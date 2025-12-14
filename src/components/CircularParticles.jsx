@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
+// WeakMap to store initialization flags per canvas element (persists across remounts)
+const canvasInitializedMap = new WeakMap();
+
 const CircularParticles = () => {
   const canvasRef = useRef(null);
   const [config, setConfig] = useState({
@@ -60,20 +63,52 @@ const CircularParticles = () => {
     return lookup;
   }, []);
 
+  // Use ref to store config so changes don't restart the animation
+  const configRef = useRef(config);
+  
+  // Update ref when config changes (without restarting animation)
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
+    // Guard: prevent re-initialization using WeakMap keyed by canvas element
+    if (canvasInitializedMap.has(canvas)) {
+      return;
+    }
+    canvasInitializedMap.set(canvas, true);
+    
+    // Guard: prevent multiple animation loops from running simultaneously
+    // Check if there's already an animation running on this canvas and cancel it
+    const existingAnimationId = canvas.dataset.animationId;
+    if (existingAnimationId) {
+      cancelAnimationFrame(parseInt(existingAnimationId));
+    }
+    
+    let isActive = true;
     
     const ctx = canvas.getContext('2d');
     let animationId;
     let particles = [];
     let backgroundParticles = [];
     let allParticles = []; // Reuse array instead of creating new one
-    let currentConfig = config;
+    let currentConfig = configRef.current;
 
+    let resizeTimeout;
     const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      // Debounce resize to prevent excessive calls
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        // CRITICAL: Setting canvas.width/height clears the canvas even if values are the same!
+        // Only set if dimensions actually changed to avoid unnecessary clears
+        if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+        }
+      }, 100); // Debounce for 100ms
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -496,24 +531,34 @@ const CircularParticles = () => {
     let angleX = 0;
     let angleY = 0;
     let lastConfigUpdate = 0;
+    let lastSphereRadius = currentConfig.sphereRadius;
     const CONFIG_UPDATE_INTERVAL = 5; // Only check config changes every 5 frames
 
     const animate = () => {
+      // Guard: stop animation if effect has been cleaned up
+      if (!isActive) return;
+      
       try {
-        if (!canvas.width || !canvas.height) {
-          animationId = requestAnimationFrame(animate);
+        if (!canvas.width || !canvas.height || !isActive) {
+          if (isActive) {
+            animationId = requestAnimationFrame(animate);
+          }
           return;
         }
         
         // Only update config reference periodically to avoid object creation overhead
         if (time - lastConfigUpdate >= CONFIG_UPDATE_INTERVAL) {
-          currentConfig = config; // Direct reference, no copy needed
+          currentConfig = configRef.current; // Read from ref (always latest)
           lastConfigUpdate = time;
           
-          // Check if particle counts changed
-          if (particles.length !== currentConfig.particleCount || 
-              backgroundParticles.length !== currentConfig.backgroundParticles) {
+          // Check if particle counts changed - only reinit if actually different
+          const particleCountChanged = particles.length !== currentConfig.particleCount;
+          const bgCountChanged = backgroundParticles.length !== currentConfig.backgroundParticles;
+          const sphereRadiusChanged = lastSphereRadius !== currentConfig.sphereRadius;
+          
+          if (particleCountChanged || bgCountChanged || sphereRadiusChanged) {
             initParticles();
+            lastSphereRadius = currentConfig.sphereRadius;
           }
         }
         
@@ -565,16 +610,30 @@ const CircularParticles = () => {
         console.error('Animation error:', error);
       }
 
-      animationId = requestAnimationFrame(animate);
+      if (isActive) {
+        animationId = requestAnimationFrame(animate);
+        // Store animation ID on canvas for cleanup detection
+        canvas.dataset.animationId = animationId.toString();
+      }
     };
 
     animate();
 
     return () => {
+      // Mark as inactive to stop animation loop
+      isActive = false;
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationId);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        // Clear the stored animation ID
+        if (canvas.dataset.animationId) {
+          delete canvas.dataset.animationId;
+        }
+      }
     };
-  }, [config, colorPalette, gradientStops, hexLookup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - colorPalette, gradientStops, hexLookup are constants that never change
 
   const updateConfig = (key, value) => {
     setConfig(prev => ({ ...prev, [key]: parseFloat(value) }));
