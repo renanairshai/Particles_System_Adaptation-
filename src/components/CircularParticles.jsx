@@ -1,7 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-
-// WeakMap to store initialization flags per canvas element (persists across remounts)
-const canvasInitializedMap = new WeakMap();
+import React, { useEffect, useRef, useState } from 'react';
 
 const CircularParticles = () => {
   const canvasRef = useRef(null);
@@ -31,8 +28,7 @@ const CircularParticles = () => {
     bgParticleOpacity: 0.2
   });
 
-  // Memoize color palette and gradient stops to avoid recreating
-  const colorPalette = useMemo(() => [
+  const colorPalette = [
     ['#050a2e', '#004466', '#b8edff'],
     ['#0e3510', '#556812', '#f9a4ed'],
     ['#ffa200', '#f4ff5c', '#FFFF99'],
@@ -41,9 +37,9 @@ const CircularParticles = () => {
     ['#2e2905', '#8eecd9', '#B0E0E6'],
     ['#0a4461', '#ffccf4', '#ffccf4'],
     ['#610000', '#ff7300', '#FFFF00']
-  ], []);
+  ];
 
-  const gradientStops = useMemo(() => [
+  const gradientStops = [
     { stop1: 0, stop2: 0.27520435967302453, stop3: 0.670299727520436 },
     { stop1: 0, stop2: 0.1, stop3: 0.508628519527702 },
     { stop1: 0, stop2: 0.3224341507720254, stop3: 1 },
@@ -52,99 +48,24 @@ const CircularParticles = () => {
     { stop1: 0, stop2: 0.1880108991825613, stop3: 0.5367847411444142 },
     { stop1: 0.1008174386920981, stop2: 0.3832879200726612, stop3: 0.6584922797456857 },
     { stop1: 0, stop2: 0.2710997442455243, stop3: 0.7148337595907929 }
-  ], []);
-
-  // Pre-compute hex conversion lookup table
-  const hexLookup = useMemo(() => {
-    const lookup = new Array(256);
-    for (let i = 0; i < 256; i++) {
-      lookup[i] = i.toString(16).padStart(2, '0');
-    }
-    return lookup;
-  }, []);
-
-  // Use ref to store config so changes don't restart the animation
-  const configRef = useRef(config);
-  
-  // Update ref when config changes (without restarting animation)
-  useEffect(() => {
-    configRef.current = config;
-  }, [config]);
+  ];
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    // Guard: prevent re-initialization using WeakMap keyed by canvas element
-    if (canvasInitializedMap.has(canvas)) {
-      return;
-    }
-    canvasInitializedMap.set(canvas, true);
-    
-    // Guard: prevent multiple animation loops from running simultaneously
-    // Check if there's already an animation running on this canvas and cancel it
-    const existingAnimationId = canvas.dataset.animationId;
-    if (existingAnimationId) {
-      cancelAnimationFrame(parseInt(existingAnimationId));
-    }
-    
-    let isActive = true;
-    
     const ctx = canvas.getContext('2d');
     let animationId;
     let particles = [];
     let backgroundParticles = [];
-    let allParticles = []; // Reuse array instead of creating new one
-    let currentConfig = configRef.current;
+    let currentConfig = { ...config };
 
-    let resizeTimeout;
     const resizeCanvas = () => {
-      // Debounce resize to prevent excessive calls
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        // CRITICAL: Setting canvas.width/height clears the canvas even if values are the same!
-        // Only set if dimensions actually changed to avoid unnecessary clears
-        if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
-          canvas.width = canvas.offsetWidth;
-          canvas.height = canvas.offsetHeight;
-        }
-      }, 100); // Debounce for 100ms
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
-    // Circular buffer for position history to avoid array shift operations
-    class CircularBuffer {
-      constructor(size) {
-        this.size = size;
-        this.buffer = new Array(size);
-        this.writeIndex = 0;
-        this.count = 0;
-      }
-
-      push(item) {
-        this.buffer[this.writeIndex] = item;
-        this.writeIndex = (this.writeIndex + 1) % this.size;
-        if (this.count < this.size) this.count++;
-      }
-
-      forEach(callback) {
-        const start = this.count < this.size ? 0 : this.writeIndex;
-        for (let i = 0; i < this.count; i++) {
-          const index = (start + i) % this.size;
-          callback(this.buffer[index], i);
-        }
-      }
-
-      get length() {
-        return this.count;
-      }
-
-      clear() {
-        this.count = 0;
-        this.writeIndex = 0;
-      }
-    }
 
     class Particle {
       constructor(index) {
@@ -186,18 +107,8 @@ const CircularParticles = () => {
         this.scale = 1;
         this.depth = 0;
         
-        // Cache base magnitude calculation
-        this.baseMag = Math.sqrt(
-          this.baseX * this.baseX + 
-          this.baseY * this.baseY + 
-          this.baseZ * this.baseZ
-        );
-        
-        // Use circular buffer for position history
-        this.positionHistory = new CircularBuffer(currentConfig.motionBlurSteps || 27);
-        
-        // Pre-compute gradient stop values
-        this.stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
+        // Store position history for echo effect
+        this.positionHistory = [];
       }
       
       updatePosition(time) {
@@ -206,7 +117,13 @@ const CircularParticles = () => {
         this.breathingPhase += this.breathingSpeed;
         const breathingOffset = Math.sin(this.breathingPhase) * this.breathingAmount;
         
-        const factor = (this.baseMag + breathingOffset) / this.baseMag;
+        const mag = Math.sqrt(
+          this.baseX * this.baseX + 
+          this.baseY * this.baseY + 
+          this.baseZ * this.baseZ
+        );
+        
+        const factor = (mag + breathingOffset) / mag;
         
         this.x3d = this.baseX * factor + this.scatterX * scatterOffset;
         this.y3d = this.baseY * factor + this.scatterY * scatterOffset;
@@ -214,7 +131,6 @@ const CircularParticles = () => {
       }
 
       rotate(angleX, angleY) {
-        // Cache cos/sin values
         const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
         const y1 = this.y3d * cosX - this.z3d * sinX;
@@ -230,68 +146,69 @@ const CircularParticles = () => {
         const scale = currentConfig.perspective / (currentConfig.perspective + z2);
         this.scale = scale;
         
-        const centerX = canvas.width * 0.5; // Use multiplication instead of division
-        const centerY = canvas.height * 0.5;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
         
         this.x2d = centerX + x2 * scale;
         this.y2d = centerY + y1 * scale;
-      }
-
-      update(time) {
-        const pulse = Math.sin(time * currentConfig.pulseSpeed + this.pulseOffset);
-        this.currentRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
         
-        // Push to history AFTER currentRadius is calculated
+        // Store position in history for echo effect
         if (currentConfig.motionBlur > 0) {
           this.positionHistory.push({
             x: this.x2d,
             y: this.y2d,
             radius: this.currentRadius
           });
+          
+          // Keep only the last N positions based on motionBlurSteps
+          const maxHistory = currentConfig.motionBlurSteps;
+          if (this.positionHistory.length > maxHistory) {
+            this.positionHistory.shift();
+          }
         } else {
-          this.positionHistory.clear();
+          this.positionHistory = [];
         }
       }
 
-      draw(time) {
+      update(time) {
+        const pulse = Math.sin(time * currentConfig.pulseSpeed + this.pulseOffset);
+        this.currentRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
+      }
+
+      draw() {
         const depthOpacity = Math.max(0.5, Math.min(1, (this.depth + currentConfig.sphereRadius) / (currentConfig.sphereRadius * 2)));
         const finalOpacity = depthOpacity * currentConfig.particleOpacity;
         
-        // Early exit if particle is off-screen
-        const margin = this.currentRadius * 2;
-        if (this.x2d < -margin || this.x2d > canvas.width + margin ||
-            this.y2d < -margin || this.y2d > canvas.height + margin) {
-          return;
-        }
-        
+        // Draw echo/ghost trails
         if (currentConfig.motionBlur > 0 && this.positionHistory.length > 0) {
-          const historyLength = this.positionHistory.length;
-          this.positionHistory.forEach((pos, i) => {
-            const fadeAmount = (i + 1) / historyLength;
+          for (let i = 0; i < this.positionHistory.length; i++) {
+            const pos = this.positionHistory[i];
+            const fadeAmount = (i + 1) / this.positionHistory.length;
             const echoOpacity = fadeAmount * currentConfig.motionBlur * finalOpacity;
-            
-            const alpha1Val = Math.floor(echoOpacity * 255);
-            const alpha2Val = Math.floor(echoOpacity * 200);
             
             const gradient = ctx.createRadialGradient(
               pos.x, pos.y, 0,
               pos.x, pos.y, pos.radius
             );
             
-            gradient.addColorStop(this.stops.stop1, this.colorSet[0] + hexLookup[alpha1Val]);
-            gradient.addColorStop(this.stops.stop2, this.colorSet[1] + hexLookup[alpha2Val]);
-            gradient.addColorStop(this.stops.stop3, this.colorSet[2] + '00');
+            const alpha1 = Math.floor(echoOpacity * 255).toString(16).padStart(2, '0');
+            const alpha2 = Math.floor(echoOpacity * 200).toString(16).padStart(2, '0');
+            
+            const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
+            
+            gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
+            gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
+            gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
             
             const segments = 16;
             const noiseAmount = pos.radius * currentConfig.blobDistortion;
-            const timeOffset = time * 0.02 + this.pulseOffset;
             
             for (let j = 0; j <= segments; j++) {
               const angle = (j / segments) * Math.PI * 2;
-              const noise = Math.sin(angle * 3 + timeOffset) * noiseAmount;
+              const noise = Math.sin(angle * 3 + time * 0.02 + this.pulseOffset) * noiseAmount;
               const radius = pos.radius + noise;
               const x = pos.x + Math.cos(angle) * radius;
               const y = pos.y + Math.sin(angle) * radius;
@@ -305,31 +222,34 @@ const CircularParticles = () => {
             
             ctx.closePath();
             ctx.fill();
-          });
+          }
         }
         
-        const alpha1Val = Math.floor(finalOpacity * 255);
-        const alpha2Val = Math.floor(finalOpacity * 200);
-        
+        // Draw main particle
         const gradient = ctx.createRadialGradient(
           this.x2d, this.y2d, 0,
           this.x2d, this.y2d, this.currentRadius
         );
         
-        gradient.addColorStop(this.stops.stop1, this.colorSet[0] + hexLookup[alpha1Val]);
-        gradient.addColorStop(this.stops.stop2, this.colorSet[1] + hexLookup[alpha2Val]);
-        gradient.addColorStop(this.stops.stop3, this.colorSet[2] + '00');
+        const alpha1 = Math.floor(finalOpacity * 255).toString(16).padStart(2, '0');
+        const alpha2 = Math.floor(finalOpacity * 200).toString(16).padStart(2, '0');
+        
+        const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
+        
+        gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
+        gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
+        gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
         
+        // Create irregular blob shape instead of perfect circle
         const segments = 16;
         const noiseAmount = this.currentRadius * currentConfig.blobDistortion;
-        const timeOffset = time * 0.02 + this.pulseOffset;
         
         for (let i = 0; i <= segments; i++) {
           const angle = (i / segments) * Math.PI * 2;
-          const noise = Math.sin(angle * 3 + timeOffset) * noiseAmount;
+          const noise = Math.sin(angle * 3 + time * 0.02 + this.pulseOffset) * noiseAmount;
           const radius = this.currentRadius + noise;
           const x = this.x2d + Math.cos(angle) * radius;
           const y = this.y2d + Math.sin(angle) * radius;
@@ -348,13 +268,17 @@ const CircularParticles = () => {
 
     class BackgroundParticle {
       constructor() {
+        this.reset();
+      }
+
+      reset() {
         const distance = 400 + Math.random() * 400;
         
         this.x3d = (Math.random() - 0.5) * distance * 2;
         this.y3d = (Math.random() - 0.5) * distance * 2;
         this.z3d = -200 - Math.random() * 600;
         
-        this.sizeRatio = Math.random();
+        this.sizeRatio = Math.random(); // Store ratio instead of absolute size
         this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
         this.colorSet = colorPalette[this.colorSetIndex];
         
@@ -374,16 +298,8 @@ const CircularParticles = () => {
         this.scale = 1;
         this.depth = 0;
         
-        // Use circular buffer
-        this.positionHistory = new CircularBuffer(currentConfig.motionBlurSteps || 27);
-        
-        // Pre-compute gradient stop values
-        this.stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
-        
-        // Pre-compute size calculations
-        this.minSize = Math.min(currentConfig.bgMinSize, currentConfig.bgMaxSize);
-        this.maxSize = Math.max(currentConfig.bgMinSize, currentConfig.bgMaxSize);
-        this.baseRadius = this.minSize + this.sizeRatio * (this.maxSize - this.minSize);
+        // Store position history for echo effect
+        this.positionHistory = [];
       }
 
       update() {
@@ -392,69 +308,74 @@ const CircularParticles = () => {
         this.z3d += this.driftZ;
         
         if (Math.abs(this.x3d) > 1000 || Math.abs(this.y3d) > 1000 || this.z3d > 200) {
-          const distance = 400 + Math.random() * 400;
-          this.x3d = (Math.random() - 0.5) * distance * 2;
-          this.y3d = (Math.random() - 0.5) * distance * 2;
-          this.z3d = -200 - Math.random() * 600;
+          this.reset();
         }
         
         this.pulsePhase += this.pulseSpeed;
       }
 
       rotate(angleX, angleY) {
+        // Background particles don't rotate with the sphere
         const scale = currentConfig.perspective / (currentConfig.perspective + this.z3d);
         this.scale = scale;
         
         this.depth = this.z3d;
         
-        const centerX = canvas.width * 0.5;
-        const centerY = canvas.height * 0.5;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
         
         this.x2d = centerX + this.x3d * scale;
         this.y2d = centerY + this.y3d * scale;
         
-        const pulse = Math.sin(this.pulsePhase);
-        this.currentRadius = this.baseRadius * this.scale * (1 + pulse * 0.2);
+        // Calculate base radius from current config with safeguard
+        const minSize = Math.min(currentConfig.bgMinSize, currentConfig.bgMaxSize);
+        const maxSize = Math.max(currentConfig.bgMinSize, currentConfig.bgMaxSize);
+        const baseRadius = minSize + this.sizeRatio * (maxSize - minSize);
         
+        const pulse = Math.sin(this.pulsePhase);
+        this.currentRadius = baseRadius * this.scale * (1 + pulse * 0.2);
+        
+        // Store position in history for echo effect
         if (currentConfig.motionBlur > 0) {
           this.positionHistory.push({
             x: this.x2d,
             y: this.y2d,
             radius: this.currentRadius
           });
+          
+          const maxHistory = currentConfig.motionBlurSteps;
+          if (this.positionHistory.length > maxHistory) {
+            this.positionHistory.shift();
+          }
         } else {
-          this.positionHistory.clear();
+          this.positionHistory = [];
         }
       }
 
-      draw(time) {
+      draw() {
         const depthOpacity = Math.max(0.3, Math.min(0.6, (this.depth + 800) / 1000));
         const finalOpacity = depthOpacity * currentConfig.bgParticleOpacity;
         
-        // Early exit if particle is off-screen
-        const margin = this.currentRadius * 2;
-        if (this.x2d < -margin || this.x2d > canvas.width + margin ||
-            this.y2d < -margin || this.y2d > canvas.height + margin) {
-          return;
-        }
-        
+        // Draw echo/ghost trails for background particles
         if (currentConfig.motionBlur > 0 && this.positionHistory.length > 0) {
-          const historyLength = this.positionHistory.length;
-          this.positionHistory.forEach((pos, i) => {
-            const fadeAmount = (i + 1) / historyLength;
+          for (let i = 0; i < this.positionHistory.length; i++) {
+            const pos = this.positionHistory[i];
+            const fadeAmount = (i + 1) / this.positionHistory.length;
             const echoOpacity = fadeAmount * currentConfig.motionBlur * finalOpacity;
-            
-            const alpha1Val = Math.floor(echoOpacity * 200);
-            const alpha2Val = Math.floor(echoOpacity * 150);
             
             const gradient = ctx.createRadialGradient(
               pos.x, pos.y, 0,
               pos.x, pos.y, pos.radius
             );
             
-            gradient.addColorStop(this.stops.stop1, this.colorSet[0] + hexLookup[alpha1Val]);
-            gradient.addColorStop(this.stops.stop2, this.colorSet[1] + hexLookup[alpha2Val]);
-            gradient.addColorStop(this.stops.stop3, this.colorSet[2] + '00');
+            const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
+            
+            const alpha1 = Math.floor(echoOpacity * 200).toString(16).padStart(2, '0');
+            const alpha2 = Math.floor(echoOpacity * 150).toString(16).padStart(2, '0');
+            
+            gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
+            gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
+            gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
@@ -478,24 +399,28 @@ const CircularParticles = () => {
             
             ctx.closePath();
             ctx.fill();
-          });
+          }
         }
         
-        const alpha1Val = Math.floor(finalOpacity * 200);
-        const alpha2Val = Math.floor(finalOpacity * 150);
-        
+        // Draw main background particle
         const gradient = ctx.createRadialGradient(
           this.x2d, this.y2d, 0,
           this.x2d, this.y2d, this.currentRadius
         );
         
-        gradient.addColorStop(this.stops.stop1, this.colorSet[0] + hexLookup[alpha1Val]);
-        gradient.addColorStop(this.stops.stop2, this.colorSet[1] + hexLookup[alpha2Val]);
-        gradient.addColorStop(this.stops.stop3, this.colorSet[2] + '00');
+        const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
+        
+        const alpha1 = Math.floor(finalOpacity * 200).toString(16).padStart(2, '0');
+        const alpha2 = Math.floor(finalOpacity * 150).toString(16).padStart(2, '0');
+        
+        gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
+        gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
+        gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
         
+        // Create irregular blob shape for background particles too
         const segments = 12;
         const noiseAmount = this.currentRadius * 0.4;
         
@@ -521,48 +446,30 @@ const CircularParticles = () => {
     const initParticles = () => {
       particles = Array.from({ length: currentConfig.particleCount }, (_, i) => new Particle(i));
       backgroundParticles = Array.from({ length: currentConfig.backgroundParticles }, () => new BackgroundParticle());
-      // Pre-allocate combined array
-      allParticles.length = 0;
-      allParticles.push(...backgroundParticles, ...particles);
     };
 
     initParticles();
     let time = 0;
     let angleX = 0;
     let angleY = 0;
-    let lastConfigUpdate = 0;
-    let lastSphereRadius = currentConfig.sphereRadius;
-    const CONFIG_UPDATE_INTERVAL = 5; // Only check config changes every 5 frames
 
     const animate = () => {
-      // Guard: stop animation if effect has been cleaned up
-      if (!isActive) return;
-      
       try {
-        if (!canvas.width || !canvas.height || !isActive) {
-          if (isActive) {
-            animationId = requestAnimationFrame(animate);
-          }
+        if (!canvas.width || !canvas.height) {
+          animationId = requestAnimationFrame(animate);
           return;
         }
         
-        // Only update config reference periodically to avoid object creation overhead
-        if (time - lastConfigUpdate >= CONFIG_UPDATE_INTERVAL) {
-          currentConfig = configRef.current; // Read from ref (always latest)
-          lastConfigUpdate = time;
-          
-          // Check if particle counts changed - only reinit if actually different
-          const particleCountChanged = particles.length !== currentConfig.particleCount;
-          const bgCountChanged = backgroundParticles.length !== currentConfig.backgroundParticles;
-          const sphereRadiusChanged = lastSphereRadius !== currentConfig.sphereRadius;
-          
-          if (particleCountChanged || bgCountChanged || sphereRadiusChanged) {
-            initParticles();
-            lastSphereRadius = currentConfig.sphereRadius;
-          }
+        // Update config
+        currentConfig = { ...config };
+        
+        // Check if we need to recreate particles
+        if (particles.length !== currentConfig.particleCount || 
+            backgroundParticles.length !== currentConfig.backgroundParticles) {
+          initParticles();
         }
         
-        // Use fillRect instead of clearRect + fillRect for better performance
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -570,70 +477,55 @@ const CircularParticles = () => {
         angleX += currentConfig.rotationSpeedX;
         angleY += currentConfig.rotationSpeedY;
 
-        // Update particles
-        for (let i = 0; i < backgroundParticles.length; i++) {
-          backgroundParticles[i].update();
-          backgroundParticles[i].rotate(angleX, angleY);
-        }
+        backgroundParticles.forEach(particle => {
+          particle.update();
+          particle.rotate(angleX, angleY);
+        });
 
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].updatePosition(time);
-          particles[i].rotate(angleX, angleY);
-          particles[i].update(time);
-        }
+        particles.forEach(particle => {
+          particle.updatePosition(time);
+          particle.rotate(angleX, angleY);
+          particle.update(time);
+        });
 
-        // Rebuild combined array only if counts changed
-        if (allParticles.length !== backgroundParticles.length + particles.length) {
-          allParticles.length = 0;
-          allParticles.push(...backgroundParticles, ...particles);
-        }
-        
-        // Sort particles by depth (back to front)
+        const allParticles = [...backgroundParticles, ...particles];
         allParticles.sort((a, b) => a.depth - b.depth);
 
         ctx.globalCompositeOperation = 'multiply';
         
-        // Use for loop instead of forEach for better performance
-        for (let i = 0; i < allParticles.length; i++) {
-          const particle = allParticles[i];
-          if (particle.x2d >= -particle.currentRadius * 2 && 
-              particle.x2d <= canvas.width + particle.currentRadius * 2 && 
-              particle.y2d >= -particle.currentRadius * 2 && 
-              particle.y2d <= canvas.height + particle.currentRadius * 2 &&
+        allParticles.forEach(particle => {
+          if (particle.x2d >= 0 && particle.x2d <= canvas.width && 
+              particle.y2d >= 0 && particle.y2d <= canvas.height &&
               particle.currentRadius > 0) {
-            particle.draw(time);
+            particle.draw();
           }
-        }
+        });
+        
+        // Debug: count visible particles
+        const visibleCount = allParticles.filter(p => 
+          p.x2d >= 0 && p.x2d <= canvas.width && 
+          p.y2d >= 0 && p.y2d <= canvas.height &&
+          p.currentRadius > 0
+        ).length;
         
         ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = 'black';
+        ctx.font = '12px monospace';
+        ctx.fillText(`Frame: ${time} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
       } catch (error) {
         console.error('Animation error:', error);
       }
 
-      if (isActive) {
-        animationId = requestAnimationFrame(animate);
-        // Store animation ID on canvas for cleanup detection
-        canvas.dataset.animationId = animationId.toString();
-      }
+      animationId = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      // Mark as inactive to stop animation loop
-      isActive = false;
-      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', resizeCanvas);
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-        // Clear the stored animation ID
-        if (canvas.dataset.animationId) {
-          delete canvas.dataset.animationId;
-        }
-      }
+      cancelAnimationFrame(animationId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - colorPalette, gradientStops, hexLookup are constants that never change
+  }, [config]);
 
   const updateConfig = (key, value) => {
     setConfig(prev => ({ ...prev, [key]: parseFloat(value) }));
@@ -969,6 +861,6 @@ const CircularParticles = () => {
       />
     </div>
   );
-}
+};
 
 export default CircularParticles;
