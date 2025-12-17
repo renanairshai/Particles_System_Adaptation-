@@ -31,10 +31,10 @@ const CircularParticles = () => {
     bgDriftSpeedMax: 0.51,
     bgMinSize: 6,
     bgMaxSize: 18,
-    motionBlur: 0.5,
-    motionBlurSteps: 10,
-    particleOpacity: 0.45,
-    bgParticleOpacity: 0.32
+    motionBlur: 0.78,
+    motionBlurSteps: 20,
+    particleOpacity: 0.23,
+    bgParticleOpacity: 0.43
   });
 
   const colorPalette = [
