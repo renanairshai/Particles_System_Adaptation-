@@ -24,3 +24,4 @@ npm run dev
 - Real-time parameter adjustment controls
 - Export configuration to clipboard
 
+

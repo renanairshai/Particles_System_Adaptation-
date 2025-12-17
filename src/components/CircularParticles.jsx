@@ -2,6 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const CircularParticles = () => {
   const canvasRef = useRef(null);
+  const particlesRef = useRef([]);
+  const bgParticlesRef = useRef([]);
+  const configRef = useRef(null); // Current config used by animation
+  const lastConfigRef = useRef(null); // Track previous config for change detection
+  const animationRef = useRef(null);
+  const timeRef = useRef(0);
+  const angleXRef = useRef(0);
+  const angleYRef = useRef(0);
+  
   const [config, setConfig] = useState({
     particleCount: 150,
     sphereRadius: 171,
@@ -16,16 +25,16 @@ const CircularParticles = () => {
     breathingSpeedMax: 0.0081,
     breathingAmountMin: 49,
     breathingAmountMax: 64,
-    backgroundParticles: 1000,
+    backgroundParticles: 773,
     blobDistortion: 0.3,
-    bgDriftSpeedMin: 0.1,
+    bgDriftSpeedMin: 0.55,
     bgDriftSpeedMax: 0.51,
     bgMinSize: 6,
-    bgMaxSize: 11,
-    motionBlur: 1.58,
-    motionBlurSteps: 27,
-    particleOpacity: 0.2,
-    bgParticleOpacity: 0.2
+    bgMaxSize: 18,
+    motionBlur: 0.5,
+    motionBlurSteps: 10,
+    particleOpacity: 0.45,
+    bgParticleOpacity: 0.32
   });
 
   const colorPalette = [
@@ -67,19 +76,43 @@ const CircularParticles = () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    // Pre-render gradient blobs to offscreen canvases for performance
+    const gradientCache = colorPalette.map((colors, index) => {
+      const size = 128;
+      const offscreen = document.createElement('canvas');
+      offscreen.width = size;
+      offscreen.height = size;
+      const offCtx = offscreen.getContext('2d');
+      
+      const gradient = offCtx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+      const stops = gradientStops[index];
+      gradient.addColorStop(stops.stop1, colors[0]);
+      gradient.addColorStop(stops.stop2, colors[1]);
+      gradient.addColorStop(stops.stop3, colors[2] + '00');
+      
+      offCtx.fillStyle = gradient;
+      offCtx.beginPath();
+      offCtx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      offCtx.fill();
+      
+      return offscreen;
+    });
+
     class Particle {
-      constructor(index) {
-        const phi = Math.acos(1 - 2 * (index + 0.5) / currentConfig.particleCount);
+      constructor(index, cfg) {
+        this.index = index;
+        
+        // Calculate unit sphere position (fixed per particle)
+        const phi = Math.acos(1 - 2 * (index + 0.5) / cfg.particleCount);
         const theta = Math.PI * (1 + Math.sqrt(5)) * index;
+        this.unitX = Math.sin(phi) * Math.cos(theta);
+        this.unitY = Math.sin(phi) * Math.sin(theta);
+        this.unitZ = Math.cos(phi);
         
-        this.baseX = currentConfig.sphereRadius * Math.sin(phi) * Math.cos(theta);
-        this.baseY = currentConfig.sphereRadius * Math.sin(phi) * Math.sin(theta);
-        this.baseZ = currentConfig.sphereRadius * Math.cos(phi);
-        
+        // Random values stored for consistent behavior
         this.scatterX = (Math.random() - 0.5) * 2;
         this.scatterY = (Math.random() - 0.5) * 2;
         this.scatterZ = (Math.random() - 0.5) * 2;
-        
         const scatterMag = Math.sqrt(
           this.scatterX * this.scatterX + 
           this.scatterY * this.scatterY + 
@@ -89,30 +122,45 @@ const CircularParticles = () => {
         this.scatterY /= scatterMag;
         this.scatterZ /= scatterMag;
         
-        this.breathingSpeed = currentConfig.breathingSpeedMin + Math.random() * (currentConfig.breathingSpeedMax - currentConfig.breathingSpeedMin);
-        this.breathingAmount = currentConfig.breathingAmountMin + Math.random() * (currentConfig.breathingAmountMax - currentConfig.breathingAmountMin);
+        this.breathingSpeedRatio = Math.random();
+        this.breathingAmountRatio = Math.random();
         this.breathingPhase = Math.random() * Math.PI * 2;
+        this.radiusRatio = Math.random();
+        
+        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
+        this.colorSet = colorPalette[this.colorSetIndex];
+        this.pulseOffset = index * 0.05;
+        
+        // Initialize positions based on config
+        this.updateFromConfig(cfg);
         
         this.x3d = this.baseX;
         this.y3d = this.baseY;
         this.z3d = this.baseZ;
         
-        this.baseRadius = currentConfig.minRadius + Math.random() * (currentConfig.maxRadius - currentConfig.minRadius);
-        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
-        this.colorSet = colorPalette[this.colorSetIndex];
-        this.pulseOffset = index * 0.05;
-        
         this.x2d = 0;
         this.y2d = 0;
         this.scale = 1;
         this.depth = 0;
+        this.currentRadius = this.baseRadius; // Initialize to prevent undefined
         
         // Store position history for echo effect
         this.positionHistory = [];
       }
       
-      updatePosition(time) {
-        const scatterOffset = currentConfig.scatter;
+      // Recalculate base positions from current config (uses stored unit positions)
+      updateFromConfig(cfg) {
+        this.baseX = cfg.sphereRadius * this.unitX;
+        this.baseY = cfg.sphereRadius * this.unitY;
+        this.baseZ = cfg.sphereRadius * this.unitZ;
+        
+        this.breathingSpeed = cfg.breathingSpeedMin + this.breathingSpeedRatio * (cfg.breathingSpeedMax - cfg.breathingSpeedMin);
+        this.breathingAmount = cfg.breathingAmountMin + this.breathingAmountRatio * (cfg.breathingAmountMax - cfg.breathingAmountMin);
+        this.baseRadius = cfg.minRadius + this.radiusRatio * (cfg.maxRadius - cfg.minRadius);
+      }
+      
+      updatePosition(cfg) {
+        const scatterOffset = cfg.scatter;
         
         this.breathingPhase += this.breathingSpeed;
         const breathingOffset = Math.sin(this.breathingPhase) * this.breathingAmount;
@@ -123,14 +171,14 @@ const CircularParticles = () => {
           this.baseZ * this.baseZ
         );
         
-        const factor = (mag + breathingOffset) / mag;
+        const factor = mag > 0 ? (mag + breathingOffset) / mag : 1;
         
         this.x3d = this.baseX * factor + this.scatterX * scatterOffset;
         this.y3d = this.baseY * factor + this.scatterY * scatterOffset;
         this.z3d = this.baseZ * factor + this.scatterZ * scatterOffset;
       }
 
-      rotate(angleX, angleY) {
+      rotate(angleX, angleY, cfg, canvasWidth, canvasHeight) {
         const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
         const y1 = this.y3d * cosX - this.z3d * sinX;
@@ -143,365 +191,257 @@ const CircularParticles = () => {
         
         this.depth = z2;
         
-        const scale = currentConfig.perspective / (currentConfig.perspective + z2);
+        const scale = cfg.perspective / (cfg.perspective + z2);
         this.scale = scale;
         
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
         
         this.x2d = centerX + x2 * scale;
         this.y2d = centerY + y1 * scale;
         
         // Store position in history for echo effect
-        if (currentConfig.motionBlur > 0) {
+        if (cfg.motionBlur > 0) {
+          const maxHistory = cfg.motionBlurSteps;
           this.positionHistory.push({
             x: this.x2d,
             y: this.y2d,
             radius: this.currentRadius
           });
-          
-          // Keep only the last N positions based on motionBlurSteps
-          const maxHistory = currentConfig.motionBlurSteps;
-          if (this.positionHistory.length > maxHistory) {
+          // Trim to max length
+          while (this.positionHistory.length > maxHistory) {
             this.positionHistory.shift();
           }
-        } else {
-          this.positionHistory = [];
+        } else if (this.positionHistory.length > 0) {
+          this.positionHistory.length = 0;
         }
       }
 
-      update(time) {
-        const pulse = Math.sin(time * currentConfig.pulseSpeed + this.pulseOffset);
-        this.currentRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
+      update(time, cfg) {
+        const pulse = Math.sin(time * cfg.pulseSpeed + this.pulseOffset);
+        this.currentRadius = Math.max(1, this.baseRadius * this.scale + pulse * 3 * this.scale);
       }
 
-      draw() {
-        const depthOpacity = Math.max(0.5, Math.min(1, (this.depth + currentConfig.sphereRadius) / (currentConfig.sphereRadius * 2)));
-        const finalOpacity = depthOpacity * currentConfig.particleOpacity;
+      draw(ctx, cfg, time) {
+        const depthOpacity = Math.max(0.5, Math.min(1, (this.depth + cfg.sphereRadius) / (cfg.sphereRadius * 2)));
+        const finalOpacity = depthOpacity * cfg.particleOpacity;
+        const cache = gradientCache[this.colorSetIndex];
         
-        // Draw echo/ghost trails
-        if (currentConfig.motionBlur > 0 && this.positionHistory.length > 0) {
+        // Draw echo/ghost trails using cached image
+        if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
           for (let i = 0; i < this.positionHistory.length; i++) {
             const pos = this.positionHistory[i];
             const fadeAmount = (i + 1) / this.positionHistory.length;
-            const echoOpacity = fadeAmount * currentConfig.motionBlur * finalOpacity;
+            const echoOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
             
-            const gradient = ctx.createRadialGradient(
-              pos.x, pos.y, 0,
-              pos.x, pos.y, pos.radius
-            );
-            
-            const alpha1 = Math.floor(echoOpacity * 255).toString(16).padStart(2, '0');
-            const alpha2 = Math.floor(echoOpacity * 200).toString(16).padStart(2, '0');
-            
-            const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
-            
-            gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
-            gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
-            gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            
-            const segments = 16;
-            const noiseAmount = pos.radius * currentConfig.blobDistortion;
-            
-            for (let j = 0; j <= segments; j++) {
-              const angle = (j / segments) * Math.PI * 2;
-              const noise = Math.sin(angle * 3 + time * 0.02 + this.pulseOffset) * noiseAmount;
-              const radius = pos.radius + noise;
-              const x = pos.x + Math.cos(angle) * radius;
-              const y = pos.y + Math.sin(angle) * radius;
-              
-              if (j === 0) {
-                ctx.moveTo(x, y);
-              } else {
-                ctx.lineTo(x, y);
-              }
-            }
-            
-            ctx.closePath();
-            ctx.fill();
+            const size = pos.radius * 2;
+            ctx.globalAlpha = echoOpacity;
+            ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
           }
         }
         
-        // Draw main particle
-        const gradient = ctx.createRadialGradient(
-          this.x2d, this.y2d, 0,
-          this.x2d, this.y2d, this.currentRadius
-        );
-        
-        const alpha1 = Math.floor(finalOpacity * 255).toString(16).padStart(2, '0');
-        const alpha2 = Math.floor(finalOpacity * 200).toString(16).padStart(2, '0');
-        
-        const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
-        
-        gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
-        gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
-        gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        
-        // Create irregular blob shape instead of perfect circle
-        const segments = 16;
-        const noiseAmount = this.currentRadius * currentConfig.blobDistortion;
-        
-        for (let i = 0; i <= segments; i++) {
-          const angle = (i / segments) * Math.PI * 2;
-          const noise = Math.sin(angle * 3 + time * 0.02 + this.pulseOffset) * noiseAmount;
-          const radius = this.currentRadius + noise;
-          const x = this.x2d + Math.cos(angle) * radius;
-          const y = this.y2d + Math.sin(angle) * radius;
-          
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
-        
-        ctx.closePath();
-        ctx.fill();
+        // Draw main particle using cached image
+        const size = this.currentRadius * 2;
+        ctx.globalAlpha = finalOpacity;
+        ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        ctx.globalAlpha = 1;
       }
     }
 
     class BackgroundParticle {
-      constructor() {
-        this.reset();
+      constructor(cfg) {
+        this.sizeRatio = Math.random();
+        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
+        this.colorSet = colorPalette[this.colorSetIndex];
+        this.driftSpeedRatio = Math.random();
+        this.driftAngle = Math.random() * Math.PI * 2;
+        this.driftAngleY = (Math.random() - 0.5) * Math.PI;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.pulseSpeed = 0.01 + Math.random() * 0.02;
+        this.positionHistory = [];
+        
+        this.reset(cfg);
       }
 
-      reset() {
+      reset(cfg) {
         const distance = 400 + Math.random() * 400;
         
         this.x3d = (Math.random() - 0.5) * distance * 2;
         this.y3d = (Math.random() - 0.5) * distance * 2;
         this.z3d = -200 - Math.random() * 600;
         
-        this.sizeRatio = Math.random(); // Store ratio instead of absolute size
-        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
-        this.colorSet = colorPalette[this.colorSetIndex];
-        
-        const speed = currentConfig.bgDriftSpeedMin + Math.random() * (currentConfig.bgDriftSpeedMax - currentConfig.bgDriftSpeedMin);
-        const angle = Math.random() * Math.PI * 2;
-        const angleY = (Math.random() - 0.5) * Math.PI;
-        
-        this.driftX = Math.cos(angle) * Math.cos(angleY) * speed;
-        this.driftY = Math.sin(angleY) * speed;
-        this.driftZ = Math.sin(angle) * Math.cos(angleY) * speed;
-        
-        this.pulsePhase = Math.random() * Math.PI * 2;
-        this.pulseSpeed = 0.01 + Math.random() * 0.02;
+        this.updateDrift(cfg);
         
         this.x2d = 0;
         this.y2d = 0;
         this.scale = 1;
         this.depth = 0;
-        
-        // Store position history for echo effect
-        this.positionHistory = [];
+      }
+      
+      updateDrift(cfg) {
+        const speed = cfg.bgDriftSpeedMin + this.driftSpeedRatio * (cfg.bgDriftSpeedMax - cfg.bgDriftSpeedMin);
+        this.driftX = Math.cos(this.driftAngle) * Math.cos(this.driftAngleY) * speed;
+        this.driftY = Math.sin(this.driftAngleY) * speed;
+        this.driftZ = Math.sin(this.driftAngle) * Math.cos(this.driftAngleY) * speed;
       }
 
-      update() {
+      update(cfg) {
         this.x3d += this.driftX;
         this.y3d += this.driftY;
         this.z3d += this.driftZ;
         
         if (Math.abs(this.x3d) > 1000 || Math.abs(this.y3d) > 1000 || this.z3d > 200) {
-          this.reset();
+          this.reset(cfg);
         }
         
         this.pulsePhase += this.pulseSpeed;
       }
 
-      rotate(angleX, angleY) {
-        // Background particles don't rotate with the sphere
-        const scale = currentConfig.perspective / (currentConfig.perspective + this.z3d);
+      rotate(cfg, canvasWidth, canvasHeight) {
+        const scale = cfg.perspective / (cfg.perspective + this.z3d);
         this.scale = scale;
         
         this.depth = this.z3d;
         
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
         
         this.x2d = centerX + this.x3d * scale;
         this.y2d = centerY + this.y3d * scale;
         
-        // Calculate base radius from current config with safeguard
-        const minSize = Math.min(currentConfig.bgMinSize, currentConfig.bgMaxSize);
-        const maxSize = Math.max(currentConfig.bgMinSize, currentConfig.bgMaxSize);
+        const minSize = Math.min(cfg.bgMinSize, cfg.bgMaxSize);
+        const maxSize = Math.max(cfg.bgMinSize, cfg.bgMaxSize);
         const baseRadius = minSize + this.sizeRatio * (maxSize - minSize);
         
         const pulse = Math.sin(this.pulsePhase);
         this.currentRadius = baseRadius * this.scale * (1 + pulse * 0.2);
         
         // Store position in history for echo effect
-        if (currentConfig.motionBlur > 0) {
+        if (cfg.motionBlur > 0) {
+          const maxHistory = cfg.motionBlurSteps;
           this.positionHistory.push({
             x: this.x2d,
             y: this.y2d,
             radius: this.currentRadius
           });
-          
-          const maxHistory = currentConfig.motionBlurSteps;
-          if (this.positionHistory.length > maxHistory) {
+          while (this.positionHistory.length > maxHistory) {
             this.positionHistory.shift();
           }
-        } else {
-          this.positionHistory = [];
+        } else if (this.positionHistory.length > 0) {
+          this.positionHistory.length = 0;
         }
       }
 
-      draw() {
+      draw(ctx, cfg) {
         const depthOpacity = Math.max(0.3, Math.min(0.6, (this.depth + 800) / 1000));
-        const finalOpacity = depthOpacity * currentConfig.bgParticleOpacity;
+        const finalOpacity = depthOpacity * cfg.bgParticleOpacity;
+        const cache = gradientCache[this.colorSetIndex];
         
-        // Draw echo/ghost trails for background particles
-        if (currentConfig.motionBlur > 0 && this.positionHistory.length > 0) {
+        // Draw echo/ghost trails using cached image
+        if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
           for (let i = 0; i < this.positionHistory.length; i++) {
             const pos = this.positionHistory[i];
             const fadeAmount = (i + 1) / this.positionHistory.length;
-            const echoOpacity = fadeAmount * currentConfig.motionBlur * finalOpacity;
+            const echoOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
             
-            const gradient = ctx.createRadialGradient(
-              pos.x, pos.y, 0,
-              pos.x, pos.y, pos.radius
-            );
-            
-            const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
-            
-            const alpha1 = Math.floor(echoOpacity * 200).toString(16).padStart(2, '0');
-            const alpha2 = Math.floor(echoOpacity * 150).toString(16).padStart(2, '0');
-            
-            gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
-            gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
-            gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            
-            const segments = 12;
-            const noiseAmount = pos.radius * 0.4;
-            
-            for (let j = 0; j <= segments; j++) {
-              const angle = (j / segments) * Math.PI * 2;
-              const noise = Math.sin(angle * 2 + this.pulsePhase) * noiseAmount;
-              const radius = pos.radius + noise;
-              const x = pos.x + Math.cos(angle) * radius;
-              const y = pos.y + Math.sin(angle) * radius;
-              
-              if (j === 0) {
-                ctx.moveTo(x, y);
-              } else {
-                ctx.lineTo(x, y);
-              }
-            }
-            
-            ctx.closePath();
-            ctx.fill();
+            const size = pos.radius * 2;
+            ctx.globalAlpha = echoOpacity;
+            ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
           }
         }
         
-        // Draw main background particle
-        const gradient = ctx.createRadialGradient(
-          this.x2d, this.y2d, 0,
-          this.x2d, this.y2d, this.currentRadius
-        );
-        
-        const stops = gradientStops[this.colorSetIndex] || { stop1: 0, stop2: 0.5, stop3: 1 };
-        
-        const alpha1 = Math.floor(finalOpacity * 200).toString(16).padStart(2, '0');
-        const alpha2 = Math.floor(finalOpacity * 150).toString(16).padStart(2, '0');
-        
-        gradient.addColorStop(stops.stop1, this.colorSet[0] + alpha1);
-        gradient.addColorStop(stops.stop2, this.colorSet[1] + alpha2);
-        gradient.addColorStop(stops.stop3, this.colorSet[2] + '00');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        
-        // Create irregular blob shape for background particles too
-        const segments = 12;
-        const noiseAmount = this.currentRadius * 0.4;
-        
-        for (let i = 0; i <= segments; i++) {
-          const angle = (i / segments) * Math.PI * 2;
-          const noise = Math.sin(angle * 2 + this.pulsePhase) * noiseAmount;
-          const radius = this.currentRadius + noise;
-          const x = this.x2d + Math.cos(angle) * radius;
-          const y = this.y2d + Math.sin(angle) * radius;
-          
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
-        
-        ctx.closePath();
-        ctx.fill();
+        // Draw main particle using cached image
+        const size = this.currentRadius * 2;
+        ctx.globalAlpha = finalOpacity;
+        ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        ctx.globalAlpha = 1;
       }
     }
 
-    const initParticles = () => {
-      particles = Array.from({ length: currentConfig.particleCount }, (_, i) => new Particle(i));
-      backgroundParticles = Array.from({ length: currentConfig.backgroundParticles }, () => new BackgroundParticle());
+    // Initialize config ref
+    configRef.current = { ...config };
+    
+    const initParticles = (cfg) => {
+      particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
+      bgParticlesRef.current = Array.from({ length: cfg.backgroundParticles }, () => new BackgroundParticle(cfg));
     };
 
-    initParticles();
-    let time = 0;
-    let angleX = 0;
-    let angleY = 0;
+    initParticles(configRef.current);
 
     const animate = () => {
       try {
         if (!canvas.width || !canvas.height) {
-          animationId = requestAnimationFrame(animate);
+          animationRef.current = requestAnimationFrame(animate);
           return;
         }
         
-        // Update config
-        currentConfig = { ...config };
-        
-        // Check if we need to recreate particles
-        if (particles.length !== currentConfig.particleCount || 
-            backgroundParticles.length !== currentConfig.backgroundParticles) {
-          initParticles();
+        const cfg = configRef.current;
+        if (!cfg) {
+          animationRef.current = requestAnimationFrame(animate);
+          return;
         }
+        
+        // Check if we need to recreate particles (only when counts change)
+        if (particlesRef.current.length !== cfg.particleCount) {
+          particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
+        }
+        if (bgParticlesRef.current.length !== cfg.backgroundParticles) {
+          bgParticlesRef.current = Array.from({ length: cfg.backgroundParticles }, () => new BackgroundParticle(cfg));
+        }
+        
+        // Only update particles when config actually changes
+        const lastCfg = lastConfigRef.current;
+        if (!lastCfg || 
+            lastCfg.sphereRadius !== cfg.sphereRadius ||
+            lastCfg.scatter !== cfg.scatter ||
+            lastCfg.minRadius !== cfg.minRadius ||
+            lastCfg.maxRadius !== cfg.maxRadius ||
+            lastCfg.breathingSpeedMin !== cfg.breathingSpeedMin ||
+            lastCfg.breathingSpeedMax !== cfg.breathingSpeedMax ||
+            lastCfg.breathingAmountMin !== cfg.breathingAmountMin ||
+            lastCfg.breathingAmountMax !== cfg.breathingAmountMax) {
+          particlesRef.current.forEach(particle => particle.updateFromConfig(cfg));
+        }
+        
+        if (!lastCfg ||
+            lastCfg.bgDriftSpeedMin !== cfg.bgDriftSpeedMin ||
+            lastCfg.bgDriftSpeedMax !== cfg.bgDriftSpeedMax) {
+          bgParticlesRef.current.forEach(particle => particle.updateDrift(cfg));
+        }
+        
+        lastConfigRef.current = { ...cfg };
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        time++;
-        angleX += currentConfig.rotationSpeedX;
-        angleY += currentConfig.rotationSpeedY;
+        timeRef.current++;
+        angleXRef.current += cfg.rotationSpeedX;
+        angleYRef.current += cfg.rotationSpeedY;
 
-        backgroundParticles.forEach(particle => {
-          particle.update();
-          particle.rotate(angleX, angleY);
+        bgParticlesRef.current.forEach(particle => {
+          particle.update(cfg);
+          particle.rotate(cfg, canvas.width, canvas.height);
         });
 
-        particles.forEach(particle => {
-          particle.updatePosition(time);
-          particle.rotate(angleX, angleY);
-          particle.update(time);
+        particlesRef.current.forEach(particle => {
+          particle.updatePosition(cfg);
+          particle.update(timeRef.current, cfg); // Update radius before rotate uses it
+          particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
         });
 
-        const allParticles = [...backgroundParticles, ...particles];
+        // Reuse array to reduce GC pressure
+        const allParticles = bgParticlesRef.current.concat(particlesRef.current);
         allParticles.sort((a, b) => a.depth - b.depth);
 
         ctx.globalCompositeOperation = 'multiply';
         
         allParticles.forEach(particle => {
-          if (particle.x2d >= 0 && particle.x2d <= canvas.width && 
-              particle.y2d >= 0 && particle.y2d <= canvas.height &&
-              particle.currentRadius > 0) {
-            particle.draw();
+          if (particle.currentRadius > 0) {
+            particle.draw(ctx, cfg, timeRef.current);
           }
         });
         
-        // Debug: count visible particles
         const visibleCount = allParticles.filter(p => 
           p.x2d >= 0 && p.x2d <= canvas.width && 
           p.y2d >= 0 && p.y2d <= canvas.height &&
@@ -511,24 +451,30 @@ const CircularParticles = () => {
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = 'black';
         ctx.font = '12px monospace';
-        ctx.fillText(`Frame: ${time} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
+        ctx.fillText(`Frame: ${timeRef.current} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
       } catch (error) {
         console.error('Animation error:', error);
       }
 
-      animationId = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationId);
+      cancelAnimationFrame(animationRef.current);
     };
-  }, [config]);
+  }, []); // Empty dependency - runs once on mount
 
   const updateConfig = (key, value) => {
-    setConfig(prev => ({ ...prev, [key]: parseFloat(value) }));
+    const newValue = parseFloat(value);
+    // Update ref immediately for smooth animation
+    if (configRef.current) {
+      configRef.current = { ...configRef.current, [key]: newValue };
+    }
+    // Update state for UI display
+    setConfig(prev => ({ ...prev, [key]: newValue }));
   };
 
   const copyAllParams = () => {
@@ -545,7 +491,7 @@ const CircularParticles = () => {
 
   return (
     <div className="w-full h-screen bg-white flex flex-col">
-      <div className="bg-gray-900 text-white p-4 overflow-y-auto max-h-64">
+      <div className="bg-gray-900 text-white pt-4 pb-4 px-4 overflow-y-auto max-h-64">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
           <button
