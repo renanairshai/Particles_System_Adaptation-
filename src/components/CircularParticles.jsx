@@ -487,9 +487,31 @@ const CircularParticles = () => {
         const pulse = Math.sin(time * cfg.pulseSpeed + this.pulseOffset);
         let baseRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
         
-        // For dividing particles: keep at full size (no size change during division)
-        // This prevents the "blink" when children appear - they maintain parent's size
-        // Size changes are handled by metaball effect only
+        // For dividing particles: start at 50% size and grow to 100% as they separate
+        // This creates the "split" effect where each half grows into a full particle
+        if (state === 'birth' && this.isDividing) {
+          // Calculate per-particle division progress
+          let particleProgress = 0;
+          if (this.divisionStartTime > 0 && currentTime) {
+            const particleElapsed = Math.max(0, currentTime - this.divisionStartTime);
+            particleProgress = Math.min(1, particleElapsed / divisionDuration);
+          } else {
+            particleProgress = divisionProgress;
+          }
+          
+          // Apply timing offset and delay (same as movement calculation)
+          const offsetProgress = Math.max(0, particleProgress - this.divisionTimeOffset);
+          const delayedProgress = Math.max(0, Math.min(1, (offsetProgress - this.divisionDelay) / (1 - this.divisionDelay)));
+          
+          // Ultra-smooth 4th power ease-in-out for size growth
+          const sizeEase = delayedProgress < 0.5
+            ? 2 * delayedProgress * delayedProgress * delayedProgress * delayedProgress
+            : 1 - Math.pow(-2 * delayedProgress + 2, 4) / 2;
+          
+          // Scale from 50% to 100% of base radius
+          const sizeMultiplier = 0.5 + (sizeEase * 0.5); // 0.5 to 1.0
+          baseRadius *= sizeMultiplier;
+        }
         
         // Metaball effect: merge with sibling when close
         if (state === 'birth' && this.siblingId !== null && allParticles) {
@@ -526,21 +548,27 @@ const CircularParticles = () => {
         
         // Fade out parent particles as children separate (if this particle has children dividing)
         // Use global progress for parents (they fade based on when children start dividing)
+        // Parent shrinks from 100% to 0% using the same easing curve as children for perfect synchronization
         if (state === 'birth' && !this.isDividing && divisionProgress !== undefined) {
           // Check if any particles have this as parent
           const hasDividingChildren = allParticles && allParticles.some(p => 
             p.parentId === this.index && p.isDividing
           );
           if (hasDividingChildren) {
-            // Shrink parent gradually with smooth easing
-            const fadeOut = Math.min(1, divisionProgress * 2.5); // Slightly faster but not too aggressive
-            // Use smoothstep for gradual shrinking
-            const smoothFadeOut = fadeOut * fadeOut * (3 - 2 * fadeOut);
-            baseRadius *= (1 - smoothFadeOut * 0.9); // Shrink to 10% of original size (smoother)
+            // Use ultra-smooth 4th power ease-in-out (same as children) for perfect synchronization
+            const smoothFadeOut = divisionProgress < 0.5
+              ? 2 * divisionProgress * divisionProgress * divisionProgress * divisionProgress
+              : 1 - Math.pow(-2 * divisionProgress + 2, 4) / 2;
+            
+            // Shrink from 100% to 0% - when children reach full size, parent is completely gone
+            baseRadius *= (1 - smoothFadeOut); // Shrink to 0% of original size
           }
         }
         
-        this.currentRadius = Math.max(1, baseRadius);
+        // Allow parent particles to shrink to 0 when fading out, otherwise minimum is 1
+        const isFadingParent = state === 'birth' && !this.isDividing && divisionProgress !== undefined && 
+          allParticles && allParticles.some(p => p.parentId === this.index && p.isDividing);
+        this.currentRadius = isFadingParent ? Math.max(0, baseRadius) : Math.max(1, baseRadius);
       }
 
       draw(ctx, cfg, time, state, allParticles, divisionProgress, currentTime) {
@@ -565,13 +593,19 @@ const CircularParticles = () => {
         
         // Fade out parent particles as children separate
         // Use global progress for parents (they fade based on when children start dividing)
+        // Use the same easing curve as size shrinking for perfect synchronization
         if (state === 'birth' && !this.isDividing && divisionProgress !== undefined) {
           const hasDividingChildren = allParticles && allParticles.some(p => 
             p.parentId === this.index && p.isDividing
           );
           if (hasDividingChildren) {
-            const fadeOut = Math.min(1, divisionProgress * 2); // Fade out in first half
-            finalOpacity *= (1 - fadeOut); // Fade to transparent
+            // Use ultra-smooth 4th power ease-in-out (same as size shrinking) for perfect synchronization
+            const smoothFadeOut = divisionProgress < 0.5
+              ? 2 * divisionProgress * divisionProgress * divisionProgress * divisionProgress
+              : 1 - Math.pow(-2 * divisionProgress + 2, 4) / 2;
+            
+            // Fade to transparent - synchronized with size shrinking
+            finalOpacity *= (1 - smoothFadeOut); // Fade to transparent
           }
         }
         
@@ -944,7 +978,7 @@ const CircularParticles = () => {
       const newParticles = [];
       
       particlesToDivide.forEach((parent, idx) => {
-        // Generate random separation direction with more organic variation
+        // Generate one random direction - children will move in opposite directions
         const dirX = (Math.random() - 0.5) * 2;
         const dirY = (Math.random() - 0.5) * 2;
         const dirZ = (Math.random() - 0.5) * 2;
@@ -952,6 +986,16 @@ const CircularParticles = () => {
         const unitX = dirX / dirMag;
         const unitY = dirY / dirMag;
         const unitZ = dirZ / dirMag;
+        
+        // First child goes in the random direction
+        const unit1X = unitX;
+        const unit1Y = unitY;
+        const unit1Z = unitZ;
+        
+        // Second child goes in the exact opposite direction
+        const unit2X = -unitX;
+        const unit2Y = -unitY;
+        const unit2Z = -unitZ;
         
         // Create two child particles that start merged
         const child1 = new Particle(particlesRef.current.length + newParticles.length, cfg);
@@ -1002,20 +1046,20 @@ const CircularParticles = () => {
         child2.divisionLevel = currentLevel + 1;
         child2.isDividing = true;
         
-        // Random timing offset for organic division start (0 to 0.6 of division duration) - increased for more variation
-        child1.divisionTimeOffset = Math.random() * 0.6;
-        child2.divisionTimeOffset = Math.random() * 0.6;
+        // No timing offsets - both children start moving immediately with same energy
+        child1.divisionTimeOffset = 0;
+        child2.divisionTimeOffset = 0;
         
-        // Staggered start time for organic feel (0 to 0.4 delay) - increased for more variation
-        child1.divisionDelay = Math.random() * 0.4;
-        child2.divisionDelay = Math.random() * 0.4;
+        // No staggered delays - both start simultaneously
+        child1.divisionDelay = 0;
+        child2.divisionDelay = 0;
         
-        // Per-particle delay before division starts (0 to 500ms) - each particle has its own pace
+        // Start immediately - no delays
         const baseStartTime = Date.now();
-        child1.divisionStartDelay = Math.random() * 500; // 0-500ms random delay
-        child2.divisionStartDelay = Math.random() * 500; // 0-500ms random delay
-        child1.divisionStartTime = baseStartTime + child1.divisionStartDelay;
-        child2.divisionStartTime = baseStartTime + child2.divisionStartDelay;
+        child1.divisionStartDelay = 0;
+        child2.divisionStartDelay = 0;
+        child1.divisionStartTime = baseStartTime;
+        child2.divisionStartTime = baseStartTime;
         
         // Start position (parent's current position - start merged)
         child1.startX = parent.x3d;
@@ -1032,22 +1076,20 @@ const CircularParticles = () => {
         child2.y3d = parent.y3d;
         child2.z3d = parent.z3d;
         
-        // Variable separation distance for organic variation (80% to 120% of base)
-        const distanceVariation1 = 0.8 + Math.random() * 0.4;
-        const distanceVariation2 = 0.8 + Math.random() * 0.4;
-        const individualSeparation1 = separationDistance * distanceVariation1;
-        const individualSeparation2 = separationDistance * distanceVariation2;
-        child1.separationDistance = individualSeparation1;
-        child2.separationDistance = individualSeparation2;
+        // Same separation distance for both children (same energy)
+        // Both move with equal energy to opposite sides
+        const individualSeparation = separationDistance;
+        child1.separationDistance = individualSeparation;
+        child2.separationDistance = individualSeparation;
         
-        // Target position (opposite directions for the two children)
-        child1.targetX = parent.x3d + unitX * individualSeparation1;
-        child1.targetY = parent.y3d + unitY * individualSeparation1;
-        child1.targetZ = parent.z3d + unitZ * individualSeparation1;
+        // Target position (children move in opposite directions with same energy)
+        child1.targetX = parent.x3d + unit1X * individualSeparation;
+        child1.targetY = parent.y3d + unit1Y * individualSeparation;
+        child1.targetZ = parent.z3d + unit1Z * individualSeparation;
         
-        child2.targetX = parent.x3d - unitX * individualSeparation2;
-        child2.targetY = parent.y3d - unitY * individualSeparation2;
-        child2.targetZ = parent.z3d - unitZ * individualSeparation2;
+        child2.targetX = parent.x3d + unit2X * individualSeparation;
+        child2.targetY = parent.y3d + unit2Y * individualSeparation;
+        child2.targetZ = parent.z3d + unit2Z * individualSeparation;
         
         // Orbital motion properties for curved paths
         child1.orbitalPhase = Math.random() * Math.PI * 2;
@@ -1059,24 +1101,17 @@ const CircularParticles = () => {
         child2.rotationPhase = Math.random() * Math.PI * 2;
         
         // Store direction for orbital calculations
-        child1.divisionDirection = { x: unitX, y: unitY, z: unitZ };
-        child2.divisionDirection = { x: -unitX, y: -unitY, z: -unitZ };
+        child1.divisionDirection = { x: unit1X, y: unit1Y, z: unit1Z };
+        child2.divisionDirection = { x: unit2X, y: unit2Y, z: unit2Z };
         
         newParticles.push(child1, child2);
       });
       
-      // Clear pre-dividing flags from old particles
-      particlesToDivide.forEach(parent => {
-        parent.isPreDividing = false;
-        parent.splitColorIndex = null;
-      });
-      
-      // Keep parent particles in array so they can fade out smoothly
-      // Only add new children, don't remove parents immediately
-      // Parents will fade out naturally based on divisionProgress
+      // Remove parent particles immediately - they should not be visible at all
+      // Only the children should be visible, creating a clean split effect
       const parentIndices = new Set(particlesToDivide.map(p => p.index));
       particlesRef.current = [
-        ...particlesRef.current.filter(p => p.divisionLevel !== currentLevel || parentIndices.has(p.index)),
+        ...particlesRef.current.filter(p => !parentIndices.has(p.index)),
         ...newParticles
       ];
       divisionLevelRef.current = currentLevel + 1;
