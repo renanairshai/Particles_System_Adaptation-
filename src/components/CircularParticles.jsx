@@ -10,6 +10,7 @@ const CircularParticles = () => {
   const timeRef = useRef(0);
   const angleXRef = useRef(0);
   const angleYRef = useRef(0);
+  const isFrozenRef = useRef(false);
   
   const [config, setConfig] = useState({
     particleCount: 150,
@@ -34,8 +35,13 @@ const CircularParticles = () => {
     motionBlur: 0.78,
     motionBlurSteps: 20,
     particleOpacity: 0.23,
-    bgParticleOpacity: 0.43
+    bgParticleOpacity: 0.43,
+    particleShape: 'circle',
+    autoRotateShapes: true,
+    glowRadius: 1
   });
+
+  const [isFrozen, setIsFrozen] = useState(false);
 
   const colorPalette = [
     ['#050a2e', '#004466', '#b8edff'],
@@ -77,25 +83,122 @@ const CircularParticles = () => {
     window.addEventListener('resize', resizeCanvas);
 
     // Pre-render gradient blobs to offscreen canvases for performance
-    const gradientCache = colorPalette.map((colors, index) => {
-      const size = 128;
+    const createShapeCache = (colors, stops, shape) => {
+      const size = shape === 'circle' ? 128 : 1024;
       const offscreen = document.createElement('canvas');
       offscreen.width = size;
       offscreen.height = size;
       const offCtx = offscreen.getContext('2d');
       
-      const gradient = offCtx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
-      const stops = gradientStops[index];
-      gradient.addColorStop(stops.stop1, colors[0]);
-      gradient.addColorStop(stops.stop2, colors[1]);
-      gradient.addColorStop(stops.stop3, colors[2] + '00');
+      const cx = size / 2;
+      const cy = size / 2;
+      const r = size / 2;
       
-      offCtx.fillStyle = gradient;
-      offCtx.beginPath();
-      offCtx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
-      offCtx.fill();
+      if (shape === 'circle') {
+        // Circle keeps the original gradient fill behavior
+        const gradient = offCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        gradient.addColorStop(stops.stop1, colors[0]);
+        gradient.addColorStop(stops.stop2, colors[1]);
+        gradient.addColorStop(stops.stop3, colors[2] + '00');
+        offCtx.fillStyle = gradient;
+        offCtx.beginPath();
+        offCtx.arc(cx, cy, r, 0, Math.PI * 2);
+        offCtx.fill();
+      } else {
+        // Other shapes: draw shape with large blur for glow, then solid shape on top
+        
+        // Helper to draw the shape path
+        const drawShapePath = (ctx, scale = 1) => {
+          ctx.beginPath();
+          switch (shape) {
+            case 'x': {
+              const lineW = size * 0.04 + (scale - 1) * size * 0.15;
+              const baseInset = size * 0.3;
+              const inset = baseInset - (scale - 1) * size * 0.1;
+              ctx.lineWidth = lineW;
+              ctx.lineCap = 'round';
+              ctx.moveTo(inset, inset);
+              ctx.lineTo(size - inset, size - inset);
+              ctx.moveTo(size - inset, inset);
+              ctx.lineTo(inset, size - inset);
+              return 'stroke';
+            }
+            case 'torus': {
+              const outerR = r * 0.5 * scale;
+              const innerR = r * 0.375 * scale;
+              ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+              ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
+              return 'fill-evenodd';
+            }
+            case 'triangle': {
+              const triR = r * 0.55 * scale;
+              ctx.moveTo(cx, cy - triR * 0.9);
+              ctx.lineTo(cx + triR * 0.85, cy + triR * 0.6);
+              ctx.lineTo(cx - triR * 0.85, cy + triR * 0.6);
+              ctx.closePath();
+              return 'fill';
+            }
+            case 'square': {
+              const sqSize = size * 0.35 * scale;
+              ctx.rect(cx - sqSize / 2, cy - sqSize / 2, sqSize, sqSize);
+              return 'fill';
+            }
+          }
+        };
+        
+        // Draw multiple glow layers using gradient colors and stops
+        const glowMult = config.glowRadius || 1;
+        const glowLayers = [
+          { blur: 180 * glowMult, color: colors[2], opacity: stops.stop3, scale: 1 + 2.0 * glowMult },
+          { blur: 120 * glowMult, color: colors[1], opacity: stops.stop2, scale: 1 + 1.2 * glowMult },
+          { blur: 60 * glowMult, color: colors[0], opacity: stops.stop1 + 0.3, scale: 1 + 0.4 * glowMult }
+        ];
+        
+        for (const layer of glowLayers) {
+          offCtx.save();
+          offCtx.globalAlpha = Math.min(1, layer.opacity);
+          offCtx.shadowColor = layer.color;
+          offCtx.shadowBlur = layer.blur;
+          offCtx.fillStyle = layer.color;
+          offCtx.strokeStyle = layer.color;
+          const fillType = drawShapePath(offCtx, layer.scale);
+          if (fillType === 'stroke') {
+            offCtx.stroke();
+          } else if (fillType === 'fill-evenodd') {
+            offCtx.fill('evenodd');
+          } else {
+            offCtx.fill();
+          }
+          offCtx.restore();
+        }
+        
+        // Draw the solid shape on top with feathered edge
+        offCtx.save();
+        offCtx.shadowColor = colors[0];
+        offCtx.shadowBlur = 6;
+        offCtx.fillStyle = colors[0];
+        offCtx.strokeStyle = colors[0];
+        const fillType = drawShapePath(offCtx, 1);
+        if (fillType === 'stroke') {
+          offCtx.stroke();
+        } else if (fillType === 'fill-evenodd') {
+          offCtx.fill('evenodd');
+        } else {
+          offCtx.fill();
+        }
+        offCtx.restore();
+      }
       
       return offscreen;
+    };
+    
+    // Create caches for all shapes and color palettes
+    const shapeTypes = ['circle', 'x', 'torus', 'triangle', 'square'];
+    const gradientCache = {};
+    shapeTypes.forEach(shape => {
+      gradientCache[shape] = colorPalette.map((colors, index) => {
+        return createShapeCache(colors, gradientStops[index], shape);
+      });
     });
 
     class Particle {
@@ -130,6 +233,11 @@ const CircularParticles = () => {
         this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
         this.colorSet = colorPalette[this.colorSetIndex];
         this.pulseOffset = index * 0.05;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.08;
+        this.lastX2d = 0;
+        this.lastY2d = 0;
+        this.movementAngle = 0;
         
         // Initialize positions based on config
         this.updateFromConfig(cfg);
@@ -223,9 +331,27 @@ const CircularParticles = () => {
       }
 
       draw(ctx, cfg, time) {
+        // Update rotation if auto-rotate is enabled
+        if (cfg.autoRotateShapes) {
+          if (cfg.particleShape === 'triangle') {
+            // Triangle points in direction of movement
+            const dx = this.x2d - this.lastX2d;
+            const dy = this.y2d - this.lastY2d;
+            if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+              this.movementAngle = Math.atan2(dy, dx) + Math.PI / 2;
+            }
+            this.lastX2d = this.x2d;
+            this.lastY2d = this.y2d;
+          } else {
+            this.rotation += this.rotationSpeed;
+          }
+        }
+        
         const depthOpacity = Math.max(0.5, Math.min(1, (this.depth + cfg.sphereRadius) / (cfg.sphereRadius * 2)));
         const finalOpacity = depthOpacity * cfg.particleOpacity;
-        const cache = gradientCache[this.colorSetIndex];
+        const cache = gradientCache[cfg.particleShape || 'circle'][this.colorSetIndex];
+        const shouldRotate = cfg.autoRotateShapes && cfg.particleShape !== 'circle';
+        const rotationToUse = cfg.particleShape === 'triangle' ? this.movementAngle : this.rotation;
         
         // Draw echo/ghost trails using cached image
         if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
@@ -236,14 +362,33 @@ const CircularParticles = () => {
             
             const size = pos.radius * 2;
             ctx.globalAlpha = echoOpacity;
-            ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
+            if (shouldRotate) {
+              ctx.save();
+              ctx.translate(pos.x, pos.y);
+              const trailRotation = cfg.particleShape === 'triangle' 
+                ? rotationToUse 
+                : rotationToUse - this.rotationSpeed * (this.positionHistory.length - i);
+              ctx.rotate(trailRotation);
+              ctx.drawImage(cache, -size/2, -size/2, size, size);
+              ctx.restore();
+            } else {
+              ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
+            }
           }
         }
         
         // Draw main particle using cached image
         const size = this.currentRadius * 2;
         ctx.globalAlpha = finalOpacity;
-        ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        if (shouldRotate) {
+          ctx.save();
+          ctx.translate(this.x2d, this.y2d);
+          ctx.rotate(rotationToUse);
+          ctx.drawImage(cache, -size/2, -size/2, size, size);
+          ctx.restore();
+        } else {
+          ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        }
         ctx.globalAlpha = 1;
       }
     }
@@ -259,6 +404,11 @@ const CircularParticles = () => {
         this.pulsePhase = Math.random() * Math.PI * 2;
         this.pulseSpeed = 0.01 + Math.random() * 0.02;
         this.positionHistory = [];
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.06;
+        this.lastX2d = 0;
+        this.lastY2d = 0;
+        this.movementAngle = 0;
         
         this.reset(cfg);
       }
@@ -333,9 +483,27 @@ const CircularParticles = () => {
       }
 
       draw(ctx, cfg) {
+        // Update rotation if auto-rotate is enabled
+        if (cfg.autoRotateShapes) {
+          if (cfg.particleShape === 'triangle') {
+            // Triangle points in direction of movement
+            const dx = this.x2d - this.lastX2d;
+            const dy = this.y2d - this.lastY2d;
+            if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+              this.movementAngle = Math.atan2(dy, dx) + Math.PI / 2;
+            }
+            this.lastX2d = this.x2d;
+            this.lastY2d = this.y2d;
+          } else {
+            this.rotation += this.rotationSpeed;
+          }
+        }
+        
         const depthOpacity = Math.max(0.3, Math.min(0.6, (this.depth + 800) / 1000));
         const finalOpacity = depthOpacity * cfg.bgParticleOpacity;
-        const cache = gradientCache[this.colorSetIndex];
+        const cache = gradientCache[cfg.particleShape || 'circle'][this.colorSetIndex];
+        const shouldRotate = cfg.autoRotateShapes && cfg.particleShape !== 'circle';
+        const rotationToUse = cfg.particleShape === 'triangle' ? this.movementAngle : this.rotation;
         
         // Draw echo/ghost trails using cached image
         if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
@@ -346,14 +514,33 @@ const CircularParticles = () => {
             
             const size = pos.radius * 2;
             ctx.globalAlpha = echoOpacity;
-            ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
+            if (shouldRotate) {
+              ctx.save();
+              ctx.translate(pos.x, pos.y);
+              const trailRotation = cfg.particleShape === 'triangle' 
+                ? rotationToUse 
+                : rotationToUse - this.rotationSpeed * (this.positionHistory.length - i);
+              ctx.rotate(trailRotation);
+              ctx.drawImage(cache, -size/2, -size/2, size, size);
+              ctx.restore();
+            } else {
+              ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
+            }
           }
         }
         
         // Draw main particle using cached image
         const size = this.currentRadius * 2;
         ctx.globalAlpha = finalOpacity;
-        ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        if (shouldRotate) {
+          ctx.save();
+          ctx.translate(this.x2d, this.y2d);
+          ctx.rotate(rotationToUse);
+          ctx.drawImage(cache, -size/2, -size/2, size, size);
+          ctx.restore();
+        } else {
+          ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+        }
         ctx.globalAlpha = 1;
       }
     }
@@ -415,20 +602,32 @@ const CircularParticles = () => {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        timeRef.current++;
-        angleXRef.current += cfg.rotationSpeedX;
-        angleYRef.current += cfg.rotationSpeedY;
+        // Only update animation values if not frozen
+        if (!isFrozenRef.current) {
+          timeRef.current++;
+          angleXRef.current += cfg.rotationSpeedX;
+          angleYRef.current += cfg.rotationSpeedY;
 
-        bgParticlesRef.current.forEach(particle => {
-          particle.update(cfg);
-          particle.rotate(cfg, canvas.width, canvas.height);
-        });
+          bgParticlesRef.current.forEach(particle => {
+            particle.update(cfg);
+            particle.rotate(cfg, canvas.width, canvas.height);
+          });
 
-        particlesRef.current.forEach(particle => {
-          particle.updatePosition(cfg);
-          particle.update(timeRef.current, cfg); // Update radius before rotate uses it
-          particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
-        });
+          particlesRef.current.forEach(particle => {
+            particle.updatePosition(cfg);
+            particle.update(timeRef.current, cfg); // Update radius before rotate uses it
+            particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
+          });
+        } else {
+          // When frozen, still need to rotate particles to their current positions for rendering
+          bgParticlesRef.current.forEach(particle => {
+            particle.rotate(cfg, canvas.width, canvas.height);
+          });
+
+          particlesRef.current.forEach(particle => {
+            particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
+          });
+        }
 
         // Reuse array to reduce GC pressure
         const allParticles = bgParticlesRef.current.concat(particlesRef.current);
@@ -467,6 +666,11 @@ const CircularParticles = () => {
     };
   }, []); // Empty dependency - runs once on mount
 
+  // Update frozen ref when state changes
+  useEffect(() => {
+    isFrozenRef.current = isFrozen;
+  }, [isFrozen]);
+
   const updateConfig = (key, value) => {
     const newValue = parseFloat(value);
     // Update ref immediately for smooth animation
@@ -494,12 +698,58 @@ const CircularParticles = () => {
       <div className="bg-gray-900 text-white pt-4 pb-4 px-4 overflow-y-auto max-h-64">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
-          <button
-            onClick={copyAllParams}
-            className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs"
-          >
-            Copy All Parameters
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-xs">Particle Shape:</label>
+              <select
+                value={config.particleShape}
+                onChange={(e) => {
+                  const newShape = e.target.value;
+                  if (configRef.current) {
+                    configRef.current = { ...configRef.current, particleShape: newShape };
+                  }
+                  setConfig(prev => ({ ...prev, particleShape: newShape }));
+                }}
+                className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
+              >
+                <option value="circle">Circle</option>
+                <option value="x">X Shape</option>
+                <option value="torus">Torus</option>
+                <option value="triangle">Triangle</option>
+                <option value="square">Square</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs">Auto Rotate:</label>
+              <input
+                type="checkbox"
+                checked={config.autoRotateShapes}
+                onChange={(e) => {
+                  const newVal = e.target.checked;
+                  if (configRef.current) {
+                    configRef.current = { ...configRef.current, autoRotateShapes: newVal };
+                  }
+                  setConfig(prev => ({ ...prev, autoRotateShapes: newVal }));
+                }}
+                className="w-4 h-4"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs">Freeze Animation:</label>
+              <input
+                type="checkbox"
+                checked={isFrozen}
+                onChange={(e) => setIsFrozen(e.target.checked)}
+                className="w-4 h-4"
+              />
+            </div>
+            <button
+              onClick={copyAllParams}
+              className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs"
+            >
+              Copy All Parameters
+            </button>
+          </div>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -546,7 +796,7 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1">Min Particle Size</label>
             <input
               type="range"
-              min="10"
+              min="1"
               max="30"
               value={config.minRadius}
               onChange={(e) => updateConfig('minRadius', e.target.value)}
@@ -559,7 +809,7 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1">Max Particle Size</label>
             <input
               type="range"
-              min="30"
+              min="1"
               max="80"
               value={config.maxRadius}
               onChange={(e) => updateConfig('maxRadius', e.target.value)}
@@ -762,8 +1012,8 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1 text-orange-400">Echo Length (frames)</label>
             <input
               type="range"
-              min="1"
-              max="30"
+              min="0"
+              max="100"
               value={config.motionBlurSteps}
               onChange={(e) => updateConfig('motionBlurSteps', e.target.value)}
               className="w-full accent-orange-500"
@@ -797,6 +1047,20 @@ const CircularParticles = () => {
               className="w-full accent-cyan-500"
             />
             <span className="text-xs text-cyan-300">{config.bgParticleOpacity.toFixed(2)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-pink-400">Glow Radius</label>
+            <input
+              type="range"
+              min="0"
+              max="3"
+              step="0.1"
+              value={config.glowRadius}
+              onChange={(e) => updateConfig('glowRadius', e.target.value)}
+              className="w-full accent-pink-500"
+            />
+            <span className="text-xs text-pink-300">{config.glowRadius.toFixed(1)}</span>
           </div>
         </div>
       </div>
