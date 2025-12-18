@@ -349,6 +349,8 @@ const CircularParticles = () => {
         this.originalColorIndex = null; // Store original color before transition
         this.targetColorIndex = null; // Target color to transition to
         this.divisionTimeOffset = 0; // Random timing offset for organic division start (0-1)
+        this.divisionStartDelay = 0; // Per-particle delay before division starts (in milliseconds, 0-500ms)
+        this.divisionStartTime = 0; // Individual start time for this particle's division (timestamp)
       }
       
       // Recalculate base positions from current config (uses stored unit positions)
@@ -362,10 +364,20 @@ const CircularParticles = () => {
         this.baseRadius = cfg.minRadius + this.radiusRatio * (cfg.maxRadius - cfg.minRadius);
       }
       
-      updatePosition(cfg, state, divisionProgress, time) {
+      updatePosition(cfg, state, divisionProgress, time, currentTime) {
         if (state === 'birth' && this.isDividing) {
+          // Calculate per-particle division progress based on individual start time
+          let particleProgress = 0;
+          if (this.divisionStartTime > 0 && currentTime) {
+            const particleElapsed = Math.max(0, currentTime - this.divisionStartTime);
+            particleProgress = Math.min(1, particleElapsed / divisionDuration);
+          } else {
+            // Fallback to global progress if per-particle timing not available
+            particleProgress = divisionProgress;
+          }
+          
           // Apply both timing offset and staggered delay for organic feel
-          const offsetProgress = Math.max(0, divisionProgress - this.divisionTimeOffset);
+          const offsetProgress = Math.max(0, particleProgress - this.divisionTimeOffset);
           const delayedProgress = Math.max(0, Math.min(1, (offsetProgress - this.divisionDelay) / (1 - this.divisionDelay)));
           
           // Organic easing: ease-out with slight overshoot feel
@@ -471,7 +483,7 @@ const CircularParticles = () => {
         }
       }
 
-      update(time, cfg, state, allParticles, divisionProgress) {
+      update(time, cfg, state, allParticles, divisionProgress, currentTime) {
         const pulse = Math.sin(time * cfg.pulseSpeed + this.pulseOffset);
         let baseRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
         
@@ -493,6 +505,7 @@ const CircularParticles = () => {
         }
         
         // Fade out parent particles as children separate (if this particle has children dividing)
+        // Use global progress for parents (they fade based on when children start dividing)
         if (state === 'birth' && !this.isDividing && divisionProgress !== undefined) {
           // Check if any particles have this as parent
           const hasDividingChildren = allParticles && allParticles.some(p => 
@@ -508,7 +521,7 @@ const CircularParticles = () => {
         this.currentRadius = Math.max(1, baseRadius);
       }
 
-      draw(ctx, cfg, time, state, allParticles, divisionProgress) {
+      draw(ctx, cfg, time, state, allParticles, divisionProgress, currentTime) {
         // Update rotation if auto-rotate is enabled
         if (cfg.autoRotateShapes) {
           if (cfg.particleShape === 'triangle') {
@@ -529,6 +542,7 @@ const CircularParticles = () => {
         let finalOpacity = depthOpacity * cfg.particleOpacity;
         
         // Fade out parent particles as children separate
+        // Use global progress for parents (they fade based on when children start dividing)
         if (state === 'birth' && !this.isDividing && divisionProgress !== undefined) {
           const hasDividingChildren = allParticles && allParticles.some(p => 
             p.parentId === this.index && p.isDividing
@@ -566,15 +580,22 @@ const CircularParticles = () => {
         let currentColorIndex = this.colorSetIndex;
         let targetCache = gradientCache[cfg.particleShape || 'circle'][this.colorSetIndex];
         
+        // Calculate per-particle progress for dividing particles
+        let particleProgressForDraw = divisionProgress;
+        if (state === 'birth' && this.isDividing && this.divisionStartTime > 0 && currentTime) {
+          const particleElapsed = Math.max(0, currentTime - this.divisionStartTime);
+          particleProgressForDraw = Math.min(1, particleElapsed / divisionDuration);
+        }
+        
         // Transition color during division - very soft and gradual with smoother steps
-        if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && divisionProgress !== undefined) {
-          // Calculate color transition based on division progress
+        if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && particleProgressForDraw !== undefined) {
+          // Calculate color transition based on per-particle division progress
           // Very gradual transition from start to near end of division
           const transitionStart = 0.0; // Start immediately when division begins
           const transitionEnd = 0.98; // Complete by 98% of division (ultra gradual)
           
-          if (divisionProgress > transitionStart) {
-            const transitionProgress = Math.min(1, (divisionProgress - transitionStart) / (transitionEnd - transitionStart));
+          if (particleProgressForDraw > transitionStart) {
+            const transitionProgress = Math.min(1, (particleProgressForDraw - transitionStart) / (transitionEnd - transitionStart));
             // Smootherstep - even smoother than smoothstep for ultra-smooth transition
             const easedProgress = transitionProgress * transitionProgress * transitionProgress * (transitionProgress * (transitionProgress * 6 - 15) + 10);
             
@@ -623,9 +644,16 @@ const CircularParticles = () => {
         ctx.globalAlpha = finalOpacity;
         
         // If transitioning colors, smoothly interpolate through color space
-        if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && this.originalColorIndex !== null && divisionProgress !== undefined) {
+        // Use per-particle progress for dividing particles
+        let particleProgressForColorTransition = divisionProgress;
+        if (state === 'birth' && this.isDividing && this.divisionStartTime > 0 && currentTime) {
+          const particleElapsed = Math.max(0, currentTime - this.divisionStartTime);
+          particleProgressForColorTransition = Math.min(1, particleElapsed / divisionDuration);
+        }
+        
+        if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && this.originalColorIndex !== null && particleProgressForColorTransition !== undefined) {
           // Apply timing offset for organic feel
-          const offsetProgress = Math.max(0, divisionProgress - this.divisionTimeOffset);
+          const offsetProgress = Math.max(0, particleProgressForColorTransition - this.divisionTimeOffset);
           
           const transitionStart = 0.0; // Start immediately
           const transitionEnd = 0.98; // Complete by 98% (ultra gradual)
@@ -939,13 +967,20 @@ const CircularParticles = () => {
         child2.divisionLevel = currentLevel + 1;
         child2.isDividing = true;
         
-        // Random timing offset for organic division start (0 to 0.4 of division duration)
-        child1.divisionTimeOffset = Math.random() * 0.4;
-        child2.divisionTimeOffset = Math.random() * 0.4;
+        // Random timing offset for organic division start (0 to 0.6 of division duration) - increased for more variation
+        child1.divisionTimeOffset = Math.random() * 0.6;
+        child2.divisionTimeOffset = Math.random() * 0.6;
         
-        // Staggered start time for organic feel (0 to 0.2 delay) - kept for position animation
-        child1.divisionDelay = Math.random() * 0.2;
-        child2.divisionDelay = Math.random() * 0.2;
+        // Staggered start time for organic feel (0 to 0.4 delay) - increased for more variation
+        child1.divisionDelay = Math.random() * 0.4;
+        child2.divisionDelay = Math.random() * 0.4;
+        
+        // Per-particle delay before division starts (0 to 500ms) - each particle has its own pace
+        const baseStartTime = Date.now();
+        child1.divisionStartDelay = Math.random() * 500; // 0-500ms random delay
+        child2.divisionStartDelay = Math.random() * 500; // 0-500ms random delay
+        child1.divisionStartTime = baseStartTime + child1.divisionStartDelay;
+        child2.divisionStartTime = baseStartTime + child2.divisionStartDelay;
         
         // Start position (parent's current position - start merged)
         child1.startX = parent.x3d;
@@ -1101,13 +1136,14 @@ const CircularParticles = () => {
           }
 
           particlesRef.current.forEach(particle => {
-            particle.updatePosition(cfg, currentStateRef.current, divisionProgressRef.current, timeRef.current);
+            particle.updatePosition(cfg, currentStateRef.current, divisionProgressRef.current, timeRef.current, Date.now());
             particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
           });
           
           // Update particle sizes with metaball effect (after positions and rotations are set)
+          const currentTime = Date.now();
           particlesRef.current.forEach(particle => {
-            particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current);
+            particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
           });
         } else {
           // When frozen, still need to rotate particles to their current positions for rendering
@@ -1131,9 +1167,10 @@ const CircularParticles = () => {
 
         ctx.globalCompositeOperation = 'multiply';
         
+        const currentTime = Date.now();
         allParticles.forEach(particle => {
           if (particle.currentRadius > 0) {
-            particle.draw(ctx, cfg, timeRef.current, currentStateRef.current, particlesRef.current, divisionProgressRef.current);
+            particle.draw(ctx, cfg, timeRef.current, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
           }
         });
         
