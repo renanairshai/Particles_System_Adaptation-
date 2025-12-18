@@ -487,6 +487,10 @@ const CircularParticles = () => {
         const pulse = Math.sin(time * cfg.pulseSpeed + this.pulseOffset);
         let baseRadius = this.baseRadius * this.scale + pulse * 3 * this.scale;
         
+        // For dividing particles: keep at full size (no size change during division)
+        // This prevents the "blink" when children appear - they maintain parent's size
+        // Size changes are handled by metaball effect only
+        
         // Metaball effect: merge with sibling when close
         if (state === 'birth' && this.siblingId !== null && allParticles) {
           const sibling = allParticles.find(p => p.index === this.siblingId);
@@ -495,11 +499,27 @@ const CircularParticles = () => {
             const dy = this.y3d - sibling.y3d;
             const dz = this.z3d - sibling.z3d;
             const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            const mergeDistance = this.baseRadius * 4; // Distance at which merging starts
-            const mergeStrength = Math.max(0, 1 - (distance / mergeDistance));
             
-            // Increase size when merging (metaball effect)
-            const mergeBoost = mergeStrength * this.baseRadius * 0.8;
+            // Prevent division by zero and sudden jumps when particles are at same position
+            const minSafeDistance = 0.1; // Minimum safe distance to prevent jumps
+            const safeDistance = Math.max(distance, minSafeDistance);
+            
+            const mergeDistance = this.baseRadius * 4; // Distance at which merging starts
+            
+            // Smooth metaball strength calculation with gradual falloff
+            const normalizedDistance = Math.min(1, safeDistance / mergeDistance);
+            // Use smoothstep for gradual transition
+            const mergeStrength = 1 - (normalizedDistance * normalizedDistance * (3 - 2 * normalizedDistance));
+            
+            // Gradually reduce metaball boost when particles are very close (fully merged)
+            // This prevents the "doubled" appearance at the start
+            const minDistance = this.baseRadius * 0.3; // Larger threshold for smoother transition
+            const closeFactor = safeDistance < minDistance 
+              ? Math.max(0.1, safeDistance / minDistance) // Never go to 0, minimum 0.1 to prevent jumps
+              : 1;
+            
+            // Increase size when merging (metaball effect) - smoothly reduced when fully merged
+            const mergeBoost = mergeStrength * closeFactor * this.baseRadius * 0.3; // Reduced for smoother effect
             baseRadius += mergeBoost * this.scale;
           }
         }
@@ -512,9 +532,11 @@ const CircularParticles = () => {
             p.parentId === this.index && p.isDividing
           );
           if (hasDividingChildren) {
-            // Shrink parent as children separate
-            const fadeOut = Math.min(1, divisionProgress * 2); // Fade out in first half of division
-            baseRadius *= (1 - fadeOut * 0.9); // Shrink to 10% of original size
+            // Shrink parent gradually with smooth easing
+            const fadeOut = Math.min(1, divisionProgress * 2.5); // Slightly faster but not too aggressive
+            // Use smoothstep for gradual shrinking
+            const smoothFadeOut = fadeOut * fadeOut * (3 - 2 * fadeOut);
+            baseRadius *= (1 - smoothFadeOut * 0.9); // Shrink to 10% of original size (smoother)
           }
         }
         
@@ -587,17 +609,23 @@ const CircularParticles = () => {
           particleProgressForDraw = Math.min(1, particleElapsed / divisionDuration);
         }
         
-        // Transition color during division - very soft and gradual with smoother steps
+        // Transition color during division - synchronized with movement
         if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && particleProgressForDraw !== undefined) {
-          // Calculate color transition based on per-particle division progress
-          // Very gradual transition from start to near end of division
-          const transitionStart = 0.0; // Start immediately when division begins
-          const transitionEnd = 0.98; // Complete by 98% of division (ultra gradual)
+          // Apply same timing calculations as movement for synchronization
+          const offsetProgress = Math.max(0, particleProgressForDraw - this.divisionTimeOffset);
+          const delayedProgress = Math.max(0, Math.min(1, (offsetProgress - this.divisionDelay) / (1 - this.divisionDelay)));
           
-          if (particleProgressForDraw > transitionStart) {
-            const transitionProgress = Math.min(1, (particleProgressForDraw - transitionStart) / (transitionEnd - transitionStart));
-            // Smootherstep - even smoother than smoothstep for ultra-smooth transition
-            const easedProgress = transitionProgress * transitionProgress * transitionProgress * (transitionProgress * (transitionProgress * 6 - 15) + 10);
+          // Start color transition slightly after movement begins (when movement is ~5% visible)
+          const transitionStart = 0.05; // Start when movement is 5% visible
+          const transitionEnd = 1.0; // Complete by 100% of division (ultra gradual)
+          
+          if (delayedProgress > transitionStart) {
+            const transitionProgress = Math.min(1, (delayedProgress - transitionStart) / (transitionEnd - transitionStart));
+            // Ultra-smooth easing: ease-in-out with very gentle curve
+            // Using a gentler ease-in-out that's smoother at the start and end
+            const easedProgress = transitionProgress < 0.5
+              ? 2 * transitionProgress * transitionProgress * transitionProgress * transitionProgress
+              : 1 - Math.pow(-2 * transitionProgress + 2, 4) / 2;
             
             // Update color index for smooth transition
             if (easedProgress > 0.5) {
@@ -652,16 +680,23 @@ const CircularParticles = () => {
         }
         
         if (state === 'birth' && this.isDividing && this.targetColorIndex !== null && this.originalColorIndex !== null && particleProgressForColorTransition !== undefined) {
-          // Apply timing offset for organic feel
+          // Apply same timing calculations as movement for synchronization
+          // This ensures color transition starts when movement becomes visible
           const offsetProgress = Math.max(0, particleProgressForColorTransition - this.divisionTimeOffset);
+          const delayedProgress = Math.max(0, Math.min(1, (offsetProgress - this.divisionDelay) / (1 - this.divisionDelay)));
           
-          const transitionStart = 0.0; // Start immediately
-          const transitionEnd = 0.98; // Complete by 98% (ultra gradual)
+          // Start color transition slightly after movement begins (when movement is ~5% visible)
+          // This prevents the weird moment where colors change but nothing moves
+          const transitionStart = 0.05; // Start when movement is 5% visible
+          const transitionEnd = 1.0; // Complete by 100% (ultra gradual)
           
-          if (offsetProgress >= transitionStart && offsetProgress <= transitionEnd) {
-            const transitionProgress = (offsetProgress - transitionStart) / (transitionEnd - transitionStart);
-            // Ultra-smooth easing for gradual color interpolation
-            const easedProgress = transitionProgress * transitionProgress * transitionProgress * (transitionProgress * (transitionProgress * 6 - 15) + 10);
+          if (delayedProgress >= transitionStart && delayedProgress <= transitionEnd) {
+            const transitionProgress = (delayedProgress - transitionStart) / (transitionEnd - transitionStart);
+            // Ultra-smooth easing: ease-in-out with very gentle curve
+            // Using a gentler ease-in-out that's smoother at the start and end
+            const easedProgress = transitionProgress < 0.5
+              ? 2 * transitionProgress * transitionProgress * transitionProgress * transitionProgress
+              : 1 - Math.pow(-2 * transitionProgress + 2, 4) / 2;
             
             ctx.save();
             ctx.translate(this.x2d, this.y2d);
@@ -1036,8 +1071,14 @@ const CircularParticles = () => {
         parent.splitColorIndex = null;
       });
       
-      // Replace old particles with new divided ones
-      particlesRef.current = newParticles;
+      // Keep parent particles in array so they can fade out smoothly
+      // Only add new children, don't remove parents immediately
+      // Parents will fade out naturally based on divisionProgress
+      const parentIndices = new Set(particlesToDivide.map(p => p.index));
+      particlesRef.current = [
+        ...particlesRef.current.filter(p => p.divisionLevel !== currentLevel || parentIndices.has(p.index)),
+        ...newParticles
+      ];
       divisionLevelRef.current = currentLevel + 1;
       divisionProgressRef.current = 0;
       divisionStartTimeRef.current = Date.now();
