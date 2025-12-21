@@ -17,7 +17,7 @@ const CircularParticles = () => {
   
   const [config, setConfig] = useState({
     particleCount: 150,
-    sphereRadius: 171,
+    sphereRadius: 1,
     minRadius: 15,
     maxRadius: 45,
     rotationSpeedX: 0.003,
@@ -1421,7 +1421,7 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1">Sphere Radius</label>
             <input
               type="range"
-              min="100"
+              min="1"
               max="300"
               value={config.sphereRadius}
               onChange={(e) => updateConfig('sphereRadius', e.target.value)}
