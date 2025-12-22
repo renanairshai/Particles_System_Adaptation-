@@ -10,7 +10,6 @@ const CircularParticles = () => {
   const timeRef = useRef(0);
   const angleXRef = useRef(0);
   const angleYRef = useRef(0);
-  const isFrozenRef = useRef(false);
   const currentStateRef = useRef('gathering');
   const divisionLevelRef = useRef(0);
   const lastStateRef = useRef('gathering');
@@ -44,7 +43,6 @@ const CircularParticles = () => {
     glowRadius: 1
   });
 
-  const [isFrozen, setIsFrozen] = useState(false);
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
   const [divisionLevel, setDivisionLevel] = useState(0); // 0-7 for 8 levels
   const divisionProgressRef = useRef(0); // 0-1 for animation progress
@@ -1151,7 +1149,7 @@ const CircularParticles = () => {
         }
         
         // Handle Birth state division logic
-        if (currentStateRef.current === 'birth' && !isFrozenRef.current) {
+        if (currentStateRef.current === 'birth') {
           const elapsed = Date.now() - divisionStartTimeRef.current;
           divisionProgressRef.current = Math.min(1, elapsed / divisionDuration);
           
@@ -1197,43 +1195,28 @@ const CircularParticles = () => {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Only update animation values if not frozen
-        if (!isFrozenRef.current) {
-          timeRef.current++;
-          angleXRef.current += cfg.rotationSpeedX;
-          angleYRef.current += cfg.rotationSpeedY;
+        timeRef.current++;
+        angleXRef.current += cfg.rotationSpeedX;
+        angleYRef.current += cfg.rotationSpeedY;
 
-          // Skip background particles in Birth state
-          if (currentStateRef.current !== 'birth') {
-            bgParticlesRef.current.forEach(particle => {
-              particle.update(cfg);
-              particle.rotate(cfg, canvas.width, canvas.height);
-            });
-          }
-
-          particlesRef.current.forEach(particle => {
-            particle.updatePosition(cfg, currentStateRef.current, divisionProgressRef.current, timeRef.current, Date.now());
-            particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
-          });
-          
-          // Update particle sizes with metaball effect (after positions and rotations are set)
-          const currentTime = Date.now();
-          particlesRef.current.forEach(particle => {
-            particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
-          });
-        } else {
-          // When frozen, still need to rotate particles to their current positions for rendering
-          // Skip background particles in Birth state
-          if (currentStateRef.current !== 'birth') {
-            bgParticlesRef.current.forEach(particle => {
-              particle.rotate(cfg, canvas.width, canvas.height);
-            });
-          }
-
-          particlesRef.current.forEach(particle => {
-            particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
+        // Skip background particles in Birth state
+        if (currentStateRef.current !== 'birth') {
+          bgParticlesRef.current.forEach(particle => {
+            particle.update(cfg);
+            particle.rotate(cfg, canvas.width, canvas.height);
           });
         }
+
+        particlesRef.current.forEach(particle => {
+          particle.updatePosition(cfg, currentStateRef.current, divisionProgressRef.current, timeRef.current, Date.now());
+          particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
+        });
+        
+        // Update particle sizes with metaball effect (after positions and rotations are set)
+        const currentTime = Date.now();
+        particlesRef.current.forEach(particle => {
+          particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
+        });
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
         const allParticles = currentStateRef.current === 'birth' 
@@ -1243,7 +1226,6 @@ const CircularParticles = () => {
 
         ctx.globalCompositeOperation = 'multiply';
         
-        const currentTime = Date.now();
         allParticles.forEach(particle => {
           if (particle.currentRadius > 0) {
             particle.draw(ctx, cfg, timeRef.current, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
@@ -1274,11 +1256,6 @@ const CircularParticles = () => {
       cancelAnimationFrame(animationRef.current);
     };
   }, []); // Empty dependency - runs once on mount
-
-  // Update frozen ref when state changes
-  useEffect(() => {
-    isFrozenRef.current = isFrozen;
-  }, [isFrozen]);
 
   // Update state refs when state changes
   useEffect(() => {
@@ -1349,50 +1326,6 @@ const CircularParticles = () => {
               >
                 Reset
               </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-xs">Particle Shape:</label>
-              <select
-                value={config.particleShape}
-                onChange={(e) => {
-                  const newShape = e.target.value;
-                  if (configRef.current) {
-                    configRef.current = { ...configRef.current, particleShape: newShape };
-                  }
-                  setConfig(prev => ({ ...prev, particleShape: newShape }));
-                }}
-                className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
-              >
-                <option value="circle">Circle</option>
-                <option value="x">X Shape</option>
-                <option value="torus">Torus</option>
-                <option value="triangle">Triangle</option>
-                <option value="square">Square</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-xs">Auto Rotate:</label>
-              <input
-                type="checkbox"
-                checked={config.autoRotateShapes}
-                onChange={(e) => {
-                  const newVal = e.target.checked;
-                  if (configRef.current) {
-                    configRef.current = { ...configRef.current, autoRotateShapes: newVal };
-                  }
-                  setConfig(prev => ({ ...prev, autoRotateShapes: newVal }));
-                }}
-                className="w-4 h-4"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-xs">Freeze Animation:</label>
-              <input
-                type="checkbox"
-                checked={isFrozen}
-                onChange={(e) => setIsFrozen(e.target.checked)}
-                className="w-4 h-4"
-              />
             </div>
             <button
               onClick={copyAllParams}
@@ -1698,20 +1631,6 @@ const CircularParticles = () => {
               className="w-full accent-cyan-500"
             />
             <span className="text-xs text-cyan-300">{config.bgParticleOpacity.toFixed(2)}</span>
-          </div>
-
-          <div>
-            <label className="text-xs block mb-1 text-pink-400">Glow Radius</label>
-            <input
-              type="range"
-              min="0"
-              max="3"
-              step="0.1"
-              value={config.glowRadius}
-              onChange={(e) => updateConfig('glowRadius', e.target.value)}
-              className="w-full accent-pink-500"
-            />
-            <span className="text-xs text-pink-300">{config.glowRadius.toFixed(1)}</span>
           </div>
         </div>
       </div>
