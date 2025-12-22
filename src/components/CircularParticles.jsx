@@ -78,6 +78,31 @@ const CircularParticles = () => {
   };
 
   const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
+  const [showGradientEditor, setShowGradientEditor] = useState(false);
+  
+  // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
+  const convertToNewFormat = (colorPalette, gradientStops) => {
+    return colorPalette.map((colors, index) => {
+      const stops = gradientStops[index];
+      return [
+        { position: stops.stop1, color: colors[0], opacity: 1 },
+        { position: stops.stop2, color: colors[1], opacity: 1 },
+        { position: stops.stop3, color: colors[2], opacity: 0 } // Last color has opacity 0
+      ].sort((a, b) => a.position - b.position); // Sort by position
+    });
+  };
+
+  // State for editable gradient values (new format: array of stops with position, color, opacity)
+  const [editableGradients, setEditableGradients] = useState(() => {
+    const currentSet = colorSets[selectedColorSet];
+    return convertToNewFormat(currentSet.colorPalette, currentSet.gradientStops);
+  });
+  
+  // Update editable gradients when color set changes
+  useEffect(() => {
+    const currentSet = colorSets[selectedColorSet];
+    setEditableGradients(convertToNewFormat(currentSet.colorPalette, currentSet.gradientStops));
+  }, [selectedColorSet]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -89,10 +114,8 @@ const CircularParticles = () => {
     let backgroundParticles = [];
     let currentConfig = { ...config };
     
-    // Get the current color set
-    const currentColorSet = colorSets[selectedColorSet];
-    const colorPalette = currentColorSet.colorPalette;
-    const gradientStops = currentColorSet.gradientStops;
+    // Get the current editable gradients (new format: array of gradient arrays)
+    const gradientStopsArray = editableGradients;
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -102,7 +125,7 @@ const CircularParticles = () => {
     window.addEventListener('resize', resizeCanvas);
 
     // Pre-render gradient blobs to offscreen canvases for performance
-    const createShapeCache = (colors, stops, shape) => {
+    const createShapeCache = (stopsArray, shape) => {
       const size = shape === 'circle' ? 128 : 1024;
       const offscreen = document.createElement('canvas');
       offscreen.width = size;
@@ -113,12 +136,18 @@ const CircularParticles = () => {
       const cy = size / 2;
       const r = size / 2;
       
+      // Sort stops by position to ensure correct order
+      const sortedStops = [...stopsArray].sort((a, b) => a.position - b.position);
+      
       if (shape === 'circle') {
         // Circle keeps the original gradient fill behavior
         const gradient = offCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        gradient.addColorStop(stops.stop1, colors[0]);
-        gradient.addColorStop(stops.stop2, colors[1]);
-        gradient.addColorStop(stops.stop3, colors[2] + '00');
+        sortedStops.forEach(stop => {
+          const colorWithOpacity = stop.opacity < 1 
+            ? stop.color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+            : stop.color;
+          gradient.addColorStop(stop.position, colorWithOpacity);
+        });
         offCtx.fillStyle = gradient;
         offCtx.beginPath();
         offCtx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -165,13 +194,19 @@ const CircularParticles = () => {
           }
         };
         
-        // Draw multiple glow layers using gradient colors and stops
+        // Draw multiple glow layers using gradient stops (reverse order for outer to inner)
         const glowMult = config.glowRadius || 1;
-        const glowLayers = [
-          { blur: 180 * glowMult, color: colors[2], opacity: stops.stop3, scale: 1 + 2.0 * glowMult },
-          { blur: 120 * glowMult, color: colors[1], opacity: stops.stop2, scale: 1 + 1.2 * glowMult },
-          { blur: 60 * glowMult, color: colors[0], opacity: stops.stop1 + 0.3, scale: 1 + 0.4 * glowMult }
-        ];
+        const reversedStops = [...sortedStops].reverse();
+        const glowLayers = reversedStops.map((stop, index) => {
+          const scaleFactor = 1 + (reversedStops.length - index) * 0.5 * glowMult;
+          const blurFactor = (reversedStops.length - index) * 60 * glowMult;
+          return {
+            blur: blurFactor,
+            color: stop.color,
+            opacity: stop.opacity,
+            scale: scaleFactor
+          };
+        });
         
         for (const layer of glowLayers) {
           offCtx.save();
@@ -191,12 +226,13 @@ const CircularParticles = () => {
           offCtx.restore();
         }
         
-        // Draw the solid shape on top with feathered edge
+        // Draw the solid shape on top with feathered edge (use first stop color)
         offCtx.save();
-        offCtx.shadowColor = colors[0];
+        const firstStop = sortedStops[0];
+        offCtx.shadowColor = firstStop.color;
         offCtx.shadowBlur = 6;
-        offCtx.fillStyle = colors[0];
-        offCtx.strokeStyle = colors[0];
+        offCtx.fillStyle = firstStop.color;
+        offCtx.strokeStyle = firstStop.color;
         const fillType = drawShapePath(offCtx, 1);
         if (fillType === 'stroke') {
           offCtx.stroke();
@@ -236,25 +272,33 @@ const CircularParticles = () => {
       return `#${clampedR.toString(16).padStart(2, '0')}${clampedG.toString(16).padStart(2, '0')}${clampedB.toString(16).padStart(2, '0')}`;
     };
     
-    // Helper function to interpolate between two color palettes
-    const interpolatePalette = (palette1, palette2, stops1, stops2, t) => {
-      const interpolatedColors = palette1.map((color, i) => 
-        interpolateColor(color, palette2[i], t)
-      );
-      const interpolatedStops = {
-        stop1: stops1.stop1 + (stops2.stop1 - stops1.stop1) * t,
-        stop2: stops1.stop2 + (stops2.stop2 - stops1.stop2) * t,
-        stop3: stops1.stop3 + (stops2.stop3 - stops1.stop3) * t
-      };
-      return { colors: interpolatedColors, stops: interpolatedStops };
+    // Helper function to interpolate between two gradient stop arrays
+    const interpolateStops = (stops1, stops2, t) => {
+      // For simplicity, interpolate matching indices (assume same number of stops)
+      // If different lengths, use the longer one and interpolate with last stop of shorter
+      const maxLength = Math.max(stops1.length, stops2.length);
+      const interpolated = [];
+      
+      for (let i = 0; i < maxLength; i++) {
+        const stop1 = stops1[i] || stops1[stops1.length - 1];
+        const stop2 = stops2[i] || stops2[stops2.length - 1];
+        
+        interpolated.push({
+          position: stop1.position + (stop2.position - stop1.position) * t,
+          color: interpolateColor(stop1.color, stop2.color, t),
+          opacity: stop1.opacity + (stop2.opacity - stop1.opacity) * t
+        });
+      }
+      
+      return interpolated;
     };
     
-    // Create caches for all shapes and color palettes
+    // Create caches for all shapes and gradients
     const shapeTypes = ['circle', 'x', 'torus', 'triangle', 'square'];
     const gradientCache = {};
     shapeTypes.forEach(shape => {
-      gradientCache[shape] = colorPalette.map((colors, index) => {
-        return createShapeCache(colors, gradientStops[index], shape);
+      gradientCache[shape] = gradientStopsArray.map((stops) => {
+        return createShapeCache(stops, shape);
       });
     });
     
@@ -263,7 +307,7 @@ const CircularParticles = () => {
       // Clamp t between 0 and 1
       const clampedT = Math.max(0, Math.min(1, t));
       
-      // If at boundaries, return the exact color
+      // If at boundaries, return the exact gradient
       if (clampedT <= 0) {
         return gradientCache[shape][fromIndex];
       }
@@ -271,13 +315,11 @@ const CircularParticles = () => {
         return gradientCache[shape][toIndex];
       }
       
-      // Interpolate between the two color palettes
-      const fromColors = colorPalette[fromIndex];
-      const toColors = colorPalette[toIndex];
-      const fromStops = gradientStops[fromIndex];
-      const toStops = gradientStops[toIndex];
-      const interpolated = interpolatePalette(fromColors, toColors, fromStops, toStops, clampedT);
-      return createShapeCache(interpolated.colors, interpolated.stops, shape);
+      // Interpolate between the two gradient stop arrays
+      const fromStops = gradientStopsArray[fromIndex];
+      const toStops = gradientStopsArray[toIndex];
+      const interpolated = interpolateStops(fromStops, toStops, clampedT);
+      return createShapeCache(interpolated, shape);
     };
 
     class Particle {
@@ -309,8 +351,8 @@ const CircularParticles = () => {
         this.breathingPhase = Math.random() * Math.PI * 2;
         this.radiusRatio = Math.random();
         
-        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
-        this.colorSet = colorPalette[this.colorSetIndex];
+        this.colorSetIndex = Math.floor(Math.random() * gradientStopsArray.length);
+        this.colorSet = gradientStopsArray[this.colorSetIndex];
         this.pulseOffset = index * 0.05;
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() - 0.5) * 0.08;
@@ -675,7 +717,7 @@ const CircularParticles = () => {
               // Switch to target color halfway through transition
               currentColorIndex = this.targetColorIndex;
               this.colorSetIndex = this.targetColorIndex;
-              this.colorSet = colorPalette[this.targetColorIndex];
+              this.colorSet = gradientStopsArray[this.targetColorIndex];
             }
             
             targetCache = gradientCache[cfg.particleShape || 'circle'][currentColorIndex];
@@ -798,8 +840,8 @@ const CircularParticles = () => {
     class BackgroundParticle {
       constructor(cfg) {
         this.sizeRatio = Math.random();
-        this.colorSetIndex = Math.floor(Math.random() * colorPalette.length);
-        this.colorSet = colorPalette[this.colorSetIndex];
+        this.colorSetIndex = Math.floor(Math.random() * gradientStopsArray.length);
+        this.colorSet = gradientStopsArray[this.colorSetIndex];
         this.driftSpeedRatio = Math.random();
         this.driftAngle = Math.random() * Math.PI * 2;
         this.driftAngleY = (Math.random() - 0.5) * Math.PI;
@@ -1016,15 +1058,15 @@ const CircularParticles = () => {
         
         // Assign random colors for more variety
         let newColorIndex1, newColorIndex2;
-        if (colorPalette.length > 1) {
+        if (gradientStopsArray.length > 1) {
           // Randomly select colors, ensuring they're different from each other
           do {
-            newColorIndex1 = Math.floor(Math.random() * colorPalette.length);
-          } while (newColorIndex1 === parent.colorSetIndex && colorPalette.length > 2);
+            newColorIndex1 = Math.floor(Math.random() * gradientStopsArray.length);
+          } while (newColorIndex1 === parent.colorSetIndex && gradientStopsArray.length > 2);
           
           do {
-            newColorIndex2 = Math.floor(Math.random() * colorPalette.length);
-          } while ((newColorIndex2 === parent.colorSetIndex || newColorIndex2 === newColorIndex1) && colorPalette.length > 2);
+            newColorIndex2 = Math.floor(Math.random() * gradientStopsArray.length);
+          } while ((newColorIndex2 === parent.colorSetIndex || newColorIndex2 === newColorIndex1) && gradientStopsArray.length > 2);
         } else {
           newColorIndex1 = 0;
           newColorIndex2 = 0;
@@ -1034,12 +1076,12 @@ const CircularParticles = () => {
         child1.originalColorIndex = parent.colorSetIndex;
         child1.targetColorIndex = newColorIndex1;
         child1.colorSetIndex = parent.colorSetIndex; // Start with parent's color
-        child1.colorSet = colorPalette[parent.colorSetIndex];
+        child1.colorSet = gradientStopsArray[parent.colorSetIndex];
         
         child2.originalColorIndex = parent.colorSetIndex;
         child2.targetColorIndex = newColorIndex2;
         child2.colorSetIndex = parent.colorSetIndex; // Start with parent's color
-        child2.colorSet = colorPalette[parent.colorSetIndex];
+        child2.colorSet = gradientStopsArray[parent.colorSetIndex];
         
         // Inherit size properties from parent
         child1.baseRadius = parent.baseRadius;
@@ -1266,7 +1308,7 @@ const CircularParticles = () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet]); // Re-run when color set changes
+  }, [selectedColorSet, editableGradients]); // Re-run when color set or gradients change
 
   // Update state refs when state changes
   useEffect(() => {
@@ -1300,9 +1342,109 @@ const CircularParticles = () => {
     });
   };
 
+  // Update gradient stop color
+  const updateGradientStopColor = (gradientIndex, stopIndex, newColor) => {
+    setEditableGradients(prev => {
+      const newGradients = prev.map((gradient, gIdx) => {
+        if (gIdx === gradientIndex) {
+          return gradient.map((stop, sIdx) => 
+            sIdx === stopIndex ? { ...stop, color: newColor } : stop
+          );
+        }
+        return gradient;
+      });
+      return newGradients;
+    });
+  };
+
+  // Update gradient stop position
+  const updateGradientStopPosition = (gradientIndex, stopIndex, newPosition) => {
+    setEditableGradients(prev => {
+      const newGradients = prev.map((gradient, gIdx) => {
+        if (gIdx === gradientIndex) {
+          const clampedPosition = Math.max(0, Math.min(1, parseFloat(newPosition)));
+          return gradient.map((stop, sIdx) => 
+            sIdx === stopIndex ? { ...stop, position: clampedPosition } : stop
+          ).sort((a, b) => a.position - b.position); // Re-sort after position change
+        }
+        return gradient;
+      });
+      return newGradients;
+    });
+  };
+
+  // Update gradient stop opacity
+  const updateGradientStopOpacity = (gradientIndex, stopIndex, newOpacity) => {
+    setEditableGradients(prev => {
+      const newGradients = prev.map((gradient, gIdx) => {
+        if (gIdx === gradientIndex) {
+          const clampedOpacity = Math.max(0, Math.min(1, parseFloat(newOpacity)));
+          return gradient.map((stop, sIdx) => 
+            sIdx === stopIndex ? { ...stop, opacity: clampedOpacity } : stop
+          );
+        }
+        return gradient;
+      });
+      return newGradients;
+    });
+  };
+
+  // Add a new stop to a gradient
+  const addGradientStop = (gradientIndex) => {
+    setEditableGradients(prev => {
+      const newGradients = prev.map((gradient, gIdx) => {
+        if (gIdx === gradientIndex) {
+          // Find a good position for the new stop (middle of largest gap)
+          const sorted = [...gradient].sort((a, b) => a.position - b.position);
+          let maxGap = 0;
+          let insertPosition = 0.5;
+          
+          for (let i = 0; i < sorted.length - 1; i++) {
+            const gap = sorted[i + 1].position - sorted[i].position;
+            if (gap > maxGap) {
+              maxGap = gap;
+              insertPosition = sorted[i].position + gap / 2;
+            }
+          }
+          
+          // Interpolate color between adjacent stops
+          const newStop = {
+            position: insertPosition,
+            color: sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)].color : '#ffffff',
+            opacity: 1
+          };
+          
+          return [...gradient, newStop].sort((a, b) => a.position - b.position);
+        }
+        return gradient;
+      });
+      return newGradients;
+    });
+  };
+
+  // Remove a stop from a gradient (must have at least 2 stops)
+  const removeGradientStop = (gradientIndex, stopIndex) => {
+    setEditableGradients(prev => {
+      const newGradients = prev.map((gradient, gIdx) => {
+        if (gIdx === gradientIndex && gradient.length > 2) {
+          return gradient.filter((_, sIdx) => sIdx !== stopIndex);
+        }
+        return gradient;
+      });
+      return newGradients;
+    });
+  };
+
+  // Copy only gradient parameters
+  const copyGradientParams = () => {
+    navigator.clipboard.writeText(JSON.stringify(editableGradients, null, 2)).then(() => {
+      alert('Gradient parameters copied to clipboard!');
+    });
+  };
+
   return (
     <div className="w-full h-screen bg-white flex flex-col">
-      <div className="bg-gray-900 text-white pt-4 pb-4 px-4 overflow-y-auto max-h-64">
+      <div className="bg-gray-900 text-white pt-4 pb-4 px-4 overflow-y-auto max-h-[246px]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
           <div className="flex items-center gap-4">
@@ -1359,8 +1501,206 @@ const CircularParticles = () => {
             >
               Copy All Parameters
             </button>
+            <button
+              onClick={() => setShowGradientEditor(!showGradientEditor)}
+              className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+            >
+              {showGradientEditor ? 'Hide' : 'Show'} Gradient Editor
+            </button>
+            {showGradientEditor && (
+              <button
+                onClick={copyGradientParams}
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
+              >
+                Copy Gradient Params
+              </button>
+            )}
           </div>
         </div>
+        
+        {showGradientEditor && (
+          <div className="mb-4 p-4 bg-gray-800 rounded border border-gray-700">
+            <h3 className="text-lg font-semibold mb-3 text-green-400">Gradient Editor</h3>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {editableGradients.map((stops, gradientIndex) => {
+                const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+                const gradientString = sortedStops.map((stop, idx) => {
+                  const colorWithOpacity = stop.opacity < 1 
+                    ? stop.color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+                    : stop.color;
+                  return `${colorWithOpacity} ${stop.position * 100}%`;
+                }).join(', ');
+                
+                return (
+                  <div key={gradientIndex} className="p-3 bg-gray-700 rounded border border-gray-600">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-white">Gradient {gradientIndex + 1}</h4>
+                      <button
+                        onClick={() => addGradientStop(gradientIndex)}
+                        className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+                      >
+                        + Add Stop
+                      </button>
+                    </div>
+                    
+                    {/* Visual Gradient Slider */}
+                    <div className="mb-4">
+                      <div 
+                        className="relative h-12 rounded border border-gray-500 overflow-hidden mb-2 cursor-crosshair"
+                        style={{
+                          background: `linear-gradient(to right, ${gradientString})`
+                        }}
+                        onMouseDown={(e) => {
+                          const slider = e.currentTarget;
+                          const rect = slider.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const percent = Math.max(0, Math.min(1, x / rect.width));
+                          
+                          // Find closest stop or create new one
+                          const sorted = [...stops].sort((a, b) => a.position - b.position);
+                          const closestStop = sorted.reduce((closest, stop) => {
+                            const dist = Math.abs(stop.position - percent);
+                            return dist < Math.abs(closest.position - percent) ? stop : closest;
+                          }, sorted[0]);
+                          
+                          const originalIndex = stops.findIndex(s => s === closestStop);
+                          const handleMove = (moveEvent) => {
+                            const newX = moveEvent.clientX - rect.left;
+                            const newPercent = Math.max(0, Math.min(1, newX / rect.width));
+                            updateGradientStopPosition(gradientIndex, originalIndex, newPercent);
+                          };
+                          const handleUp = () => {
+                            document.removeEventListener('mousemove', handleMove);
+                            document.removeEventListener('mouseup', handleUp);
+                          };
+                          document.addEventListener('mousemove', handleMove);
+                          document.addEventListener('mouseup', handleUp);
+                        }}
+                      >
+                        {sortedStops.map((stop, stopIndex) => {
+                          const originalIndex = stops.findIndex(s => s === stop);
+                          return (
+                            <div
+                              key={originalIndex}
+                              className="absolute top-0 bottom-0 cursor-move"
+                              style={{
+                                left: `${stop.position * 100}%`,
+                                transform: 'translateX(-50%)',
+                                zIndex: 10,
+                                width: '8px'
+                              }}
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                const slider = e.currentTarget.parentElement;
+                                const rect = slider.getBoundingClientRect();
+                                const handleMove = (moveEvent) => {
+                                  const x = moveEvent.clientX - rect.left;
+                                  const percent = Math.max(0, Math.min(1, x / rect.width));
+                                  updateGradientStopPosition(gradientIndex, originalIndex, percent);
+                                };
+                                const handleUp = () => {
+                                  document.removeEventListener('mousemove', handleMove);
+                                  document.removeEventListener('mouseup', handleUp);
+                                };
+                                document.addEventListener('mousemove', handleMove);
+                                document.addEventListener('mouseup', handleUp);
+                              }}
+                            >
+                              <div 
+                                className="absolute top-0 left-1/2 transform -translate-x-1/2 w-5 h-5 rounded border-2 border-white shadow-lg cursor-move hover:scale-110 transition-transform"
+                                style={{ 
+                                  backgroundColor: stop.color,
+                                  borderColor: stop.opacity < 0.5 ? '#888' : '#fff',
+                                  top: '-2px'
+                                }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* Stop Details */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-gray-400 mb-2">Stops:</div>
+                      {sortedStops.map((stop, stopIndex) => {
+                        const originalIndex = stops.findIndex(s => s === stop);
+                        return (
+                          <div 
+                            key={originalIndex} 
+                            className="p-2 bg-gray-600 rounded border border-gray-500"
+                          >
+                            <div className="flex items-center gap-3 mb-2">
+                              <div 
+                                className="w-6 h-6 rounded border border-gray-400"
+                                style={{ backgroundColor: stop.color }}
+                              />
+                              <div className="flex-1 grid grid-cols-3 gap-2">
+                                <div>
+                                  <label className="text-xs text-gray-300 block mb-1">Position</label>
+                                  <input
+                                    type="text"
+                                    value={`${(stop.position * 100).toFixed(1)}%`}
+                                    onChange={(e) => {
+                                      const percent = parseFloat(e.target.value.replace('%', '')) / 100;
+                                      if (!isNaN(percent)) {
+                                        updateGradientStopPosition(gradientIndex, originalIndex, percent);
+                                      }
+                                    }}
+                                    className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-xs text-gray-300 block mb-1">Color</label>
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="color"
+                                      value={stop.color}
+                                      onChange={(e) => updateGradientStopColor(gradientIndex, originalIndex, e.target.value)}
+                                      className="w-8 h-8 rounded border border-gray-500 cursor-pointer"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={stop.color}
+                                      onChange={(e) => updateGradientStopColor(gradientIndex, originalIndex, e.target.value)}
+                                      className="flex-1 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-xs text-gray-300 block mb-1">Opacity</label>
+                                  <input
+                                    type="text"
+                                    value={`${Math.round(stop.opacity * 100)}%`}
+                                    onChange={(e) => {
+                                      const percent = parseFloat(e.target.value.replace('%', '')) / 100;
+                                      if (!isNaN(percent)) {
+                                        updateGradientStopOpacity(gradientIndex, originalIndex, percent);
+                                      }
+                                    }}
+                                    className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                                  />
+                                </div>
+                              </div>
+                              {stops.length > 2 && (
+                                <button
+                                  onClick={() => removeGradientStop(gradientIndex, originalIndex)}
+                                  className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                                >
+                                  −
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
