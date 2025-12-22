@@ -51,27 +51,33 @@ const CircularParticles = () => {
   const divisionDuration = 2000; // 2 seconds per division cycle
   const separationDistance = 100; // Distance particles move apart
 
-  const colorPalette = [
-    ['#050a2e', '#004466', '#b8edff'],
-    ['#0e3510', '#556812', '#f9a4ed'],
-    ['#ffa200', '#f4ff5c', '#FFFF99'],
-    ['#0d351c', '#5d6303', '#DDA0DD'],
-    ['#992900', '#ffe747', '#fffef5'],
-    ['#2e2905', '#8eecd9', '#B0E0E6'],
-    ['#0a4461', '#ffccf4', '#ffccf4'],
-    ['#610000', '#ff7300', '#FFFF00']
-  ];
+  // Define color sets - each set contains 8 gradients (color palettes + gradient stops)
+  const colorSets = {
+    'Color Set A': {
+      colorPalette: [
+        ['#050a2e', '#004466', '#b8edff'],
+        ['#0e3510', '#556812', '#f9a4ed'],
+        ['#ffa200', '#f4ff5c', '#FFFF99'],
+        ['#0d351c', '#5d6303', '#DDA0DD'],
+        ['#992900', '#ffe747', '#fffef5'],
+        ['#2e2905', '#8eecd9', '#B0E0E6'],
+        ['#0a4461', '#ffccf4', '#ffccf4'],
+        ['#610000', '#ff7300', '#FFFF00']
+      ],
+      gradientStops: [
+        { stop1: 0, stop2: 0.27520435967302453, stop3: 0.670299727520436 },
+        { stop1: 0, stop2: 0.1, stop3: 0.508628519527702 },
+        { stop1: 0, stop2: 0.3224341507720254, stop3: 1 },
+        { stop1: 0, stop2: 0.18528610354223432, stop3: 0.5 },
+        { stop1: 0, stop2: 0.3478655767484105, stop3: 1 },
+        { stop1: 0, stop2: 0.1880108991825613, stop3: 0.5367847411444142 },
+        { stop1: 0.1008174386920981, stop2: 0.3832879200726612, stop3: 0.6584922797456857 },
+        { stop1: 0, stop2: 0.2710997442455243, stop3: 0.7148337595907929 }
+      ]
+    }
+  };
 
-  const gradientStops = [
-    { stop1: 0, stop2: 0.27520435967302453, stop3: 0.670299727520436 },
-    { stop1: 0, stop2: 0.1, stop3: 0.508628519527702 },
-    { stop1: 0, stop2: 0.3224341507720254, stop3: 1 },
-    { stop1: 0, stop2: 0.18528610354223432, stop3: 0.5 },
-    { stop1: 0, stop2: 0.3478655767484105, stop3: 1 },
-    { stop1: 0, stop2: 0.1880108991825613, stop3: 0.5367847411444142 },
-    { stop1: 0.1008174386920981, stop2: 0.3832879200726612, stop3: 0.6584922797456857 },
-    { stop1: 0, stop2: 0.2710997442455243, stop3: 0.7148337595907929 }
-  ];
+  const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -82,6 +88,11 @@ const CircularParticles = () => {
     let particles = [];
     let backgroundParticles = [];
     let currentConfig = { ...config };
+    
+    // Get the current color set
+    const currentColorSet = colorSets[selectedColorSet];
+    const colorPalette = currentColorSet.colorPalette;
+    const gradientStops = currentColorSet.gradientStops;
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -1255,7 +1266,7 @@ const CircularParticles = () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationRef.current);
     };
-  }, []); // Empty dependency - runs once on mount
+  }, [selectedColorSet]); // Re-run when color set changes
 
   // Update state refs when state changes
   useEffect(() => {
@@ -1277,10 +1288,11 @@ const CircularParticles = () => {
   };
 
   const copyAllParams = () => {
+    const currentColorSet = colorSets[selectedColorSet];
     const params = {
       config: config,
-      colorPalette: colorPalette,
-      gradientStops: gradientStops
+      colorPalette: currentColorSet.colorPalette,
+      gradientStops: currentColorSet.gradientStops
     };
     
     navigator.clipboard.writeText(JSON.stringify(params, null, 2)).then(() => {
@@ -1294,6 +1306,20 @@ const CircularParticles = () => {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
           <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-xs">Color Set:</label>
+              <select
+                value={selectedColorSet}
+                onChange={(e) => setSelectedColorSet(e.target.value)}
+                className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
+              >
+                {Object.keys(colorSets).map((setName) => (
+                  <option key={setName} value={setName}>
+                    {setName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <label className="text-xs">State:</label>
               <select
