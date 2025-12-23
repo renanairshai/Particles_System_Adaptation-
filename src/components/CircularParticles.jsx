@@ -55,8 +55,12 @@ const CircularParticles = () => {
     connectorMaxTotal: 20,
     connectorArcMode: false,
     connectorArcOutward: true,
-    connectorShowDots: false,
-    connectorDotSize: 3
+    connectorShowDots: true,
+    connectorDotSize: 9,
+    connectorLineStyle: 'solid',
+    connectorBlendMode: 'source-over',
+    connectorDotStrokeOnly: false,
+    connectorDotFillConnected: false
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -422,9 +426,9 @@ const CircularParticles = () => {
       gradientStops: [
         [
           { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#424242', opacity: 1 },
-          { position: 0.24258474576271186, color: '#616161', opacity: 1 },
-          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
         ],
         [
           { position: 0.09110169491525423, color: '#556812', opacity: 1 },
@@ -444,13 +448,13 @@ const CircularParticles = () => {
         ],
         [
           { position: 0, color: '#ffffff', opacity: 1 },
-          { position: 0.1880108991825613, color: '#4d4d4d', opacity: 1 },
-          { position: 0.5367847411444142, color: '#4f4f4f', opacity: 0 }
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
         ],
         [
           { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
-          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
-          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
         ],
         [
           { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
@@ -472,14 +476,49 @@ const CircularParticles = () => {
         [
           { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
           { position: 0.11016949152542373, color: '#212121', opacity: 1 },
-          { position: 0.4727520435967303, color: '#616161', opacity: 1 },
-          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+          { position: 0.3103813559322034, color: '#bfbfbf', opacity: 1 },
+          { position: 0.475635593220339, color: '#ffffff', opacity: 0 }
         ],
         [
           { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
           { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
           { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
           { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set I': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0, color: '#243dff', opacity: 1 },
+          { position: 0.27520435967302453, color: '#cce4ef', opacity: 1 },
+          { position: 0.670299727520436, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffa200', opacity: 1 },
+          { position: 0.3224341507720254, color: '#f4ff5c', opacity: 1 },
+          { position: 1, color: '#FFFF99', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#751071', opacity: 1 },
+          { position: 0.18528610354223432, color: '#ff859d', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#992900', opacity: 1 },
+          { position: 0.3478655767484105, color: '#ffe747', opacity: 1 },
+          { position: 1, color: '#fffef5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3874ff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#8eecd9', opacity: 1 },
+          { position: 0.5367847411444142, color: '#B0E0E6', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#ff2424', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
         ]
       ]
     }
@@ -657,6 +696,111 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
+        blendMode: 'soft-light'
+      },
+      selectedColorSet: 'Color Set H',
+      backgroundColor: '#dbdbdb'
+    },
+    'D': {
+      config: {
+        particleCount: 150,
+        sphereRadius: 217,
+        minRadius: 30,
+        maxRadius: 69,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.005,
+        pulseSpeed: 0.02,
+        perspective: 800,
+        scatter: 0,
+        breathingSpeedMin: 0,
+        breathingSpeedMax: 0.0081,
+        breathingAmountMin: 49,
+        breathingAmountMax: 64,
+        backgroundParticles: 773,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 6,
+        bgMaxSize: 18,
+        motionBlur: 0.78,
+        motionBlurSteps: 20,
+        particleOpacity: 0.21,
+        bgParticleOpacity: 0.43,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#c8c8ff',
+        blendMode: 'multiply'
+      },
+      selectedColorSet: 'Color Set I',
+      backgroundColor: '#ffffff'
+    },
+    'E': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 198,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.0027,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 93,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 1.33,
+        motionBlurSteps: 16,
+        particleOpacity: 0.6,
+        bgParticleOpacity: 0.54,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light'
+      },
+      selectedColorSet: 'Color Set H',
+      backgroundColor: '#dbdbdb'
+    },
+    'F': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 198,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.0027,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 93,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 0.22,
+        motionBlurSteps: 71,
+        particleOpacity: 1,
+        bgParticleOpacity: 1,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'streak',
+        streakColor: '#61784f',
         blendMode: 'soft-light'
       },
       selectedColorSet: 'Color Set H',
@@ -2095,6 +2239,116 @@ const CircularParticles = () => {
       return idx1 < idx2 ? `${idx1}-${idx2}` : `${idx2}-${idx1}`;
     };
 
+    // Helper function to draw a line with different styles
+    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null) => {
+      const lineStyle = style || 'solid';
+      
+      if (lineStyle === 'solid') {
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        if (isArc && controlX !== null && controlY !== null) {
+          ctx.moveTo(x1, y1);
+          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+        } else {
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+        }
+        ctx.stroke();
+      } else if (lineStyle === 'dashed') {
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        if (isArc && controlX !== null && controlY !== null) {
+          ctx.moveTo(x1, y1);
+          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+        } else {
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else if (lineStyle === 'dotted') {
+        ctx.setLineDash([2, 3]); // Small dots with gaps
+        ctx.beginPath();
+        if (isArc && controlX !== null && controlY !== null) {
+          ctx.moveTo(x1, y1);
+          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+        } else {
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else if (lineStyle === 'arrows' || lineStyle === 'arrows-large') {
+        // Calculate the direction angle for straight lines (from x1,y1 to x2,y2)
+        const straightDirectionAngle = Math.atan2(y2 - y1, x2 - x1);
+        
+        // Draw line first
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        if (isArc && controlX !== null && controlY !== null) {
+          ctx.moveTo(x1, y1);
+          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+        } else {
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+        }
+        ctx.stroke();
+        
+        // Draw arrows along the path
+        const arrowCount = lineStyle === 'arrows-large' ? 2 : 3; // Fewer arrows for large style
+        const arrowSize = lineStyle === 'arrows-large' ? 8 : 4; // Bigger arrows
+        
+        for (let i = 1; i <= arrowCount; i++) {
+          const t = i / (arrowCount + 1);
+          let arrowX, arrowY, arrowAngle;
+          
+          if (isArc && controlX !== null && controlY !== null) {
+            // Calculate position on arc
+            const t1 = 1 - t;
+            const mt = 1 - t1;
+            arrowX = (1 - mt) * (1 - mt) * x1 + 2 * (1 - mt) * mt * controlX + mt * mt * x2;
+            arrowY = (1 - mt) * (1 - mt) * y1 + 2 * (1 - mt) * mt * controlY + mt * mt * y2;
+            
+            // Calculate tangent angle at this point on the arc
+            // For quadratic bezier: derivative gives tangent direction
+            // P(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+            // P'(t) = 2(1-t)(P₁ - P₀) + 2t(P₂ - P₁)
+            const dx_dt = 2 * (1 - mt) * (controlX - x1) + 2 * mt * (x2 - controlX);
+            const dy_dt = 2 * (1 - mt) * (controlY - y1) + 2 * mt * (y2 - controlY);
+            arrowAngle = Math.atan2(dy_dt, dx_dt);
+          } else {
+            // Straight line
+            arrowX = x1 + (x2 - x1) * t;
+            arrowY = y1 + (y2 - y1) * t;
+            arrowAngle = straightDirectionAngle; // Use straight direction for non-arcs
+          }
+          
+          // Draw arrowhead aligned to the path direction
+          ctx.save();
+          ctx.translate(arrowX, arrowY);
+          ctx.rotate(arrowAngle);
+          ctx.beginPath();
+          if (lineStyle === 'arrows-large') {
+            // Big arrows: unclosed triangle (2 lines, V-shape)
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowSize, -arrowSize / 2);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowSize, arrowSize / 2);
+            ctx.stroke();
+          } else {
+            // Regular arrows: filled triangle
+            ctx.fillStyle = ctx.strokeStyle; // Use same color as line
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowSize, -arrowSize / 2);
+            ctx.lineTo(-arrowSize, arrowSize / 2);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+    };
+
     // Draw connectors between particles within distance range
     const drawConnectors = (ctx, particles, cfg) => {
       if (!cfg.connectorsEnabled) return;
@@ -2103,7 +2357,7 @@ const CircularParticles = () => {
       ctx.strokeStyle = cfg.connectorColor || '#ffffff';
       ctx.lineWidth = cfg.connectorWidth || 1;
       ctx.globalAlpha = cfg.connectorOpacity || 0.3;
-      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalCompositeOperation = cfg.connectorBlendMode || 'source-over';
       
       const minDist = cfg.connectorMinDistance || 100;
       const maxDist = cfg.connectorMaxDistance || 200;
@@ -2115,6 +2369,7 @@ const CircularParticles = () => {
       
       // Track current frame's connections per particle
       const connectionsPerParticle = new Map();
+      const connectedParticles = new Set(); // Track which particles have connections
       let totalConnectionsDrawn = 0;
       const newActiveConnections = new Map();
       
@@ -2140,42 +2395,29 @@ const CircularParticles = () => {
           
           // Keep connection if limits allow
           if (count1 < maxPerParticle && count2 < maxPerParticle && totalConnectionsDrawn < maxTotal) {
-            // Draw the persistent connection
-            ctx.beginPath();
-            if (cfg.connectorArcMode) {
-              // Draw as arc using quadratic bezier curve
+            // Calculate arc control point if needed
+            let controlX = null;
+            let controlY = null;
+            const isArc = cfg.connectorArcMode;
+            
+            if (isArc) {
               const midX = (p1.x2d + p2.x2d) / 2;
               const midY = (p1.y2d + p2.y2d) / 2;
               const dx = p2.x2d - p1.x2d;
               const dy = p2.y2d - p1.y2d;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              // Control point perpendicular to the line, creating an arc
-              const arcHeight = distance * 0.3; // Adjust arc height
-              const direction = cfg.connectorArcOutward !== false ? 1 : -1; // 1 for outward, -1 for inward
-              const controlX = midX + (-dy / distance) * arcHeight * direction;
-              const controlY = midY + (dx / distance) * arcHeight * direction;
-              ctx.moveTo(p1.x2d, p1.y2d);
-              ctx.quadraticCurveTo(controlX, controlY, p2.x2d, p2.y2d);
-            } else {
-              ctx.moveTo(p1.x2d, p1.y2d);
-              ctx.lineTo(p2.x2d, p2.y2d);
+              const arcHeight = distance * 0.3;
+              const direction = cfg.connectorArcOutward !== false ? 1 : -1;
+              controlX = midX + (-dy / distance) * arcHeight * direction;
+              controlY = midY + (dx / distance) * arcHeight * direction;
             }
-            ctx.stroke();
             
-            // Draw dots at connector tips if enabled
-            if (cfg.connectorShowDots) {
-              const dotSize = Number(cfg.connectorDotSize) || 3;
-              const savedAlpha = ctx.globalAlpha;
-              ctx.fillStyle = cfg.connectorColor || '#000000';
-              ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
-              ctx.beginPath();
-              ctx.arc(p1.x2d, p1.y2d, dotSize / 2, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.beginPath();
-              ctx.arc(p2.x2d, p2.y2d, dotSize / 2, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.globalAlpha = savedAlpha; // Restore previous alpha
-            }
+            // Draw line with selected style
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY);
+            
+            // Mark particles as connected
+            connectedParticles.add(p1);
+            connectedParticles.add(p2);
             
             // Track this connection
             connectionsPerParticle.set(p1, count1 + 1);
@@ -2234,41 +2476,29 @@ const CircularParticles = () => {
         
         // Only add if both particles haven't exceeded their limit
         if (count1 < maxPerParticle && count2 < maxPerParticle) {
-          ctx.beginPath();
-          if (cfg.connectorArcMode) {
-            // Draw as arc using quadratic bezier curve
+          // Calculate arc control point if needed
+          let controlX = null;
+          let controlY = null;
+          const isArc = cfg.connectorArcMode;
+          
+          if (isArc) {
             const midX = (conn.p1.x2d + conn.p2.x2d) / 2;
             const midY = (conn.p1.y2d + conn.p2.y2d) / 2;
             const dx = conn.p2.x2d - conn.p1.x2d;
             const dy = conn.p2.y2d - conn.p1.y2d;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            // Control point perpendicular to the line, creating an arc
-            const arcHeight = distance * 0.3; // Adjust arc height
-            const direction = cfg.connectorArcOutward !== false ? 1 : -1; // 1 for outward, -1 for inward
-            const controlX = midX + (-dy / distance) * arcHeight * direction;
-            const controlY = midY + (dx / distance) * arcHeight * direction;
-            ctx.moveTo(conn.p1.x2d, conn.p1.y2d);
-            ctx.quadraticCurveTo(controlX, controlY, conn.p2.x2d, conn.p2.y2d);
-          } else {
-            ctx.moveTo(conn.p1.x2d, conn.p1.y2d);
-            ctx.lineTo(conn.p2.x2d, conn.p2.y2d);
+            const arcHeight = distance * 0.3;
+            const direction = cfg.connectorArcOutward !== false ? 1 : -1;
+            controlX = midX + (-dy / distance) * arcHeight * direction;
+            controlY = midY + (dx / distance) * arcHeight * direction;
           }
-          ctx.stroke();
           
-          // Draw dots at connector tips if enabled
-          if (cfg.connectorShowDots) {
-            const dotSize = Number(cfg.connectorDotSize) || 3;
-            const savedAlpha = ctx.globalAlpha;
-            ctx.fillStyle = cfg.connectorColor || '#000000';
-            ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
-            ctx.beginPath();
-            ctx.arc(conn.p1.x2d, conn.p1.y2d, dotSize / 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(conn.p2.x2d, conn.p2.y2d, dotSize / 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = savedAlpha; // Restore previous alpha
-          }
+          // Draw line with selected style
+          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY);
+          
+          // Mark particles as connected
+          connectedParticles.add(conn.p1);
+          connectedParticles.add(conn.p2);
           
           // Track this connection
           connectionsPerParticle.set(conn.p1, count1 + 1);
@@ -2282,6 +2512,40 @@ const CircularParticles = () => {
       
       // Update active connections for next frame
       activeConnectionsRef.current = newActiveConnections;
+      
+      // Draw dots on all particles if enabled
+      if (cfg.connectorShowDots) {
+        const dotSize = Number(cfg.connectorDotSize) || 3;
+        const savedAlpha = ctx.globalAlpha;
+        const savedLineDash = ctx.getLineDash(); // Save current line dash pattern
+        const fillConnected = cfg.connectorDotFillConnected === true;
+        ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
+        
+        // Draw dots on all particles
+        for (const particle of particles) {
+          if (!particle || particle.currentRadius <= 0) continue;
+          
+          const isConnected = connectedParticles.has(particle);
+          const shouldFill = fillConnected ? isConnected : !cfg.connectorDotStrokeOnly;
+          
+          if (shouldFill) {
+            ctx.fillStyle = cfg.connectorColor || '#000000';
+            ctx.beginPath();
+            ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.setLineDash([]); // Ensure solid line for dot stroke
+            ctx.strokeStyle = cfg.connectorColor || '#000000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+        
+        ctx.setLineDash(savedLineDash); // Restore line dash pattern
+        ctx.globalAlpha = savedAlpha; // Restore previous alpha
+      }
       
       ctx.restore();
     };
@@ -2438,8 +2702,8 @@ const CircularParticles = () => {
 
   const updateConfig = (key, value) => {
     // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
-    const stringKeys = ['trailType', 'streakColor', 'blendMode', 'connectorColor'];
-    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots'];
+    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected'];
+    const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle'];
     let newValue;
     if (stringKeys.includes(key)) {
       newValue = value;
@@ -2473,7 +2737,11 @@ const CircularParticles = () => {
       connectorArcMode: config.connectorArcMode,
       connectorArcOutward: config.connectorArcOutward,
       connectorShowDots: config.connectorShowDots,
-      connectorDotSize: config.connectorDotSize
+      connectorDotSize: config.connectorDotSize,
+      connectorLineStyle: config.connectorLineStyle,
+      connectorBlendMode: config.connectorBlendMode,
+      connectorDotStrokeOnly: config.connectorDotStrokeOnly,
+      connectorDotFillConnected: config.connectorDotFillConnected
     };
     
     // Merge preset config with preserved connector properties
@@ -3387,7 +3655,7 @@ const CircularParticles = () => {
 
           <div>
             <label className="text-xs block mb-1 text-green-400">Connector Color</label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-2">
               <input
                 type="color"
                 value={config.connectorColor || '#ffffff'}
@@ -3419,6 +3687,49 @@ const CircularParticles = () => {
               disabled={config.connectorsEnabled === false}
             />
             <span className="text-xs text-green-300">{(config.connectorWidth || 1).toFixed(1)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Line Style</label>
+            <select
+              value={config.connectorLineStyle || 'solid'}
+              onChange={(e) => updateConfig('connectorLineStyle', e.target.value)}
+              className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+              disabled={!config.connectorsEnabled}
+            >
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+              <option value="arrows">Arrows</option>
+              <option value="arrows-large">Big Arrows</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Connector Blend Mode</label>
+            <select
+              value={config.connectorBlendMode || 'source-over'}
+              onChange={(e) => updateConfig('connectorBlendMode', e.target.value)}
+              className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+              disabled={!config.connectorsEnabled}
+            >
+              <option value="source-over">Normal (Source Over)</option>
+              <option value="multiply">Multiply</option>
+              <option value="screen">Screen</option>
+              <option value="overlay">Overlay</option>
+              <option value="darken">Darken</option>
+              <option value="lighten">Lighten</option>
+              <option value="color-dodge">Color Dodge</option>
+              <option value="color-burn">Color Burn</option>
+              <option value="hard-light">Hard Light</option>
+              <option value="soft-light">Soft Light</option>
+              <option value="difference">Difference</option>
+              <option value="exclusion">Exclusion</option>
+              <option value="hue">Hue</option>
+              <option value="saturation">Saturation</option>
+              <option value="color">Color</option>
+              <option value="luminosity">Luminosity</option>
+            </select>
           </div>
 
           <div>
@@ -3495,6 +3806,41 @@ const CircularParticles = () => {
             />
             <span className="text-xs text-green-300">{(Number(config.connectorDotSize) || 3).toFixed(1)}</span>
           </div>
+
+          {config.connectorShowDots && (
+            <>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Dot Stroke Only</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={config.connectorDotStrokeOnly === true}
+                    onChange={(e) => updateConfig('connectorDotStrokeOnly', e.target.checked)}
+                    className="w-4 h-4 accent-green-500"
+                    disabled={!config.connectorsEnabled || config.connectorDotFillConnected === true}
+                  />
+                  <span className="text-xs text-green-300 ml-2">
+                    {config.connectorDotStrokeOnly === true ? 'Stroke Only' : 'Filled'}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Fill Connected Only</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={config.connectorDotFillConnected === true}
+                    onChange={(e) => updateConfig('connectorDotFillConnected', e.target.checked)}
+                    className="w-4 h-4 accent-green-500"
+                    disabled={!config.connectorsEnabled}
+                  />
+                  <span className="text-xs text-green-300 ml-2">
+                    {config.connectorDotFillConnected === true ? 'Enabled' : 'Disabled'}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
