@@ -41,7 +41,9 @@ const CircularParticles = () => {
     particleShape: 'circle',
     autoRotateShapes: true,
     glowRadius: 1,
-    trailType: 'echo'
+    trailType: 'echo',
+    streakColor: '#c8c8ff',
+    blendMode: 'multiply'
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -182,6 +184,223 @@ const CircularParticles = () => {
           { position: 0.1016949152542373, color: '#610000', opacity: 1 },
           { position: 0.2849576271186441, color: '#ff7300', opacity: 1 },
           { position: 0.8792372881355932, color: '#FFFF00', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set D': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.06991525423728813, color: '#800033', opacity: 1 },
+          { position: 0.15360169491525424, color: '#781b79', opacity: 1 },
+          { position: 0.2309322033898305, color: '#a6ddd7', opacity: 1 },
+          { position: 0.2309322033898305, color: '#3e51b1', opacity: 0.7 },
+          { position: 0.3644067796610169, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.048728813559322036, color: '#ffdbbd', opacity: 1 },
+          { position: 0.10699152542372882, color: '#c1e1c4', opacity: 1 },
+          { position: 0.30431425976385107, color: '#e1f5f2', opacity: 1 },
+          { position: 0.5995762711864406, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.02754237288135593, color: '#ff0aca', opacity: 1 },
+          { position: 0.2701271186440678, color: '#ffd1b8', opacity: 1 },
+          { position: 0.3813559322033898, color: '#ffa55c', opacity: 1 },
+          { position: 0.4576271186440678, color: '#f8ff94', opacity: 1 },
+          { position: 0.5338983050847458, color: '#FFFF99', opacity: 0 }
+        ],
+        [
+          { position: 0.020127118644067795, color: '#14ff6e', opacity: 1 },
+          { position: 0.10063559322033898, color: '#ffe524', opacity: 1 },
+          { position: 0.2913135593220339, color: '#8eecd9', opacity: 0.7 },
+          { position: 0.3898305084745763, color: '#4bff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.01059322033898305, color: '#ff6161', opacity: 1 },
+          { position: 0.1016949152542373, color: '#610000', opacity: 1 },
+          { position: 0.2923728813559322, color: '#ff7300', opacity: 1 },
+          { position: 0.600635593220339, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.06991525423728813, color: '#800033', opacity: 1 },
+          { position: 0.15360169491525424, color: '#781b79', opacity: 1 },
+          { position: 0.18008474576271186, color: '#3e51b1', opacity: 0.7 },
+          { position: 0.2796610169491525, color: '#a6ddd7', opacity: 1 },
+          { position: 0.6875, color: '#b8edff', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set E': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffa200', opacity: 1 },
+          { position: 0.3224341507720254, color: '#f4ff5c', opacity: 1 },
+          { position: 1, color: '#FFFF99', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#2e2905', opacity: 1 },
+          { position: 0.1880108991825613, color: '#8a8a8a', opacity: 1 },
+          { position: 0.5367847411444142, color: '#B0E0E6', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#610000', opacity: 1 },
+          { position: 0.2710997442455243, color: '#ff7300', opacity: 1 },
+          { position: 0.6684322033898306, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#050a2e', opacity: 1 },
+          { position: 0.27520435967302453, color: '#004466', opacity: 1 },
+          { position: 0.670299727520436, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set F': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
+          { position: 0.4727520435967303, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.17690677966101695, color: '#29496b', opacity: 1 },
+          { position: 0.19809322033898305, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#4d4d4d', opacity: 1 },
+          { position: 0.5367847411444142, color: '#4f4f4f', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#610000', opacity: 1 },
+          { position: 0.2710997442455243, color: '#ff7300', opacity: 1 },
+          { position: 0.6684322033898306, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#050a2e', opacity: 1 },
+          { position: 0.27520435967302453, color: '#004466', opacity: 1 },
+          { position: 0.670299727520436, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
+          { position: 0.4727520435967303, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set G': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#424242', opacity: 1 },
+          { position: 0.24258474576271186, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#4d4d4d', opacity: 1 },
+          { position: 0.5367847411444142, color: '#4f4f4f', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#050a2e', opacity: 1 },
+          { position: 0.23728813559322035, color: '#004466', opacity: 1 },
+          { position: 0.4502118644067797, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
+          { position: 0.4727520435967303, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
         ]
       ]
     }
@@ -514,6 +733,18 @@ const CircularParticles = () => {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
+      // Helper to convert hex to RGB
+      const hexToRgb = (hex) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 200, g: 200, b: 255 }; // fallback to original blue
+      };
+      
+      const rgb = hexToRgb(cfg.streakColor || '#c8c8ff');
+      
       // Draw lines with increasing opacity
       for (let i = 0; i < positionHistory.length - 1; i++) {
         const pos1 = positionHistory[i];
@@ -529,8 +760,8 @@ const CircularParticles = () => {
         const lineOpacity = Math.min(1, fadeAmount * cfg.motionBlur * finalOpacity * 2);
         const lineWidth = Math.max(2, pos1.radius * 0.5 * fadeAmount);
         
-        // Use a color that will be visible
-        ctx.strokeStyle = `rgba(200, 200, 255, ${lineOpacity})`;
+        // Use the configurable streak color
+        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${lineOpacity})`;
         ctx.globalAlpha = 1;
         ctx.lineWidth = lineWidth;
         ctx.beginPath();
@@ -1699,7 +1930,7 @@ const CircularParticles = () => {
           : bgParticlesRef.current.concat(particlesRef.current);
         allParticles.sort((a, b) => a.depth - b.depth);
 
-        ctx.globalCompositeOperation = 'multiply';
+        ctx.globalCompositeOperation = cfg.blendMode || 'multiply';
         
         allParticles.forEach(particle => {
           if (particle.currentRadius > 0) {
@@ -1742,8 +1973,8 @@ const CircularParticles = () => {
   }, [divisionLevel]);
 
   const updateConfig = (key, value) => {
-    // Handle string values (like trailType) vs numeric values
-    const newValue = key === 'trailType' ? value : parseFloat(value);
+    // Handle string values (like trailType, streakColor, blendMode) vs numeric values
+    const newValue = (key === 'trailType' || key === 'streakColor' || key === 'blendMode') ? value : parseFloat(value);
     // Update ref immediately for smooth animation
     if (configRef.current) {
       configRef.current = { ...configRef.current, [key]: newValue };
@@ -2440,6 +2671,53 @@ const CircularParticles = () => {
               <option value="sparkle">Sparkle</option>
               <option value="glow">Glow</option>
               <option value="fade">Fade</option>
+            </select>
+          </div>
+
+          {config.trailType === 'streak' && (
+            <div>
+              <label className="text-xs block mb-1 text-orange-400">Streak Color</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={config.streakColor || '#c8c8ff'}
+                  onChange={(e) => updateConfig('streakColor', e.target.value)}
+                  className="w-10 h-8 rounded border border-gray-500 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={config.streakColor || '#c8c8ff'}
+                  onChange={(e) => updateConfig('streakColor', e.target.value)}
+                  className="flex-1 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                  placeholder="#c8c8ff"
+                />
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="text-xs block mb-1 text-orange-400">Blend Mode</label>
+            <select
+              value={config.blendMode || 'multiply'}
+              onChange={(e) => updateConfig('blendMode', e.target.value)}
+              className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+            >
+              <option value="source-over">Normal (Source Over)</option>
+              <option value="multiply">Multiply</option>
+              <option value="screen">Screen</option>
+              <option value="overlay">Overlay</option>
+              <option value="darken">Darken</option>
+              <option value="lighten">Lighten</option>
+              <option value="color-dodge">Color Dodge</option>
+              <option value="color-burn">Color Burn</option>
+              <option value="hard-light">Hard Light</option>
+              <option value="soft-light">Soft Light</option>
+              <option value="difference">Difference</option>
+              <option value="exclusion">Exclusion</option>
+              <option value="hue">Hue</option>
+              <option value="saturation">Saturation</option>
+              <option value="color">Color</option>
+              <option value="luminosity">Luminosity</option>
             </select>
           </div>
 
