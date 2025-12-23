@@ -14,6 +14,7 @@ const CircularParticles = () => {
   const divisionLevelRef = useRef(0);
   const lastStateRef = useRef('gathering');
   const activeConnectionsRef = useRef(new Map()); // Store persistent connections between frames
+  const hoveredParticleRef = useRef(null); // Track hovered particle for position display
   
   const [config, setConfig] = useState({
     particleCount: 150,
@@ -874,6 +875,41 @@ const CircularParticles = () => {
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    
+    // Mouse move handler to detect hovered particles
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Find the closest particle within hover distance
+      let closestParticle = null;
+      let closestDistance = Infinity;
+      const hoverThreshold = 30; // Maximum distance to consider a particle "hovered"
+      
+      // Check all particles (both main and background)
+      const allParticles = currentStateRef.current === 'birth' 
+        ? particlesRef.current
+        : bgParticlesRef.current.concat(particlesRef.current);
+      
+      for (const particle of allParticles) {
+        if (!particle || particle.currentRadius <= 0) continue;
+        
+        const dx = mouseX - particle.x2d;
+        const dy = mouseY - particle.y2d;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Check if mouse is within the particle's radius + threshold
+        if (distance < particle.currentRadius + hoverThreshold && distance < closestDistance) {
+          closestDistance = distance;
+          closestParticle = particle;
+        }
+      }
+      
+      hoveredParticleRef.current = closestParticle;
+    };
+    
+    canvas.addEventListener('mousemove', handleMouseMove);
 
     // Pre-render gradient blobs to offscreen canvases for performance
     const createShapeCache = (stopsArray, shape) => {
@@ -2676,6 +2712,55 @@ const CircularParticles = () => {
         ctx.fillStyle = 'black';
         ctx.font = '12px monospace';
         ctx.fillText(`Frame: ${timeRef.current} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
+        
+        // Draw position text for hovered particle
+        if (hoveredParticleRef.current) {
+          const particle = hoveredParticleRef.current;
+          const x = Math.round(particle.x3d * 100) / 100;
+          const y = Math.round(particle.y3d * 100) / 100;
+          const z = Math.round(particle.z3d * 100) / 100;
+          const positionText = `[${x}, ${y}, ${z}]`;
+          
+          // Position text above the particle, but adjust if too close to edges
+          let textX = particle.x2d;
+          let textY = particle.y2d - particle.currentRadius - 20;
+          
+          // Draw background rectangle for better readability
+          ctx.font = '14px monospace';
+          const textMetrics = ctx.measureText(positionText);
+          const padding = 6;
+          const bgWidth = textMetrics.width + padding * 2;
+          const bgHeight = 20;
+          let bgX = textX - bgWidth / 2;
+          let bgY = textY - bgHeight;
+          
+          // Keep text within canvas bounds
+          if (bgX < 0) {
+            bgX = 0;
+            textX = bgWidth / 2;
+          } else if (bgX + bgWidth > canvas.width) {
+            bgX = canvas.width - bgWidth;
+            textX = canvas.width - bgWidth / 2;
+          }
+          
+          if (bgY < 0) {
+            bgY = particle.y2d + particle.currentRadius + 10; // Show below instead
+            textY = bgY + bgHeight / 2;
+          }
+          
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+          
+          // Draw text
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(positionText, textX, textY);
+          
+          // Reset text alignment
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+        }
       } catch (error) {
         console.error('Animation error:', error);
       }
@@ -2687,6 +2772,7 @@ const CircularParticles = () => {
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
   }, [selectedColorSet, editableGradients, backgroundColor]); // Re-run when color set, gradients, or background color change
