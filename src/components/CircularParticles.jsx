@@ -403,12 +403,258 @@ const CircularParticles = () => {
           { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
         ]
       ]
+    },
+    'Color Set H': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#424242', opacity: 1 },
+          { position: 0.24258474576271186, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#4d4d4d', opacity: 1 },
+          { position: 0.5367847411444142, color: '#4f4f4f', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
+          { position: 0.4727520435967303, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    }
+  };
+
+  // Design presets - complete configurations including all params, color set, and background
+  const designPresets = {
+    'A': {
+      config: {
+        particleCount: 150,
+        sphereRadius: 217,
+        minRadius: 30,
+        maxRadius: 69,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.005,
+        pulseSpeed: 0.02,
+        perspective: 800,
+        scatter: 0,
+        breathingSpeedMin: 0,
+        breathingSpeedMax: 0.0081,
+        breathingAmountMin: 49,
+        breathingAmountMax: 64,
+        backgroundParticles: 773,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 6,
+        bgMaxSize: 18,
+        motionBlur: 0.78,
+        motionBlurSteps: 20,
+        particleOpacity: 0.23,
+        bgParticleOpacity: 0.43,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#c8c8ff',
+        blendMode: 'multiply'
+      },
+      selectedColorSet: 'Color Set A',
+      backgroundColor: '#ffffff'
+    },
+    'Default': {
+      config: {
+        particleCount: 150,
+        sphereRadius: 1,
+        minRadius: 15,
+        maxRadius: 45,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.005,
+        pulseSpeed: 0.02,
+        perspective: 800,
+        scatter: 0,
+        breathingSpeedMin: 0,
+        breathingSpeedMax: 0.0081,
+        breathingAmountMin: 49,
+        breathingAmountMax: 64,
+        backgroundParticles: 773,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 6,
+        bgMaxSize: 18,
+        motionBlur: 0.78,
+        motionBlurSteps: 20,
+        particleOpacity: 0.23,
+        bgParticleOpacity: 0.43,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#c8c8ff',
+        blendMode: 'multiply'
+      },
+      selectedColorSet: 'Color Set A',
+      backgroundColor: '#ffffff'
+    },
+    'B': {
+      config: {
+        particleCount: 117,
+        sphereRadius: 174,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.006,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 64,
+        breathingSpeedMin: 0,
+        breathingSpeedMax: 0.0081,
+        breathingAmountMin: 49,
+        breathingAmountMax: 64,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 1.68,
+        motionBlurSteps: 28,
+        particleOpacity: 0.34,
+        bgParticleOpacity: 1,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'streak',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light'
+      },
+      selectedColorSet: 'Color Set H',
+      backgroundColor: '#dbdbdb'
+    },
+    'C': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 198,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.0027,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 93,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 1.33,
+        motionBlurSteps: 16,
+        particleOpacity: 0.6,
+        bgParticleOpacity: 0.54,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light'
+      },
+      selectedColorSet: 'Color Set H',
+      backgroundColor: '#dbdbdb'
+    },
+    'C2': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 198,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.003,
+        rotationSpeedY: 0.0027,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 93,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.55,
+        bgDriftSpeedMax: 0.51,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 0.84,
+        motionBlurSteps: 46,
+        particleOpacity: 0.42,
+        bgParticleOpacity: 1,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light'
+      },
+      selectedColorSet: 'Color Set H',
+      backgroundColor: '#dbdbdb'
     }
   };
 
   const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
   const [showGradientEditor, setShowGradientEditor] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [selectedPreset, setSelectedPreset] = useState('Default');
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
@@ -1983,6 +2229,28 @@ const CircularParticles = () => {
     setConfig(prev => ({ ...prev, [key]: newValue }));
   };
 
+  const handlePresetChange = (presetName) => {
+    const preset = designPresets[presetName];
+    if (!preset) return;
+    
+    // Update config state
+    setConfig(preset.config);
+    
+    // Update config ref immediately for smooth animation
+    if (configRef.current) {
+      configRef.current = { ...preset.config };
+    }
+    
+    // Update color set
+    setSelectedColorSet(preset.selectedColorSet);
+    
+    // Update background color
+    setBackgroundColor(preset.backgroundColor);
+    
+    // Update selected preset
+    setSelectedPreset(presetName);
+  };
+
   const copyAllParams = () => {
     const currentColorSet = colorSets[selectedColorSet];
     const params = {
@@ -2127,6 +2395,20 @@ const CircularParticles = () => {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
           <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-xs">Design Preset:</label>
+              <select
+                value={selectedPreset}
+                onChange={(e) => handlePresetChange(e.target.value)}
+                className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
+              >
+                {Object.keys(designPresets).map((presetName) => (
+                  <option key={presetName} value={presetName}>
+                    {presetName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <label className="text-xs">Color Set:</label>
               <select
