@@ -517,19 +517,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#c8c8ff',
-        blendMode: 'multiply',
-        connectorsEnabled: true,
-        connectorMinDistance: 100,
-        connectorMaxDistance: 112,
-        connectorColor: '#000000',
-        connectorWidth: 0.5,
-        connectorOpacity: 1.00,
-        connectorMaxPerParticle: 5,
-        connectorMaxTotal: 20,
-        connectorArcMode: false,
-        connectorArcOutward: true,
-        connectorShowDots: false,
-        connectorDotSize: 3
+        blendMode: 'multiply'
       },
       selectedColorSet: 'Color Set A',
       backgroundColor: '#ffffff'
@@ -564,19 +552,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#c8c8ff',
-        blendMode: 'multiply',
-        connectorsEnabled: true,
-        connectorMinDistance: 100,
-        connectorMaxDistance: 112,
-        connectorColor: '#000000',
-        connectorWidth: 0.5,
-        connectorOpacity: 1.00,
-        connectorMaxPerParticle: 5,
-        connectorMaxTotal: 20,
-        connectorArcMode: false,
-        connectorArcOutward: true,
-        connectorShowDots: false,
-        connectorDotSize: 3
+        blendMode: 'multiply'
       },
       selectedColorSet: 'Color Set A',
       backgroundColor: '#ffffff'
@@ -611,19 +587,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'streak',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light',
-        connectorsEnabled: true,
-        connectorMinDistance: 100,
-        connectorMaxDistance: 112,
-        connectorColor: '#000000',
-        connectorWidth: 0.5,
-        connectorOpacity: 1.00,
-        connectorMaxPerParticle: 5,
-        connectorMaxTotal: 20,
-        connectorArcMode: false,
-        connectorArcOutward: true,
-        connectorShowDots: false,
-        connectorDotSize: 3
+        blendMode: 'soft-light'
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -658,19 +622,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light',
-        connectorsEnabled: true,
-        connectorMinDistance: 100,
-        connectorMaxDistance: 112,
-        connectorColor: '#000000',
-        connectorWidth: 0.5,
-        connectorOpacity: 1.00,
-        connectorMaxPerParticle: 5,
-        connectorMaxTotal: 20,
-        connectorArcMode: false,
-        connectorArcOutward: true,
-        connectorShowDots: false,
-        connectorDotSize: 3
+        blendMode: 'soft-light'
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -705,19 +657,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light',
-        connectorsEnabled: true,
-        connectorMinDistance: 100,
-        connectorMaxDistance: 112,
-        connectorColor: '#000000',
-        connectorWidth: 0.5,
-        connectorOpacity: 1.00,
-        connectorMaxPerParticle: 5,
-        connectorMaxTotal: 20,
-        connectorArcMode: false,
-        connectorArcOutward: true,
-        connectorShowDots: false,
-        connectorDotSize: 3
+        blendMode: 'soft-light'
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -2520,12 +2460,31 @@ const CircularParticles = () => {
     const preset = designPresets[presetName];
     if (!preset) return;
     
+    // Preserve connector properties from current config
+    const connectorProps = {
+      connectorsEnabled: config.connectorsEnabled,
+      connectorMinDistance: config.connectorMinDistance,
+      connectorMaxDistance: config.connectorMaxDistance,
+      connectorColor: config.connectorColor,
+      connectorWidth: config.connectorWidth,
+      connectorOpacity: config.connectorOpacity,
+      connectorMaxPerParticle: config.connectorMaxPerParticle,
+      connectorMaxTotal: config.connectorMaxTotal,
+      connectorArcMode: config.connectorArcMode,
+      connectorArcOutward: config.connectorArcOutward,
+      connectorShowDots: config.connectorShowDots,
+      connectorDotSize: config.connectorDotSize
+    };
+    
+    // Merge preset config with preserved connector properties
+    const mergedConfig = { ...preset.config, ...connectorProps };
+    
     // Update config state
-    setConfig(preset.config);
+    setConfig(mergedConfig);
     
     // Update config ref immediately for smooth animation
     if (configRef.current) {
-      configRef.current = { ...preset.config };
+      configRef.current = { ...mergedConfig };
     }
     
     // Update color set
