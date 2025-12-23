@@ -13,6 +13,7 @@ const CircularParticles = () => {
   const currentStateRef = useRef('gathering');
   const divisionLevelRef = useRef(0);
   const lastStateRef = useRef('gathering');
+  const activeConnectionsRef = useRef(new Map()); // Store persistent connections between frames
   
   const [config, setConfig] = useState({
     particleCount: 150,
@@ -43,7 +44,19 @@ const CircularParticles = () => {
     glowRadius: 1,
     trailType: 'echo',
     streakColor: '#c8c8ff',
-    blendMode: 'multiply'
+    blendMode: 'multiply',
+    connectorsEnabled: true,
+    connectorMinDistance: 100,
+    connectorMaxDistance: 112,
+    connectorColor: '#000000',
+    connectorWidth: 0.5,
+    connectorOpacity: 1.00,
+    connectorMaxPerParticle: 5,
+    connectorMaxTotal: 20,
+    connectorArcMode: false,
+    connectorArcOutward: true,
+    connectorShowDots: false,
+    connectorDotSize: 3
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -504,7 +517,19 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#c8c8ff',
-        blendMode: 'multiply'
+        blendMode: 'multiply',
+        connectorsEnabled: true,
+        connectorMinDistance: 100,
+        connectorMaxDistance: 112,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1.00,
+        connectorMaxPerParticle: 5,
+        connectorMaxTotal: 20,
+        connectorArcMode: false,
+        connectorArcOutward: true,
+        connectorShowDots: false,
+        connectorDotSize: 3
       },
       selectedColorSet: 'Color Set A',
       backgroundColor: '#ffffff'
@@ -539,7 +564,19 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#c8c8ff',
-        blendMode: 'multiply'
+        blendMode: 'multiply',
+        connectorsEnabled: true,
+        connectorMinDistance: 100,
+        connectorMaxDistance: 112,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1.00,
+        connectorMaxPerParticle: 5,
+        connectorMaxTotal: 20,
+        connectorArcMode: false,
+        connectorArcOutward: true,
+        connectorShowDots: false,
+        connectorDotSize: 3
       },
       selectedColorSet: 'Color Set A',
       backgroundColor: '#ffffff'
@@ -574,7 +611,19 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'streak',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light'
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 100,
+        connectorMaxDistance: 112,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1.00,
+        connectorMaxPerParticle: 5,
+        connectorMaxTotal: 20,
+        connectorArcMode: false,
+        connectorArcOutward: true,
+        connectorShowDots: false,
+        connectorDotSize: 3
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -609,7 +658,19 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light'
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 100,
+        connectorMaxDistance: 112,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1.00,
+        connectorMaxPerParticle: 5,
+        connectorMaxTotal: 20,
+        connectorArcMode: false,
+        connectorArcOutward: true,
+        connectorShowDots: false,
+        connectorDotSize: 3
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -617,34 +678,46 @@ const CircularParticles = () => {
     'C2': {
       config: {
         particleCount: 92,
-        sphereRadius: 198,
+        sphereRadius: 190,
         minRadius: 30,
         maxRadius: 80,
         rotationSpeedX: 0.003,
         rotationSpeedY: 0.0027,
         pulseSpeed: 0.02,
         perspective: 1200,
-        scatter: 93,
+        scatter: 57,
         breathingSpeedMin: 0.0086,
         breathingSpeedMax: 0.01,
         breathingAmountMin: 7,
         breathingAmountMax: 100,
-        backgroundParticles: 270,
+        backgroundParticles: 172,
         blobDistortion: 0.3,
         bgDriftSpeedMin: 0.55,
         bgDriftSpeedMax: 0.51,
         bgMinSize: 13,
-        bgMaxSize: 45,
-        motionBlur: 0.84,
-        motionBlurSteps: 46,
-        particleOpacity: 0.42,
-        bgParticleOpacity: 1,
+        bgMaxSize: 46,
+        motionBlur: 2,
+        motionBlurSteps: 25,
+        particleOpacity: 0.19,
+        bgParticleOpacity: 0.36,
         particleShape: 'circle',
         autoRotateShapes: true,
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light'
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 100,
+        connectorMaxDistance: 112,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1.00,
+        connectorMaxPerParticle: 5,
+        connectorMaxTotal: 20,
+        connectorArcMode: false,
+        connectorArcOutward: true,
+        connectorShowDots: false,
+        connectorDotSize: 3
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -1894,6 +1967,8 @@ const CircularParticles = () => {
     const initParticles = (cfg) => {
       particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
       bgParticlesRef.current = Array.from({ length: cfg.backgroundParticles }, () => new BackgroundParticle(cfg));
+      // Clear connections when particles are reinitialized
+      activeConnectionsRef.current = new Map();
     };
 
     initParticles(configRef.current);
@@ -1915,6 +1990,8 @@ const CircularParticles = () => {
       divisionStartTimeRef.current = Date.now();
       isDividingRef.current = false;
       setDivisionLevel(0);
+      // Clear connections when entering Birth state
+      activeConnectionsRef.current = new Map();
     };
 
     // Divide particles: each particle splits into 2
@@ -2071,6 +2148,204 @@ const CircularParticles = () => {
       isDividingRef.current = false;
     };
 
+    // Helper function to create a connection key from two particle indices
+    const getConnectionKey = (p1, p2) => {
+      const idx1 = p1.index;
+      const idx2 = p2.index;
+      return idx1 < idx2 ? `${idx1}-${idx2}` : `${idx2}-${idx1}`;
+    };
+
+    // Draw connectors between particles within distance range
+    const drawConnectors = (ctx, particles, cfg) => {
+      if (!cfg.connectorsEnabled) return;
+      
+      ctx.save();
+      ctx.strokeStyle = cfg.connectorColor || '#ffffff';
+      ctx.lineWidth = cfg.connectorWidth || 1;
+      ctx.globalAlpha = cfg.connectorOpacity || 0.3;
+      ctx.globalCompositeOperation = 'source-over';
+      
+      const minDist = cfg.connectorMinDistance || 100;
+      const maxDist = cfg.connectorMaxDistance || 200;
+      const maxPerParticle = cfg.connectorMaxPerParticle || Infinity;
+      const maxTotal = cfg.connectorMaxTotal || Infinity;
+      
+      // Get or initialize active connections map
+      let activeConnections = activeConnectionsRef.current;
+      
+      // Track current frame's connections per particle
+      const connectionsPerParticle = new Map();
+      let totalConnectionsDrawn = 0;
+      const newActiveConnections = new Map();
+      
+      // First, validate existing connections and keep valid ones
+      for (const [key, conn] of activeConnections.entries()) {
+        const p1 = conn.p1;
+        const p2 = conn.p2;
+        
+        // Check if particles still exist and are valid
+        if (!p1 || !p2 || p1.currentRadius <= 0 || p2.currentRadius <= 0) {
+          continue; // Skip invalid connections
+        }
+        
+        // Calculate current distance
+        const dx = p1.x2d - p2.x2d;
+        const dy = p1.y2d - p2.y2d;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Check if connection is still within range
+        if (distance >= minDist && distance <= maxDist) {
+          const count1 = connectionsPerParticle.get(p1) || 0;
+          const count2 = connectionsPerParticle.get(p2) || 0;
+          
+          // Keep connection if limits allow
+          if (count1 < maxPerParticle && count2 < maxPerParticle && totalConnectionsDrawn < maxTotal) {
+            // Draw the persistent connection
+            ctx.beginPath();
+            if (cfg.connectorArcMode) {
+              // Draw as arc using quadratic bezier curve
+              const midX = (p1.x2d + p2.x2d) / 2;
+              const midY = (p1.y2d + p2.y2d) / 2;
+              const dx = p2.x2d - p1.x2d;
+              const dy = p2.y2d - p1.y2d;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              // Control point perpendicular to the line, creating an arc
+              const arcHeight = distance * 0.3; // Adjust arc height
+              const direction = cfg.connectorArcOutward !== false ? 1 : -1; // 1 for outward, -1 for inward
+              const controlX = midX + (-dy / distance) * arcHeight * direction;
+              const controlY = midY + (dx / distance) * arcHeight * direction;
+              ctx.moveTo(p1.x2d, p1.y2d);
+              ctx.quadraticCurveTo(controlX, controlY, p2.x2d, p2.y2d);
+            } else {
+              ctx.moveTo(p1.x2d, p1.y2d);
+              ctx.lineTo(p2.x2d, p2.y2d);
+            }
+            ctx.stroke();
+            
+            // Draw dots at connector tips if enabled
+            if (cfg.connectorShowDots) {
+              const dotSize = Number(cfg.connectorDotSize) || 3;
+              const savedAlpha = ctx.globalAlpha;
+              ctx.fillStyle = cfg.connectorColor || '#000000';
+              ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
+              ctx.beginPath();
+              ctx.arc(p1.x2d, p1.y2d, dotSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(p2.x2d, p2.y2d, dotSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.globalAlpha = savedAlpha; // Restore previous alpha
+            }
+            
+            // Track this connection
+            connectionsPerParticle.set(p1, count1 + 1);
+            connectionsPerParticle.set(p2, count2 + 1);
+            totalConnectionsDrawn++;
+            
+            // Keep in new active connections
+            newActiveConnections.set(key, { p1, p2, distance });
+          }
+        }
+      }
+      
+      // Now find new connections to fill remaining capacity
+      const candidateConnections = [];
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+        if (!p1 || p1.currentRadius <= 0) continue;
+        
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          if (!p2 || p2.currentRadius <= 0) continue;
+          
+          // Skip if this connection already exists
+          const key = getConnectionKey(p1, p2);
+          if (newActiveConnections.has(key)) continue;
+          
+          // Calculate 2D screen distance
+          const dx = p1.x2d - p2.x2d;
+          const dy = p1.y2d - p2.y2d;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          // Store connection if distance is within range
+          if (distance >= minDist && distance <= maxDist) {
+            candidateConnections.push({
+              p1,
+              p2,
+              distance,
+              key
+            });
+          }
+        }
+      }
+      
+      // Sort candidate connections by distance (closest first)
+      candidateConnections.sort((a, b) => a.distance - b.distance);
+      
+      // Add new connections up to limits
+      for (const conn of candidateConnections) {
+        // Stop if total limit reached
+        if (totalConnectionsDrawn >= maxTotal) {
+          break;
+        }
+        
+        const count1 = connectionsPerParticle.get(conn.p1) || 0;
+        const count2 = connectionsPerParticle.get(conn.p2) || 0;
+        
+        // Only add if both particles haven't exceeded their limit
+        if (count1 < maxPerParticle && count2 < maxPerParticle) {
+          ctx.beginPath();
+          if (cfg.connectorArcMode) {
+            // Draw as arc using quadratic bezier curve
+            const midX = (conn.p1.x2d + conn.p2.x2d) / 2;
+            const midY = (conn.p1.y2d + conn.p2.y2d) / 2;
+            const dx = conn.p2.x2d - conn.p1.x2d;
+            const dy = conn.p2.y2d - conn.p1.y2d;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            // Control point perpendicular to the line, creating an arc
+            const arcHeight = distance * 0.3; // Adjust arc height
+            const direction = cfg.connectorArcOutward !== false ? 1 : -1; // 1 for outward, -1 for inward
+            const controlX = midX + (-dy / distance) * arcHeight * direction;
+            const controlY = midY + (dx / distance) * arcHeight * direction;
+            ctx.moveTo(conn.p1.x2d, conn.p1.y2d);
+            ctx.quadraticCurveTo(controlX, controlY, conn.p2.x2d, conn.p2.y2d);
+          } else {
+            ctx.moveTo(conn.p1.x2d, conn.p1.y2d);
+            ctx.lineTo(conn.p2.x2d, conn.p2.y2d);
+          }
+          ctx.stroke();
+          
+          // Draw dots at connector tips if enabled
+          if (cfg.connectorShowDots) {
+            const dotSize = Number(cfg.connectorDotSize) || 3;
+            const savedAlpha = ctx.globalAlpha;
+            ctx.fillStyle = cfg.connectorColor || '#000000';
+            ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
+            ctx.beginPath();
+            ctx.arc(conn.p1.x2d, conn.p1.y2d, dotSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(conn.p2.x2d, conn.p2.y2d, dotSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = savedAlpha; // Restore previous alpha
+          }
+          
+          // Track this connection
+          connectionsPerParticle.set(conn.p1, count1 + 1);
+          connectionsPerParticle.set(conn.p2, count2 + 1);
+          totalConnectionsDrawn++;
+          
+          // Add to new active connections
+          newActiveConnections.set(conn.key, { p1: conn.p1, p2: conn.p2, distance: conn.distance });
+        }
+      }
+      
+      // Update active connections for next frame
+      activeConnectionsRef.current = newActiveConnections;
+      
+      ctx.restore();
+    };
+
     const animate = () => {
       try {
         if (!canvas.width || !canvas.height) {
@@ -2170,6 +2445,9 @@ const CircularParticles = () => {
           particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
         });
 
+        // Draw connectors between particles within distance range
+        drawConnectors(ctx, particlesRef.current, cfg);
+
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
         const allParticles = currentStateRef.current === 'birth' 
           ? [...particlesRef.current]
@@ -2219,8 +2497,17 @@ const CircularParticles = () => {
   }, [divisionLevel]);
 
   const updateConfig = (key, value) => {
-    // Handle string values (like trailType, streakColor, blendMode) vs numeric values
-    const newValue = (key === 'trailType' || key === 'streakColor' || key === 'blendMode') ? value : parseFloat(value);
+    // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
+    const stringKeys = ['trailType', 'streakColor', 'blendMode', 'connectorColor'];
+    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots'];
+    let newValue;
+    if (stringKeys.includes(key)) {
+      newValue = value;
+    } else if (booleanKeys.includes(key)) {
+      newValue = value;
+    } else {
+      newValue = parseFloat(value);
+    }
     // Update ref immediately for smooth animation
     if (configRef.current) {
       configRef.current = { ...configRef.current, [key]: newValue };
@@ -3056,6 +3343,198 @@ const CircularParticles = () => {
               className="w-full accent-cyan-500"
             />
             <span className="text-xs text-cyan-300">{config.bgParticleOpacity.toFixed(2)}</span>
+          </div>
+
+          <div className="col-span-2 md:col-span-4 border-t border-gray-600 pt-4 mt-2">
+            <h3 className="text-sm font-semibold text-green-400 mb-3">Connectors</h3>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Enable Connectors</label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={config.connectorsEnabled !== false}
+                onChange={(e) => updateConfig('connectorsEnabled', e.target.checked)}
+                className="w-4 h-4 accent-green-500"
+              />
+              <span className="text-xs text-green-300 ml-2">
+                {config.connectorsEnabled !== false ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Arc Mode</label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={config.connectorArcMode === true}
+                onChange={(e) => updateConfig('connectorArcMode', e.target.checked)}
+                className="w-4 h-4 accent-green-500"
+                disabled={config.connectorsEnabled === false}
+              />
+              <span className="text-xs text-green-300 ml-2">
+                {config.connectorArcMode === true ? 'Arcs' : 'Lines'}
+              </span>
+            </div>
+          </div>
+
+          {config.connectorArcMode && (
+            <div>
+              <label className="text-xs block mb-1 text-green-400">Arc Direction</label>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={config.connectorArcOutward !== false}
+                  onChange={(e) => updateConfig('connectorArcOutward', e.target.checked)}
+                  className="w-4 h-4 accent-green-500"
+                  disabled={config.connectorsEnabled === false}
+                />
+                <span className="text-xs text-green-300 ml-2">
+                  {config.connectorArcOutward !== false ? 'Outward' : 'Inward'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Min Distance</label>
+            <input
+              type="range"
+              min="0"
+              max="300"
+              value={config.connectorMinDistance || 100}
+              onChange={(e) => updateConfig('connectorMinDistance', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{config.connectorMinDistance || 100}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Max Distance</label>
+            <input
+              type="range"
+              min="0"
+              max="500"
+              value={config.connectorMaxDistance || 200}
+              onChange={(e) => updateConfig('connectorMaxDistance', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{config.connectorMaxDistance || 200}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Connector Color</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={config.connectorColor || '#ffffff'}
+                onChange={(e) => updateConfig('connectorColor', e.target.value)}
+                className="w-10 h-8 rounded border border-gray-500 cursor-pointer"
+                disabled={config.connectorsEnabled === false}
+              />
+              <input
+                type="text"
+                value={config.connectorColor || '#ffffff'}
+                onChange={(e) => updateConfig('connectorColor', e.target.value)}
+                className="flex-1 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                placeholder="#ffffff"
+                disabled={config.connectorsEnabled === false}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Line Width</label>
+            <input
+              type="range"
+              min="0.5"
+              max="5"
+              step="0.1"
+              value={config.connectorWidth || 1}
+              onChange={(e) => updateConfig('connectorWidth', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{(config.connectorWidth || 1).toFixed(1)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Opacity</label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.connectorOpacity || 0.3}
+              onChange={(e) => updateConfig('connectorOpacity', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{(config.connectorOpacity || 0.3).toFixed(2)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Max Per Particle</label>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={config.connectorMaxPerParticle || 5}
+              onChange={(e) => updateConfig('connectorMaxPerParticle', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{config.connectorMaxPerParticle || 5}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Max Total Connectors</label>
+            <input
+              type="range"
+              min="10"
+              max="500"
+              step="10"
+              value={config.connectorMaxTotal || 100}
+              onChange={(e) => updateConfig('connectorMaxTotal', e.target.value)}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">{config.connectorMaxTotal || 100}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Show Dots</label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={config.connectorShowDots === true}
+                onChange={(e) => updateConfig('connectorShowDots', e.target.checked)}
+                className="w-4 h-4 accent-green-500"
+                disabled={!config.connectorsEnabled}
+              />
+              <span className="text-xs text-green-300 ml-2">
+                {config.connectorShowDots === true ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Dot Size</label>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              step="0.5"
+              value={Number(config.connectorDotSize) || 3}
+              onChange={(e) => updateConfig('connectorDotSize', Number(e.target.value))}
+              className="w-full accent-green-500"
+              disabled={!config.connectorsEnabled || !config.connectorShowDots}
+            />
+            <span className="text-xs text-green-300">{(Number(config.connectorDotSize) || 3).toFixed(1)}</span>
           </div>
         </div>
       </div>
