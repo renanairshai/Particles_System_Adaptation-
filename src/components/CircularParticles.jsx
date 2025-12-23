@@ -40,7 +40,8 @@ const CircularParticles = () => {
     bgParticleOpacity: 0.43,
     particleShape: 'circle',
     autoRotateShapes: true,
-    glowRadius: 1
+    glowRadius: 1,
+    trailType: 'echo'
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -74,14 +75,142 @@ const CircularParticles = () => {
         { stop1: 0.1008174386920981, stop2: 0.3832879200726612, stop3: 0.6584922797456857 },
         { stop1: 0, stop2: 0.2710997442455243, stop3: 0.7148337595907929 }
       ]
+    },
+    'Color Set B': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09533898305084745, color: '#ffffff', opacity: 1 },
+          { position: 0.1917372881355932, color: '#050a2e', opacity: 1 },
+          { position: 0.388771186440678, color: '#004466', opacity: 0.7 },
+          { position: 0.670299727520436, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.11970338983050847, color: '#ffffff', opacity: 1 },
+          { position: 0.13029661016949154, color: '#0d3510', opacity: 1 },
+          { position: 0.30431425976385107, color: '#556812', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.11652542372881355, color: '#ffffff', opacity: 1 },
+          { position: 0.1451271186440678, color: '#ffa202', opacity: 1 },
+          { position: 0.6612170753860127, color: '#f4ff5c', opacity: 1 },
+          { position: 1, color: '#FFFF99', opacity: 0 }
+        ],
+        [
+          { position: 0.09957627118644068, color: '#ffffff', opacity: 1 },
+          { position: 0.11546610169491525, color: '#0d351c', opacity: 1 },
+          { position: 0.3707627118644068, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0.11122881355932203, color: '#ffffff', opacity: 1 },
+          { position: 0.11758474576271187, color: '#992900', opacity: 1 },
+          { position: 0.6739327883742052, color: '#ffe747', opacity: 1 },
+          { position: 1, color: '#fffef5', opacity: 0 }
+        ],
+        [
+          { position: 0.09533898305084745, color: '#ffffff', opacity: 1 },
+          { position: 0.10063559322033898, color: '#2e2905', opacity: 1 },
+          { position: 0.2913135593220339, color: '#8eecd9', opacity: 0.7 },
+          { position: 0.5367847411444142, color: '#B0E0E6', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#ffffff', opacity: 1 },
+          { position: 0.10805084745762712, color: '#0b4461', opacity: 1 },
+          { position: 0.3832879200726612, color: '#ffccf4', opacity: 1 },
+          { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#ffffff', opacity: 1 },
+          { position: 0.1016949152542373, color: '#610000', opacity: 1 },
+          { position: 0.2849576271186441, color: '#ff7300', opacity: 1 },
+          { position: 0.8792372881355932, color: '#FFFF00', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set C': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.06991525423728813, color: '#800033', opacity: 1 },
+          { position: 0.15360169491525424, color: '#781b79', opacity: 1 },
+          { position: 0.18008474576271186, color: '#3e51b1', opacity: 0.7 },
+          { position: 0.2796610169491525, color: '#a6ddd7', opacity: 1 },
+          { position: 0.6875, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.048728813559322036, color: '#ffdbbd', opacity: 1 },
+          { position: 0.10699152542372882, color: '#c1e1c4', opacity: 1 },
+          { position: 0.30431425976385107, color: '#e1f5f2', opacity: 1 },
+          { position: 1, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.02754237288135593, color: '#ff99e9', opacity: 1 },
+          { position: 0.1260593220338983, color: '#ffd1b8', opacity: 1 },
+          { position: 0.3813559322033898, color: '#ffa55c', opacity: 1 },
+          { position: 0.5540254237288136, color: '#f8ff94', opacity: 1 },
+          { position: 1, color: '#FFFF99', opacity: 0 }
+        ],
+        [
+          { position: 0.04025423728813559, color: '#ff5c5c', opacity: 1 },
+          { position: 0.1461864406779661, color: '#6ba064', opacity: 1 },
+          { position: 0.4385593220338983, color: '#ffc58f', opacity: 1 },
+          { position: 1, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0.0625, color: '#9e0028', opacity: 1 },
+          { position: 0.11758474576271187, color: '#498cb6', opacity: 1 },
+          { position: 0.3146186440677966, color: '#94c76b', opacity: 1 },
+          { position: 0.6573093220338984, color: '#fff3a3', opacity: 1 },
+          { position: 1, color: '#fffef5', opacity: 0 }
+        ],
+        [
+          { position: 0.020127118644067795, color: '#14ff6e', opacity: 1 },
+          { position: 0.10063559322033898, color: '#2e2905', opacity: 1 },
+          { position: 0.2913135593220339, color: '#8eecd9', opacity: 0.7 },
+          { position: 0.5367847411444142, color: '#B0E0E6', opacity: 0 }
+        ],
+        [
+          { position: 0.015889830508474576, color: '#9effb1', opacity: 1 },
+          { position: 0.11175847457627118, color: '#0b4461', opacity: 1 },
+          { position: 0.2076271186440678, color: '#ff7575', opacity: 1 },
+          { position: 0.3400423728813559, color: '#ffccd9', opacity: 0 }
+        ],
+        [
+          { position: 0.01059322033898305, color: '#ff6161', opacity: 1 },
+          { position: 0.1016949152542373, color: '#610000', opacity: 1 },
+          { position: 0.2849576271186441, color: '#ff7300', opacity: 1 },
+          { position: 0.8792372881355932, color: '#FFFF00', opacity: 0 }
+        ]
+      ]
     }
   };
 
   const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
   const [showGradientEditor, setShowGradientEditor] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
-  const convertToNewFormat = (colorPalette, gradientStops) => {
+  const convertToNewFormat = (colorSet) => {
+    // Check if it's already in new format (has gradientStops as array of arrays of stop objects)
+    if (colorSet.gradientStops && 
+        Array.isArray(colorSet.gradientStops) && 
+        colorSet.gradientStops.length > 0 &&
+        Array.isArray(colorSet.gradientStops[0]) && 
+        colorSet.gradientStops[0].length > 0 &&
+        typeof colorSet.gradientStops[0][0] === 'object' &&
+        'position' in colorSet.gradientStops[0][0] &&
+        'color' in colorSet.gradientStops[0][0]) {
+      // Already in new format, just return it (make a deep copy to avoid mutations)
+      return colorSet.gradientStops.map(gradient => 
+        gradient.map(stop => ({ ...stop }))
+      );
+    }
+    
+    // Old format: convert colorPalette + gradientStops to new format
+    const colorPalette = colorSet.colorPalette;
+    const gradientStops = colorSet.gradientStops;
     return colorPalette.map((colors, index) => {
       const stops = gradientStops[index];
       return [
@@ -95,13 +224,13 @@ const CircularParticles = () => {
   // State for editable gradient values (new format: array of stops with position, color, opacity)
   const [editableGradients, setEditableGradients] = useState(() => {
     const currentSet = colorSets[selectedColorSet];
-    return convertToNewFormat(currentSet.colorPalette, currentSet.gradientStops);
+    return convertToNewFormat(currentSet);
   });
   
   // Update editable gradients when color set changes
   useEffect(() => {
     const currentSet = colorSets[selectedColorSet];
-    setEditableGradients(convertToNewFormat(currentSet.colorPalette, currentSet.gradientStops));
+    setEditableGradients(convertToNewFormat(currentSet));
   }, [selectedColorSet]);
 
   useEffect(() => {
@@ -320,6 +449,341 @@ const CircularParticles = () => {
       const toStops = gradientStopsArray[toIndex];
       const interpolated = interpolateStops(fromStops, toStops, clampedT);
       return createShapeCache(interpolated, shape);
+    };
+
+    // Trail rendering functions
+    const drawTrail = (ctx, positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, rotationSpeed, particleShape) => {
+      if (cfg.motionBlur <= 0 || positionHistory.length === 0) return;
+
+      const trailType = cfg.trailType || 'echo';
+      const maxDistance = Math.max(canvas.width, canvas.height) * 0.5; // Max distance for valid trail segments
+      
+      switch (trailType) {
+        case 'echo':
+          drawEchoTrail(ctx, positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, rotationSpeed, particleShape);
+          break;
+        case 'streak':
+          drawStreakTrail(ctx, positionHistory, cfg, finalOpacity, maxDistance);
+          break;
+        case 'ribbon':
+          drawRibbonTrail(ctx, positionHistory, cfg, finalOpacity, maxDistance);
+          break;
+        case 'sparkle':
+          drawSparkleTrail(ctx, positionHistory, cfg, finalOpacity, cache);
+          break;
+        case 'glow':
+          drawGlowTrail(ctx, positionHistory, cfg, finalOpacity, maxDistance);
+          break;
+        case 'fade':
+          drawFadeTrail(ctx, positionHistory, cfg, finalOpacity, maxDistance);
+          break;
+        default:
+          drawEchoTrail(ctx, positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, rotationSpeed, particleShape);
+      }
+    };
+
+    // Echo trail: Faded copies of previous positions
+    const drawEchoTrail = (ctx, positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, rotationSpeed, particleShape) => {
+      for (let i = 0; i < positionHistory.length; i++) {
+        const pos = positionHistory[i];
+        const fadeAmount = (i + 1) / positionHistory.length;
+        const echoOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
+        
+        const size = pos.radius * 2;
+        ctx.globalAlpha = echoOpacity;
+        if (shouldRotate) {
+          ctx.save();
+          ctx.translate(pos.x, pos.y);
+          const trailRotation = particleShape === 'triangle' 
+            ? rotationToUse 
+            : rotationToUse - rotationSpeed * (positionHistory.length - i);
+          ctx.rotate(trailRotation);
+          ctx.drawImage(cache, -size/2, -size/2, size, size);
+          ctx.restore();
+        } else {
+          ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
+        }
+      }
+    };
+
+    // Streak trail: Continuous line connecting positions
+    const drawStreakTrail = (ctx, positionHistory, cfg, finalOpacity, maxDistance) => {
+      if (positionHistory.length < 2) return;
+      
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      // Draw lines with increasing opacity
+      for (let i = 0; i < positionHistory.length - 1; i++) {
+        const pos1 = positionHistory[i];
+        const pos2 = positionHistory[i + 1];
+        
+        // Check distance - skip if positions are too far apart (likely a wrap/jump)
+        const dx = pos2.x - pos1.x;
+        const dy = pos2.y - pos1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > maxDistance) continue; // Skip drawing this segment
+        
+        const fadeAmount = (i + 1) / positionHistory.length;
+        const lineOpacity = Math.min(1, fadeAmount * cfg.motionBlur * finalOpacity * 2);
+        const lineWidth = Math.max(2, pos1.radius * 0.5 * fadeAmount);
+        
+        // Use a color that will be visible
+        ctx.strokeStyle = `rgba(200, 200, 255, ${lineOpacity})`;
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(pos1.x, pos1.y);
+        ctx.lineTo(pos2.x, pos2.y);
+        ctx.stroke();
+      }
+      
+      ctx.restore();
+    };
+
+    // Ribbon trail: Smooth curved path with varying width
+    const drawRibbonTrail = (ctx, positionHistory, cfg, finalOpacity, maxDistance) => {
+      if (positionHistory.length < 2) return;
+      
+      ctx.save();
+      
+      // Draw ribbon segments
+      for (let i = 0; i < positionHistory.length - 1; i++) {
+        const pos1 = positionHistory[i];
+        const pos2 = positionHistory[i + 1];
+        
+        // Calculate perpendicular vector for ribbon width
+        const dx = pos2.x - pos1.x;
+        const dy = pos2.y - pos1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // Skip if positions are too close or too far apart
+        if (dist < 0.1 || dist > maxDistance) continue;
+        
+        const fadeAmount = (i + 1) / positionHistory.length;
+        const ribbonOpacity = Math.min(1, fadeAmount * cfg.motionBlur * finalOpacity * 2);
+        const width = Math.max(3, pos1.radius * 0.6 * fadeAmount);
+        
+        // Use a visible color
+        ctx.fillStyle = `rgba(200, 200, 255, ${ribbonOpacity})`;
+        ctx.globalAlpha = 1;
+        
+        const perpX = -dy / dist;
+        const perpY = dx / dist;
+        
+        // Draw ribbon segment as a quad
+        ctx.beginPath();
+        ctx.moveTo(pos1.x + perpX * width, pos1.y + perpY * width);
+        ctx.lineTo(pos1.x - perpX * width, pos1.y - perpY * width);
+        ctx.lineTo(pos2.x - perpX * width, pos2.y - perpY * width);
+        ctx.lineTo(pos2.x + perpX * width, pos2.y + perpY * width);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      ctx.restore();
+    };
+
+    // Sparkle trail: Small particles scattered along the trail
+    const drawSparkleTrail = (ctx, positionHistory, cfg, finalOpacity, cache) => {
+      if (positionHistory.length === 0) return;
+      
+      ctx.save();
+      const sampleInterval = Math.max(1, Math.floor(positionHistory.length / 10));
+      
+      for (let i = 0; i < positionHistory.length; i += sampleInterval) {
+        const pos = positionHistory[i];
+        const fadeAmount = (i + 1) / positionHistory.length;
+        const sparkleOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
+        const sparkleSize = Math.max(2, pos.radius * 0.3 * fadeAmount);
+        
+        ctx.globalAlpha = sparkleOpacity;
+        ctx.drawImage(cache, pos.x - sparkleSize/2, pos.y - sparkleSize/2, sparkleSize, sparkleSize);
+      }
+      
+      ctx.restore();
+    };
+
+    // Glow trail: Gradient glow along the path
+    const drawGlowTrail = (ctx, positionHistory, cfg, finalOpacity, maxDistance) => {
+      if (positionHistory.length < 2) return;
+      
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      // Filter out positions that are too far apart to avoid cross-screen lines
+      const filteredHistory = [];
+      for (let i = 0; i < positionHistory.length; i++) {
+        if (i === 0) {
+          filteredHistory.push(positionHistory[i]);
+        } else {
+          const prev = filteredHistory[filteredHistory.length - 1];
+          const curr = positionHistory[i];
+          const dx = curr.x - prev.x;
+          const dy = curr.y - prev.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist <= maxDistance) {
+            filteredHistory.push(curr);
+          } else {
+            // If distance is too large, draw current segment and start a new one
+            if (filteredHistory.length > 1) {
+              // Draw current segment before starting new one
+              for (let layer = 2; layer >= 0; layer--) {
+                const layerWidth = (layer + 1) * 4;
+                const layerOpacity = Math.min(1, (1 - layer * 0.25) * cfg.motionBlur * finalOpacity * 1.5);
+                
+                ctx.strokeStyle = `rgba(200, 220, 255, ${layerOpacity})`;
+                ctx.lineWidth = layerWidth;
+                ctx.globalAlpha = 1;
+                
+                ctx.beginPath();
+                for (let j = 0; j < filteredHistory.length; j++) {
+                  const pos = filteredHistory[j];
+                  if (j === 0) {
+                    ctx.moveTo(pos.x, pos.y);
+                  } else {
+                    ctx.lineTo(pos.x, pos.y);
+                  }
+                }
+                ctx.stroke();
+              }
+              // Start new segment
+              filteredHistory.length = 0;
+              filteredHistory.push(curr);
+            } else {
+              filteredHistory[0] = curr;
+            }
+          }
+        }
+      }
+      
+      // Draw remaining segment
+      if (filteredHistory.length > 1) {
+        for (let layer = 2; layer >= 0; layer--) {
+          const layerWidth = (layer + 1) * 4;
+          const layerOpacity = Math.min(1, (1 - layer * 0.25) * cfg.motionBlur * finalOpacity * 1.5);
+          
+          ctx.strokeStyle = `rgba(200, 220, 255, ${layerOpacity})`;
+          ctx.lineWidth = layerWidth;
+          ctx.globalAlpha = 1;
+          
+          ctx.beginPath();
+          for (let j = 0; j < filteredHistory.length; j++) {
+            const pos = filteredHistory[j];
+            if (j === 0) {
+              ctx.moveTo(pos.x, pos.y);
+            } else {
+              ctx.lineTo(pos.x, pos.y);
+            }
+          }
+          ctx.stroke();
+        }
+      }
+      
+      ctx.restore();
+    };
+
+    // Fade trail: Single smooth fading tail
+    const drawFadeTrail = (ctx, positionHistory, cfg, finalOpacity, maxDistance) => {
+      if (positionHistory.length < 2) return;
+      
+      ctx.save();
+      
+      // Filter out positions that are too far apart
+      const filteredHistory = [];
+      for (let i = 0; i < positionHistory.length; i++) {
+        if (i === 0) {
+          filteredHistory.push(positionHistory[i]);
+        } else {
+          const prev = filteredHistory[filteredHistory.length - 1];
+          const curr = positionHistory[i];
+          const dx = curr.x - prev.x;
+          const dy = curr.y - prev.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist <= maxDistance) {
+            filteredHistory.push(curr);
+          } else {
+            // If distance is too large, draw current segment and start a new one
+            if (filteredHistory.length > 1) {
+              // Draw current segment
+              const firstPos = filteredHistory[0];
+              const lastPos = filteredHistory[filteredHistory.length - 1];
+              const gradient = ctx.createLinearGradient(
+                firstPos.x, firstPos.y,
+                lastPos.x, lastPos.y
+              );
+              
+              for (let j = 0; j < filteredHistory.length; j++) {
+                const fadeAmount = (j + 1) / filteredHistory.length;
+                const stopOpacity = Math.min(1, fadeAmount * cfg.motionBlur * finalOpacity * 2);
+                const stopPos = j / Math.max(1, filteredHistory.length - 1);
+                gradient.addColorStop(stopPos, `rgba(200, 220, 255, ${stopOpacity})`);
+              }
+              
+              ctx.strokeStyle = gradient;
+              ctx.lineWidth = Math.max(3, filteredHistory[0].radius * 0.8);
+              ctx.lineCap = 'round';
+              ctx.lineJoin = 'round';
+              ctx.globalAlpha = 1;
+              
+              ctx.beginPath();
+              for (let j = 0; j < filteredHistory.length; j++) {
+                const pos = filteredHistory[j];
+                if (j === 0) {
+                  ctx.moveTo(pos.x, pos.y);
+                } else {
+                  ctx.lineTo(pos.x, pos.y);
+                }
+              }
+              ctx.stroke();
+              
+              // Start new segment
+              filteredHistory.length = 0;
+              filteredHistory.push(curr);
+            } else {
+              filteredHistory[0] = curr;
+            }
+          }
+        }
+      }
+      
+      // Draw remaining segment
+      if (filteredHistory.length > 1) {
+        const firstPos = filteredHistory[0];
+        const lastPos = filteredHistory[filteredHistory.length - 1];
+        const gradient = ctx.createLinearGradient(
+          firstPos.x, firstPos.y,
+          lastPos.x, lastPos.y
+        );
+        
+        for (let i = 0; i < filteredHistory.length; i++) {
+          const fadeAmount = (i + 1) / filteredHistory.length;
+          const stopOpacity = Math.min(1, fadeAmount * cfg.motionBlur * finalOpacity * 2);
+          const stopPos = i / Math.max(1, filteredHistory.length - 1);
+          gradient.addColorStop(stopPos, `rgba(200, 220, 255, ${stopOpacity})`);
+        }
+        
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = Math.max(3, filteredHistory[0].radius * 0.8);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = 1;
+        
+        ctx.beginPath();
+        for (let i = 0; i < filteredHistory.length; i++) {
+          const pos = filteredHistory[i];
+          if (i === 0) {
+            ctx.moveTo(pos.x, pos.y);
+          } else {
+            ctx.lineTo(pos.x, pos.y);
+          }
+        }
+        ctx.stroke();
+      }
+      
+      ctx.restore();
     };
 
     class Particle {
@@ -728,29 +1192,8 @@ const CircularParticles = () => {
         const shouldRotate = cfg.autoRotateShapes && cfg.particleShape !== 'circle';
         const rotationToUse = cfg.particleShape === 'triangle' ? this.movementAngle : this.rotation;
         
-        // Draw echo/ghost trails using cached image
-        if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
-          for (let i = 0; i < this.positionHistory.length; i++) {
-            const pos = this.positionHistory[i];
-            const fadeAmount = (i + 1) / this.positionHistory.length;
-            const echoOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
-            
-            const size = pos.radius * 2;
-            ctx.globalAlpha = echoOpacity;
-            if (shouldRotate) {
-              ctx.save();
-              ctx.translate(pos.x, pos.y);
-              const trailRotation = cfg.particleShape === 'triangle' 
-                ? rotationToUse 
-                : rotationToUse - this.rotationSpeed * (this.positionHistory.length - i);
-              ctx.rotate(trailRotation);
-              ctx.drawImage(cache, -size/2, -size/2, size, size);
-              ctx.restore();
-            } else {
-              ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
-            }
-          }
-        }
+        // Draw trail effect
+        drawTrail(ctx, this.positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, this.rotationSpeed, cfg.particleShape);
         
         // Draw main particle
         const size = this.currentRadius * 2;
@@ -949,29 +1392,8 @@ const CircularParticles = () => {
         const shouldRotate = cfg.autoRotateShapes && cfg.particleShape !== 'circle';
         const rotationToUse = cfg.particleShape === 'triangle' ? this.movementAngle : this.rotation;
         
-        // Draw echo/ghost trails using cached image
-        if (cfg.motionBlur > 0 && this.positionHistory.length > 0) {
-          for (let i = 0; i < this.positionHistory.length; i++) {
-            const pos = this.positionHistory[i];
-            const fadeAmount = (i + 1) / this.positionHistory.length;
-            const echoOpacity = fadeAmount * cfg.motionBlur * finalOpacity;
-            
-            const size = pos.radius * 2;
-            ctx.globalAlpha = echoOpacity;
-            if (shouldRotate) {
-              ctx.save();
-              ctx.translate(pos.x, pos.y);
-              const trailRotation = cfg.particleShape === 'triangle' 
-                ? rotationToUse 
-                : rotationToUse - this.rotationSpeed * (this.positionHistory.length - i);
-              ctx.rotate(trailRotation);
-              ctx.drawImage(cache, -size/2, -size/2, size, size);
-              ctx.restore();
-            } else {
-              ctx.drawImage(cache, pos.x - size/2, pos.y - size/2, size, size);
-            }
-          }
-        }
+        // Draw trail effect
+        drawTrail(ctx, this.positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, this.rotationSpeed, cfg.particleShape);
         
         // Draw main particle using cached image
         const size = this.currentRadius * 2;
@@ -1245,7 +1667,7 @@ const CircularParticles = () => {
         lastConfigRef.current = { ...cfg };
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         timeRef.current++;
@@ -1308,7 +1730,7 @@ const CircularParticles = () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet, editableGradients]); // Re-run when color set or gradients change
+  }, [selectedColorSet, editableGradients, backgroundColor]); // Re-run when color set, gradients, or background color change
 
   // Update state refs when state changes
   useEffect(() => {
@@ -1320,7 +1742,8 @@ const CircularParticles = () => {
   }, [divisionLevel]);
 
   const updateConfig = (key, value) => {
-    const newValue = parseFloat(value);
+    // Handle string values (like trailType) vs numeric values
+    const newValue = key === 'trailType' ? value : parseFloat(value);
     // Update ref immediately for smooth animation
     if (configRef.current) {
       configRef.current = { ...configRef.current, [key]: newValue };
@@ -1435,6 +1858,31 @@ const CircularParticles = () => {
     });
   };
 
+  // Add a new gradient to the color set
+  const addGradient = () => {
+    setEditableGradients(prev => {
+      // Create a new gradient with default stops (similar to first gradient or a simple default)
+      const defaultGradient = prev.length > 0 
+        ? prev[0].map(stop => ({ ...stop })) // Copy first gradient as template
+        : [
+            { position: 0, color: '#ffffff', opacity: 1 },
+            { position: 0.5, color: '#000000', opacity: 1 },
+            { position: 1, color: '#000000', opacity: 0 }
+          ];
+      return [...prev, defaultGradient];
+    });
+  };
+
+  // Remove a gradient from the color set (must have at least 1 gradient)
+  const removeGradient = (gradientIndex) => {
+    setEditableGradients(prev => {
+      if (prev.length > 1) {
+        return prev.filter((_, idx) => idx !== gradientIndex);
+      }
+      return prev; // Keep at least 1 gradient
+    });
+  };
+
   // Copy only gradient parameters
   const copyGradientParams = () => {
     navigator.clipboard.writeText(JSON.stringify(editableGradients, null, 2)).then(() => {
@@ -1443,7 +1891,7 @@ const CircularParticles = () => {
   };
 
   return (
-    <div className="w-full h-screen bg-white flex flex-col">
+    <div className="w-full h-screen flex flex-col" style={{ backgroundColor }}>
       <div className="bg-gray-900 text-white pt-4 pb-4 px-4 overflow-y-auto max-h-[246px]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">3D Sphere Particle System</h2>
@@ -1515,12 +1963,36 @@ const CircularParticles = () => {
                 Copy Gradient Params
               </button>
             )}
+            <div className="flex items-center gap-2">
+              <label className="text-xs">BG Color:</label>
+              <input
+                type="color"
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                className="w-10 h-8 rounded border border-gray-500 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                placeholder="#ffffff"
+              />
+            </div>
           </div>
         </div>
         
         {showGradientEditor && (
           <div className="mb-4 p-4 bg-gray-800 rounded border border-gray-700">
-            <h3 className="text-lg font-semibold mb-3 text-green-400">Gradient Editor</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-green-400">Gradient Editor</h3>
+              <button
+                onClick={addGradient}
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+              >
+                + Add Gradient
+              </button>
+            </div>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {editableGradients.map((stops, gradientIndex) => {
                 const sortedStops = [...stops].sort((a, b) => a.position - b.position);
@@ -1534,7 +2006,18 @@ const CircularParticles = () => {
                 return (
                   <div key={gradientIndex} className="p-3 bg-gray-700 rounded border border-gray-600">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-white">Gradient {gradientIndex + 1}</h4>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-medium text-white">Gradient {gradientIndex + 1}</h4>
+                        {editableGradients.length > 1 && (
+                          <button
+                            onClick={() => removeGradient(gradientIndex)}
+                            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                            title="Remove this gradient"
+                          >
+                            × Remove Gradient
+                          </button>
+                        )}
+                      </div>
                       <button
                         onClick={() => addGradientStop(gradientIndex)}
                         className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
@@ -1945,7 +2428,23 @@ const CircularParticles = () => {
           </div>
 
           <div>
-            <label className="text-xs block mb-1 text-orange-400">Echo Amount</label>
+            <label className="text-xs block mb-1 text-orange-400">Trail Type</label>
+            <select
+              value={config.trailType}
+              onChange={(e) => updateConfig('trailType', e.target.value)}
+              className="w-full bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+            >
+              <option value="echo">Echo</option>
+              <option value="streak">Streak</option>
+              <option value="ribbon">Ribbon</option>
+              <option value="sparkle">Sparkle</option>
+              <option value="glow">Glow</option>
+              <option value="fade">Fade</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-orange-400">Trail Amount</label>
             <input
               type="range"
               min="0"
@@ -1959,7 +2458,7 @@ const CircularParticles = () => {
           </div>
 
           <div>
-            <label className="text-xs block mb-1 text-orange-400">Echo Length (frames)</label>
+            <label className="text-xs block mb-1 text-orange-400">Trail Length (frames)</label>
             <input
               type="range"
               min="0"
