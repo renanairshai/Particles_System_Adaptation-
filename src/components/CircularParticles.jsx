@@ -1203,6 +1203,15 @@ const CircularParticles = () => {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [selectedPreset, setSelectedPreset] = useState('Default');
   const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [enabledPeriods, setEnabledPeriods] = useState({
+    '1': true,
+    '2': true,
+    '3': true,
+    '4': true,
+    '5': true,
+    '6': true
+  });
+  const [interpolateMode, setInterpolateMode] = useState(true);
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
@@ -3497,6 +3506,148 @@ const CircularParticles = () => {
     setSelectedPreset(presetName);
   };
 
+  // Helper function to interpolate between two hex colors
+  const interpolateColor = (color1, color2, factor) => {
+    // Convert hex to RGB
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    };
+
+    // Convert RGB to hex
+    const rgbToHex = (r, g, b) => {
+      return "#" + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      }).join("");
+    };
+
+    const rgb1 = hexToRgb(color1);
+    const rgb2 = hexToRgb(color2);
+    
+    if (!rgb1 || !rgb2) return color1; // Fallback if color parsing fails
+
+    const r = rgb1.r + (rgb2.r - rgb1.r) * factor;
+    const g = rgb1.g + (rgb2.g - rgb1.g) * factor;
+    const b = rgb1.b + (rgb2.b - rgb1.b) * factor;
+
+    return rgbToHex(r, g, b);
+  };
+
+  // Interpolate between two period configurations based on index position
+  const interpolatePeriodConfigByIndex = (indexValue) => {
+    const enabled = getEnabledPeriods();
+    if (enabled.length === 0) return;
+    
+    const index = parseFloat(indexValue);
+    
+    // Clamp to valid range
+    if (index < 0) return;
+    if (index > enabled.length - 1) return;
+    
+    const lowerIndex = Math.floor(index);
+    const upperIndex = Math.ceil(index);
+    const factor = index - lowerIndex; // 0 to 1
+    
+    // If exactly on a period (integer index), use that period's config directly
+    if (factor === 0 || lowerIndex === upperIndex) {
+      const periodKey = enabled[lowerIndex];
+      if (periodKey) {
+        handlePeriodChange(periodKey);
+      }
+      return;
+    }
+    
+    const lowerPeriodKey = enabled[lowerIndex];
+    const upperPeriodKey = enabled[upperIndex];
+    
+    if (!lowerPeriodKey || !upperPeriodKey) return;
+    
+    const lowerPeriodData = periodPresets[lowerPeriodKey];
+    const upperPeriodData = periodPresets[upperPeriodKey];
+    
+    if (!lowerPeriodData || !upperPeriodData) return;
+    
+    // Interpolate config values
+    const lowerConfig = lowerPeriodData.config;
+    const upperConfig = upperPeriodData.config;
+    const interpolatedConfig = {};
+    
+    // Interpolate all numeric values
+    Object.keys(lowerConfig).forEach(key => {
+      const lowerVal = lowerConfig[key];
+      const upperVal = upperConfig[key];
+      
+      if (typeof lowerVal === 'number' && typeof upperVal === 'number') {
+        // Linear interpolation for numbers
+        interpolatedConfig[key] = lowerVal + (upperVal - lowerVal) * factor;
+      } else if (typeof lowerVal === 'boolean' && typeof upperVal === 'boolean') {
+        // Use threshold: >= 0.5 use upper, < 0.5 use lower
+        interpolatedConfig[key] = factor >= 0.5 ? upperVal : lowerVal;
+      } else {
+        // For strings, null, or other types, use lower period's value
+        interpolatedConfig[key] = lowerVal;
+      }
+    });
+    
+    // Update config state
+    setConfig(interpolatedConfig);
+    
+    // Update config ref immediately for smooth animation
+    if (configRef.current) {
+      configRef.current = { ...interpolatedConfig };
+    }
+    
+    // Use lower period's color set (interpolating color sets would be complex)
+    if (lowerPeriodData.selectedColorSet) {
+      setSelectedColorSet(lowerPeriodData.selectedColorSet);
+    }
+    
+    // Interpolate background color
+    const interpolatedBgColor = interpolateColor(
+      lowerPeriodData.backgroundColor,
+      upperPeriodData.backgroundColor,
+      factor
+    );
+    setBackgroundColor(interpolatedBgColor);
+    
+    // Update selected period (store as decimal index for display)
+    setSelectedPeriod(indexValue.toString());
+  };
+
+  // Get enabled periods in order
+  const getEnabledPeriods = () => {
+    return Object.keys(periodPresets).filter(key => enabledPeriods[key]);
+  };
+
+  // Toggle period enabled state
+  const togglePeriodEnabled = (periodKey) => {
+    setEnabledPeriods(prev => {
+      const newEnabled = { ...prev, [periodKey]: !prev[periodKey] };
+      
+      // If disabling the currently selected period, switch to first enabled period
+      const enabled = Object.keys(periodPresets).filter(key => newEnabled[key]);
+      
+      // Check if current selection would be invalid
+      const currentIsDecimal = selectedPeriod && !isNaN(parseFloat(selectedPeriod)) && parseFloat(selectedPeriod) >= 0;
+      const currentIsPeriodKey = selectedPeriod && enabled.includes(selectedPeriod);
+      
+      if (!newEnabled[periodKey] && (selectedPeriod === periodKey || (!currentIsPeriodKey && !currentIsDecimal))) {
+        if (enabled.length > 0) {
+          handlePeriodChange(enabled[0]);
+        } else {
+          setSelectedPeriod(null);
+        }
+      }
+      
+      return newEnabled;
+    });
+  };
+
   const handlePeriodChange = (periodName) => {
     const period = periodPresets[periodName];
     if (!period) return;
@@ -3780,6 +3931,150 @@ const CircularParticles = () => {
                 className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
                 placeholder="#ffffff"
               />
+            </div>
+          </div>
+        </div>
+        
+        {/* Period Slider */}
+        <div className="mb-4 py-4 px-4 bg-gray-800 rounded border border-gray-700">
+          {/* Checkboxes for enabling/disabling periods */}
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="text-xs font-medium text-gray-300">Enable periods:</label>
+            {Object.keys(periodPresets).map((periodKey) => (
+              <label key={periodKey} className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={enabledPeriods[periodKey]}
+                  onChange={() => togglePeriodEnabled(periodKey)}
+                  className="w-4 h-4 accent-blue-500 cursor-pointer"
+                />
+                <span className="text-xs text-white">{periodKey}</span>
+              </label>
+            ))}
+            <div className="ml-auto flex items-center gap-2">
+              <label className="text-xs font-medium text-gray-300">Interpolate:</label>
+              <button
+                onClick={() => {
+                  const newMode = !interpolateMode;
+                  setInterpolateMode(newMode);
+                  
+                  // If switching to snap mode, snap to nearest period
+                  if (!newMode && selectedPeriod) {
+                    const enabled = getEnabledPeriods();
+                    if (enabled.length > 0) {
+                      const parsed = parseFloat(selectedPeriod);
+                      if (!isNaN(parsed) && parsed >= 0 && parsed < enabled.length) {
+                        // It's a decimal index, snap to nearest
+                        const roundedIndex = Math.round(parsed);
+                        const targetPeriod = enabled[roundedIndex];
+                        if (targetPeriod) {
+                          handlePeriodChange(targetPeriod);
+                        }
+                      } else if (enabled.includes(selectedPeriod)) {
+                        // Already a period key, keep it
+                        handlePeriodChange(selectedPeriod);
+                      } else {
+                        // Invalid, use first enabled
+                        handlePeriodChange(enabled[0]);
+                      }
+                    }
+                  }
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  interpolateMode ? 'bg-blue-500' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    interpolateMode ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-white whitespace-nowrap">Period:</label>
+            <div className="flex-1 flex items-center gap-4">
+              {(() => {
+                const enabled = getEnabledPeriods();
+                if (enabled.length === 0) {
+                  return (
+                    <div className="flex-1 text-center text-gray-400 text-sm py-2">
+                      No periods enabled
+                    </div>
+                  );
+                }
+                
+                // Get current index value (can be decimal for interpolation)
+                let currentIndexValue = 0;
+                if (selectedPeriod) {
+                  // Check if selectedPeriod is a decimal index string
+                  const parsed = parseFloat(selectedPeriod);
+                  if (!isNaN(parsed) && parsed >= 0 && parsed < enabled.length) {
+                    currentIndexValue = parsed;
+                  } else if (enabled.includes(selectedPeriod)) {
+                    // It's a period key, get its index
+                    currentIndexValue = enabled.indexOf(selectedPeriod);
+                  }
+                }
+                
+                // Calculate progress based on index position (equal segments)
+                const progress = enabled.length > 1
+                  ? (currentIndexValue / (enabled.length - 1)) * 100
+                  : 0;
+                
+                // Determine display value
+                const lowerIndex = Math.floor(currentIndexValue);
+                const upperIndex = Math.ceil(currentIndexValue);
+                const factor = currentIndexValue - lowerIndex;
+                let displayValue = '--';
+                
+                if (factor === 0 || lowerIndex === upperIndex) {
+                  // Exactly on a period
+                  displayValue = enabled[lowerIndex] || '--';
+                } else if (interpolateMode) {
+                  // Between periods - show both with interpolation indicator
+                  const lowerPeriod = enabled[lowerIndex];
+                  const upperPeriod = enabled[upperIndex];
+                  displayValue = `${lowerPeriod}-${upperPeriod}`;
+                } else {
+                  // Snap mode - show nearest period
+                  displayValue = enabled[Math.round(currentIndexValue)] || enabled[lowerIndex] || '--';
+                }
+                
+                return (
+                  <>
+                    <input
+                      type="range"
+                      min="0"
+                      max={enabled.length - 1}
+                      step={interpolateMode ? "0.01" : "1"}
+                      value={interpolateMode ? currentIndexValue : Math.round(currentIndexValue)}
+                      onChange={(e) => {
+                        const indexValue = parseFloat(e.target.value);
+                        if (interpolateMode) {
+                          interpolatePeriodConfigByIndex(indexValue);
+                        } else {
+                          // Snap to nearest period
+                          const roundedIndex = Math.round(indexValue);
+                          const targetPeriod = enabled[roundedIndex];
+                          if (targetPeriod) {
+                            handlePeriodChange(targetPeriod);
+                          }
+                        }
+                      }}
+                      className="flex-1 h-4 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 transition-colors"
+                      style={{
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progress}%, #374151 ${progress}%, #374151 100%)`
+                      }}
+                    />
+                    <span className="text-sm font-mono text-white bg-gray-700 px-3 py-1.5 rounded min-w-[3rem] text-center border border-gray-600">
+                      {displayValue}
+                    </span>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
