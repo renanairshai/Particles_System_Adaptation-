@@ -1040,6 +1040,58 @@ const CircularParticles = () => {
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
     },
+    '4': {
+      config: {
+        particleCount: 105,
+        sphereRadius: 194,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.0021,
+        rotationSpeedY: 0.0026,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 134,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 10,
+        bgMaxSize: 24,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.5,
+        bgParticleOpacity: 1,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 7,
+        connectorMaxDistance: 63,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 11,
+        connectorMaxTotal: 40,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.05,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      selectedColorSet: 'Color Set J',
+      backgroundColor: '#dbdbdb'
+    },
     '5': {
       config: {
         particleCount: 92,
@@ -1079,6 +1131,58 @@ const CircularParticles = () => {
         connectorOpacity: 1,
         connectorMaxPerParticle: 3,
         connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.3,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      selectedColorSet: 'Color Set J',
+      backgroundColor: '#dbdbdb'
+    },
+    '6': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 116,
+        minRadius: 5,
+        maxRadius: 30,
+        rotationSpeedX: 0.0007,
+        rotationSpeedY: 0.0028,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 0,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.76,
+        bgDriftSpeedMax: 0.57,
+        bgMinSize: 13,
+        bgMaxSize: 19,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.34,
+        bgParticleOpacity: 0.26,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 14,
+        connectorMaxDistance: 303,
+        connectorColor: null,
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 15,
+        connectorMaxTotal: 50,
         connectorArcMode: true,
         connectorArcOutward: true,
         connectorArcHeight: 0.3,
@@ -2562,29 +2666,165 @@ const CircularParticles = () => {
     };
 
     // Helper function to draw a line with different styles
-    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null) => {
+    // progress: 0-1, controls trim path effect (0 = no line, 1 = full line)
+    // Draws from both ends toward center: 0→50% and 100%→50%
+    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null, progress = 1.0) => {
       const lineStyle = style || 'solid';
+      const trimmedProgress = Math.max(0, Math.min(1, progress)); // Clamp to 0-1
       
       if (lineStyle === 'solid') {
         ctx.setLineDash([]);
         ctx.beginPath();
         if (isArc && controlX !== null && controlY !== null) {
-          ctx.moveTo(x1, y1);
-          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          // Bezier curve: draw from both ends toward center
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          } else {
+            // Calculate midpoint of curve (t = 0.5)
+            const midT = 0.5;
+            const q0x = x1 + (controlX - x1) * midT;
+            const q0y = y1 + (controlY - y1) * midT;
+            const q1x = controlX + (x2 - controlX) * midT;
+            const q1y = controlY + (y2 - controlY) * midT;
+            const midX = q0x + (q1x - q0x) * midT;
+            const midY = q0y + (q1y - q0y) * midT;
+            
+            // Progress for each half (0 to 1, where 1 = reaches center)
+            const halfProgress = trimmedProgress * 2; // Scale to 0-2, then clamp each half
+            
+            // Draw from start toward center (0 → 50%)
+            if (halfProgress > 0) {
+              const startT = Math.min(0.5, halfProgress * 0.5);
+              const startQ0x = x1 + (controlX - x1) * startT;
+              const startQ0y = y1 + (controlY - y1) * startT;
+              const startQ1x = controlX + (x2 - controlX) * startT;
+              const startQ1y = controlY + (y2 - controlY) * startT;
+              const startEndX = startQ0x + (startQ1x - startQ0x) * startT;
+              const startEndY = startQ0y + (startQ1y - startQ0y) * startT;
+              ctx.moveTo(x1, y1);
+              ctx.quadraticCurveTo(startQ0x, startQ0y, startEndX, startEndY);
+            }
+            
+            // Draw from end toward center (100% → 50%)
+            if (halfProgress > 1) {
+              // Calculate how far from end we've drawn (0.5 = at midpoint, 1.0 = at end)
+              const endProgress = Math.min(0.5, (halfProgress - 1) * 0.5);
+              // endT goes from 1.0 (at end) down to 0.5 (at midpoint)
+              const endT = 1.0 - endProgress;
+              
+              // To draw from end (t=1.0) toward a point at t=endT, we need the curve segment
+              // For quadratic bezier P(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+              // To get segment from t=a to t=1.0, we subdivide at t=a
+              // The second half has: start = P(a), control = Q₁(a), end = P₂
+              
+              // Calculate point and control at t=endT
+              const t = endT;
+              const q0x = x1 + (controlX - x1) * t;
+              const q0y = y1 + (controlY - y1) * t;
+              const q1x = controlX + (x2 - controlX) * t;
+              const q1y = controlY + (y2 - controlY) * t;
+              const pointAtT_X = q0x + (q1x - q0x) * t;
+              const pointAtT_Y = q0y + (q1y - q0y) * t;
+              
+              // The second half of the curve (from t to 1.0) uses:
+              // Start: pointAtT, Control: q1, End: x2,y2
+              // But we want to draw from end (x2,y2) toward pointAtT
+              // So we reverse it: start at x2,y2, end at pointAtT, control is q1
+              ctx.moveTo(x2, y2);
+              ctx.quadraticCurveTo(q1x, q1y, pointAtT_X, pointAtT_Y);
+            }
+          }
         } else {
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          // Straight line: draw from both ends toward center
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+          } else {
+            const halfProgress = trimmedProgress * 2; // Scale to 0-2
+            
+            // Draw from start toward center (0 → 50%)
+            if (halfProgress > 0) {
+              const startProgress = Math.min(0.5, halfProgress * 0.5);
+              const startEndX = x1 + (x2 - x1) * startProgress;
+              const startEndY = y1 + (y2 - y1) * startProgress;
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(startEndX, startEndY);
+            }
+            
+            // Draw from end toward center (100% → 50%)
+            if (halfProgress > 1) {
+              const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
+              const endEndX = x1 + (x2 - x1) * endProgress;
+              const endEndY = y1 + (y2 - y1) * endProgress;
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(endEndX, endEndY);
+            }
+          }
         }
         ctx.stroke();
       } else if (lineStyle === 'dashed') {
         ctx.setLineDash([5, 5]);
         ctx.beginPath();
         if (isArc && controlX !== null && controlY !== null) {
-          ctx.moveTo(x1, y1);
-          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          } else {
+            const midT = 0.5;
+            const halfProgress = trimmedProgress * 2;
+            
+            if (halfProgress > 0) {
+              const startT = Math.min(0.5, halfProgress * 0.5);
+              const startQ0x = x1 + (controlX - x1) * startT;
+              const startQ0y = y1 + (controlY - y1) * startT;
+              const startQ1x = controlX + (x2 - controlX) * startT;
+              const startQ1y = controlY + (y2 - controlY) * startT;
+              const startEndX = startQ0x + (startQ1x - startQ0x) * startT;
+              const startEndY = startQ0y + (startQ1y - startQ0y) * startT;
+              ctx.moveTo(x1, y1);
+              ctx.quadraticCurveTo(startQ0x, startQ0y, startEndX, startEndY);
+            }
+            
+            if (halfProgress > 1) {
+              const endProgress = Math.min(0.5, (halfProgress - 1) * 0.5);
+              const endT = 1.0 - endProgress;
+              
+              const t = endT;
+              const q0x = x1 + (controlX - x1) * t;
+              const q0y = y1 + (controlY - y1) * t;
+              const q1x = controlX + (x2 - controlX) * t;
+              const q1y = controlY + (y2 - controlY) * t;
+              const pointAtT_X = q0x + (q1x - q0x) * t;
+              const pointAtT_Y = q0y + (q1y - q0y) * t;
+              
+              ctx.moveTo(x2, y2);
+              ctx.quadraticCurveTo(q1x, q1y, pointAtT_X, pointAtT_Y);
+            }
+          }
         } else {
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+          } else {
+            const halfProgress = trimmedProgress * 2;
+            
+            if (halfProgress > 0) {
+              const startProgress = Math.min(0.5, halfProgress * 0.5);
+              const startEndX = x1 + (x2 - x1) * startProgress;
+              const startEndY = y1 + (y2 - y1) * startProgress;
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(startEndX, startEndY);
+            }
+            
+            if (halfProgress > 1) {
+              const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
+              const endEndX = x1 + (x2 - x1) * endProgress;
+              const endEndY = y1 + (y2 - y1) * endProgress;
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(endEndX, endEndY);
+            }
+          }
         }
         ctx.stroke();
         ctx.setLineDash([]);
@@ -2592,11 +2832,63 @@ const CircularParticles = () => {
         ctx.setLineDash([2, 3]); // Small dots with gaps
         ctx.beginPath();
         if (isArc && controlX !== null && controlY !== null) {
-          ctx.moveTo(x1, y1);
-          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          } else {
+            const halfProgress = trimmedProgress * 2;
+            
+            if (halfProgress > 0) {
+              const startT = Math.min(0.5, halfProgress * 0.5);
+              const startQ0x = x1 + (controlX - x1) * startT;
+              const startQ0y = y1 + (controlY - y1) * startT;
+              const startQ1x = controlX + (x2 - controlX) * startT;
+              const startQ1y = controlY + (y2 - controlY) * startT;
+              const startEndX = startQ0x + (startQ1x - startQ0x) * startT;
+              const startEndY = startQ0y + (startQ1y - startQ0y) * startT;
+              ctx.moveTo(x1, y1);
+              ctx.quadraticCurveTo(startQ0x, startQ0y, startEndX, startEndY);
+            }
+            
+            if (halfProgress > 1) {
+              const endProgress = Math.min(0.5, (halfProgress - 1) * 0.5);
+              const endT = 1.0 - endProgress;
+              
+              const t = endT;
+              const q0x = x1 + (controlX - x1) * t;
+              const q0y = y1 + (controlY - y1) * t;
+              const q1x = controlX + (x2 - controlX) * t;
+              const q1y = controlY + (y2 - controlY) * t;
+              const pointAtT_X = q0x + (q1x - q0x) * t;
+              const pointAtT_Y = q0y + (q1y - q0y) * t;
+              
+              ctx.moveTo(x2, y2);
+              ctx.quadraticCurveTo(q1x, q1y, pointAtT_X, pointAtT_Y);
+            }
+          }
         } else {
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          if (trimmedProgress >= 1.0) {
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+          } else {
+            const halfProgress = trimmedProgress * 2;
+            
+            if (halfProgress > 0) {
+              const startProgress = Math.min(0.5, halfProgress * 0.5);
+              const startEndX = x1 + (x2 - x1) * startProgress;
+              const startEndY = y1 + (y2 - y1) * startProgress;
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(startEndX, startEndY);
+            }
+            
+            if (halfProgress > 1) {
+              const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
+              const endEndX = x1 + (x2 - x1) * endProgress;
+              const endEndY = y1 + (y2 - y1) * endProgress;
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(endEndX, endEndY);
+            }
+          }
         }
         ctx.stroke();
         ctx.setLineDash([]);
@@ -2609,10 +2901,23 @@ const CircularParticles = () => {
         ctx.beginPath();
         if (isArc && controlX !== null && controlY !== null) {
           ctx.moveTo(x1, y1);
-          ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          if (trimmedProgress >= 1.0) {
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+          } else {
+            const t = trimmedProgress;
+            const q0x = x1 + (controlX - x1) * t;
+            const q0y = y1 + (controlY - y1) * t;
+            const q1x = controlX + (x2 - controlX) * t;
+            const q1y = controlY + (y2 - controlY) * t;
+            const endX = q0x + (q1x - q0x) * t;
+            const endY = q0y + (q1y - q0y) * t;
+            ctx.quadraticCurveTo(q0x, q0y, endX, endY);
+          }
         } else {
           ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          const endX = x1 + (x2 - x1) * trimmedProgress;
+          const endY = y1 + (y2 - y1) * trimmedProgress;
+          ctx.lineTo(endX, endY);
         }
         ctx.stroke();
         
@@ -2687,6 +2992,9 @@ const CircularParticles = () => {
       const maxPerParticle = cfg.connectorMaxPerParticle || Infinity;
       const maxTotal = cfg.connectorMaxTotal || Infinity;
       
+      // Animation speed for trim path effect (progress per frame, ~60fps)
+      const animationSpeed = 0.03; // Adjust this to control animation speed
+      
       // Get or initialize active connections map
       let activeConnections = activeConnectionsRef.current;
       
@@ -2700,6 +3008,9 @@ const CircularParticles = () => {
       for (const [key, conn] of activeConnections.entries()) {
         const p1 = conn.p1;
         const p2 = conn.p2;
+        
+        // Initialize progress if not present (for backward compatibility)
+        let progress = conn.progress !== undefined ? conn.progress : 1.0;
         
         // Check if particles still exist and are valid
         if (!p1 || !p2 || p1.currentRadius <= 0 || p2.currentRadius <= 0) {
@@ -2718,6 +3029,9 @@ const CircularParticles = () => {
           
           // Keep connection if limits allow
           if (count1 < maxPerParticle && count2 < maxPerParticle && totalConnectionsDrawn < maxTotal) {
+            // Animate progress: increase towards 1.0
+            progress = Math.min(1.0, progress + animationSpeed);
+            
             // Calculate arc control point if needed
             let controlX = null;
             let controlY = null;
@@ -2729,14 +3043,20 @@ const CircularParticles = () => {
               const dx = p2.x2d - p1.x2d;
               const dy = p2.y2d - p1.y2d;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              const arcHeight = distance * (cfg.connectorArcHeight || 0.3);
+              // Power function: distance^1.3 creates exponential-like curve growth
+              const baseMultiplier = 0.15; // Base curve intensity
+              const powerFactor = 1.3; // Controls how aggressively curves grow with distance
+              const normalizedDist = Math.max(0, Math.min(1, (distance - minDist) / (maxDist - minDist)));
+              const distanceFactor = Math.pow(normalizedDist, powerFactor);
+              const curveIntensity = 0.05 + (distanceFactor * 0.45); // Range: 0.05 to 0.5
+              const arcHeight = distance * curveIntensity;
               const direction = cfg.connectorArcOutward !== false ? 1 : -1;
               controlX = midX + (-dy / distance) * arcHeight * direction;
               controlY = midY + (dx / distance) * arcHeight * direction;
             }
             
-            // Draw line with selected style
-            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY);
+            // Draw line with selected style and progress (trim path effect)
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
             
             // Mark particles as connected
             connectedParticles.add(p1);
@@ -2747,8 +3067,57 @@ const CircularParticles = () => {
             connectionsPerParticle.set(p2, count2 + 1);
             totalConnectionsDrawn++;
             
-            // Keep in new active connections
-            newActiveConnections.set(key, { p1, p2, distance });
+            // Keep in new active connections with updated progress
+            newActiveConnections.set(key, { p1, p2, distance, progress });
+          } else {
+            // Connection is being removed - animate out
+            progress = Math.max(0, progress - animationSpeed);
+            if (progress > 0) {
+              // Still draw while fading out
+              let controlX = null;
+              let controlY = null;
+              const isArc = cfg.connectorArcMode;
+              if (isArc) {
+                const midX = (p1.x2d + p2.x2d) / 2;
+                const midY = (p1.y2d + p2.y2d) / 2;
+                const dx = p2.x2d - p1.x2d;
+                const dy = p2.y2d - p1.y2d;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const normalizedDist = Math.max(0, Math.min(1, (distance - minDist) / (maxDist - minDist)));
+                const distanceFactor = Math.pow(normalizedDist, 1.3);
+                const curveIntensity = 0.05 + (distanceFactor * 0.45);
+                const arcHeight = distance * curveIntensity;
+                const direction = cfg.connectorArcOutward !== false ? 1 : -1;
+                controlX = midX + (-dy / distance) * arcHeight * direction;
+                controlY = midY + (dx / distance) * arcHeight * direction;
+              }
+              drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
+              newActiveConnections.set(key, { p1, p2, distance, progress });
+            }
+          }
+        } else {
+          // Connection out of range - animate out
+          progress = Math.max(0, progress - animationSpeed);
+          if (progress > 0) {
+            let controlX = null;
+            let controlY = null;
+            const isArc = cfg.connectorArcMode;
+            if (isArc) {
+              const midX = (p1.x2d + p2.x2d) / 2;
+              const midY = (p1.y2d + p2.y2d) / 2;
+              const dx = p2.x2d - p1.x2d;
+              const dy = p2.y2d - p1.y2d;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              const normalizedDist = Math.max(0, Math.min(1, (distance - minDist) / (maxDist - minDist)));
+              const distanceFactor = Math.pow(normalizedDist, 1.3);
+              const curveIntensity = 0.05 + (distanceFactor * 0.45);
+              const arcHeight = distance * curveIntensity;
+              const direction = cfg.connectorArcOutward !== false ? 1 : -1;
+              controlX = midX + (-dy / distance) * arcHeight * direction;
+              controlY = midY + (dx / distance) * arcHeight * direction;
+            }
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
+            newActiveConnections.set(key, { p1, p2, distance, progress });
           }
         }
       }
@@ -2810,14 +3179,23 @@ const CircularParticles = () => {
             const dx = conn.p2.x2d - conn.p1.x2d;
             const dy = conn.p2.y2d - conn.p1.y2d;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const arcHeight = distance * 0.3;
+            // Power function: distance^1.3 creates exponential-like curve growth
+            const baseMultiplier = 0.15; // Base curve intensity
+            const powerFactor = 1.3; // Controls how aggressively curves grow with distance
+            const normalizedDist = Math.max(0, Math.min(1, (distance - minDist) / (maxDist - minDist)));
+            const distanceFactor = Math.pow(normalizedDist, powerFactor);
+            const curveIntensity = 0.05 + (distanceFactor * 0.85); // Range: 0.05 to 0.9
+            const arcHeight = distance * curveIntensity;
             const direction = cfg.connectorArcOutward !== false ? 1 : -1;
             controlX = midX + (-dy / distance) * arcHeight * direction;
             controlY = midY + (dx / distance) * arcHeight * direction;
           }
           
-          // Draw line with selected style
-          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY);
+          // New connection - start with progress 0 and animate in
+          const newProgress = 0; // Will animate to 1.0 over time
+          
+          // Draw line with selected style and progress (trim path effect)
+          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, newProgress);
           
           // Mark particles as connected
           connectedParticles.add(conn.p1);
@@ -2828,8 +3206,8 @@ const CircularParticles = () => {
           connectionsPerParticle.set(conn.p2, count2 + 1);
           totalConnectionsDrawn++;
           
-          // Add to new active connections
-          newActiveConnections.set(conn.key, { p1: conn.p1, p2: conn.p2, distance: conn.distance });
+          // Add to new active connections with initial progress
+          newActiveConnections.set(conn.key, { p1: conn.p1, p2: conn.p2, distance: conn.distance, progress: newProgress });
         }
       }
       
