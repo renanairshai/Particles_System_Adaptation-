@@ -259,7 +259,7 @@ const CircularParticles = () => {
         ],
         [
           { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
           { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
         ],
         [
@@ -268,7 +268,7 @@ const CircularParticles = () => {
           { position: 1, color: '#FFFF99', opacity: 0 }
         ],
         [
-          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0, color: '#318150', opacity: 1 },
           { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
           { position: 0.5, color: '#DDA0DD', opacity: 0 }
         ],
@@ -310,7 +310,7 @@ const CircularParticles = () => {
         ],
         [
           { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
           { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
         ],
         [
@@ -319,7 +319,7 @@ const CircularParticles = () => {
           { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
         ],
         [
-          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0, color: '#318150', opacity: 1 },
           { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
           { position: 0.5, color: '#DDA0DD', opacity: 0 }
         ],
@@ -367,7 +367,7 @@ const CircularParticles = () => {
         ],
         [
           { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
           { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
         ],
         [
@@ -377,7 +377,7 @@ const CircularParticles = () => {
           { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
         ],
         [
-          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0, color: '#318150', opacity: 1 },
           { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
           { position: 0.5, color: '#DDA0DD', opacity: 0 }
         ],
@@ -433,7 +433,7 @@ const CircularParticles = () => {
         ],
         [
           { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#0e3510', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
           { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
         ],
         [
@@ -443,7 +443,7 @@ const CircularParticles = () => {
           { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
         ],
         [
-          { position: 0, color: '#0d351c', opacity: 1 },
+          { position: 0, color: '#318150', opacity: 1 },
           { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
           { position: 0.5, color: '#DDA0DD', opacity: 0 }
         ],
@@ -599,35 +599,51 @@ const CircularParticles = () => {
     },
     'B': {
       config: {
-        particleCount: 117,
-        sphereRadius: 174,
+        particleCount: 92,
+        sphereRadius: 198,
         minRadius: 30,
         maxRadius: 80,
         rotationSpeedX: 0.003,
-        rotationSpeedY: 0.006,
+        rotationSpeedY: 0.0027,
         pulseSpeed: 0.02,
         perspective: 1200,
-        scatter: 64,
-        breathingSpeedMin: 0,
-        breathingSpeedMax: 0.0081,
-        breathingAmountMin: 49,
-        breathingAmountMax: 64,
+        scatter: 93,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
         backgroundParticles: 270,
         blobDistortion: 0.3,
-        bgDriftSpeedMin: 0.55,
-        bgDriftSpeedMax: 0.51,
+        bgDriftSpeedMin: 0.25,
+        bgDriftSpeedMax: 0.64,
         bgMinSize: 13,
         bgMaxSize: 45,
-        motionBlur: 1.68,
-        motionBlurSteps: 28,
-        particleOpacity: 0.34,
-        bgParticleOpacity: 1,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.63,
+        bgParticleOpacity: 0.54,
         particleShape: 'circle',
         autoRotateShapes: true,
         glowRadius: 1,
-        trailType: 'streak',
+        trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light'
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 14,
+        connectorMaxDistance: 214,
+        connectorColor: '#000000',
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: false,
+        connectorDotFillConnected: true
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -809,10 +825,321 @@ const CircularParticles = () => {
     }
   };
 
+  // PERIOD presets - complete configurations including all params, gradients, and connectors
+  const periodPresets = {
+    '1': {
+      config: {
+        particleCount: 105,
+        sphereRadius: 300,
+        minRadius: 1,
+        maxRadius: 1,
+        rotationSpeedX: 0,
+        rotationSpeedY: 0,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 300,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.76,
+        bgDriftSpeedMax: 0.57,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.20,
+        bgParticleOpacity: 0,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 0,
+        connectorMaxDistance: 72,
+        connectorColor: null,
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ],
+      backgroundColor: '#dbdbdb'
+    },
+    '2': {
+      config: {
+        particleCount: 105,
+        sphereRadius: 239,
+        minRadius: 1,
+        maxRadius: 1,
+        rotationSpeedX: 0.0023,
+        rotationSpeedY: 0.0026,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 137,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.03,
+        bgDriftSpeedMax: 0.1,
+        bgMinSize: 5,
+        bgMaxSize: 5,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.2,
+        bgParticleOpacity: 0,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 0,
+        connectorMaxDistance: 72,
+        connectorColor: null,
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ],
+      backgroundColor: '#dbdbdb'
+    },
+    '5': {
+      config: {
+        particleCount: 92,
+        sphereRadius: 1,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.01,
+        rotationSpeedY: 0.0055,
+        pulseSpeed: 0.02,
+        perspective: 1200,
+        scatter: 140,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 270,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.76,
+        bgDriftSpeedMax: 0.57,
+        bgMinSize: 13,
+        bgMaxSize: 45,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.5,
+        bgParticleOpacity: 0.26,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 0,
+        connectorMaxDistance: 72,
+        connectorColor: null,
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ],
+      backgroundColor: '#dbdbdb'
+    }
+  };
+
   const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
   const [showGradientEditor, setShowGradientEditor] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [selectedPreset, setSelectedPreset] = useState('Default');
+  const [selectedPeriod, setSelectedPeriod] = useState(null);
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
@@ -2721,40 +3048,15 @@ const CircularParticles = () => {
           const z = Math.round(particle.z3d * 100) / 100;
           const positionText = `[${x}, ${y}, ${z}]`;
           
-          // Position text above the particle, but adjust if too close to edges
-          let textX = particle.x2d;
-          let textY = particle.y2d - particle.currentRadius - 20;
+          // Position text very close to the particle (above)
+          const textX = particle.x2d;
+          const textY = particle.y2d - particle.currentRadius - 2;
           
-          // Draw background rectangle for better readability
-          ctx.font = '14px monospace';
-          const textMetrics = ctx.measureText(positionText);
-          const padding = 6;
-          const bgWidth = textMetrics.width + padding * 2;
-          const bgHeight = 20;
-          let bgX = textX - bgWidth / 2;
-          let bgY = textY - bgHeight;
-          
-          // Keep text within canvas bounds
-          if (bgX < 0) {
-            bgX = 0;
-            textX = bgWidth / 2;
-          } else if (bgX + bgWidth > canvas.width) {
-            bgX = canvas.width - bgWidth;
-            textX = canvas.width - bgWidth / 2;
-          }
-          
-          if (bgY < 0) {
-            bgY = particle.y2d + particle.currentRadius + 10; // Show below instead
-            textY = bgY + bgHeight / 2;
-          }
-          
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-          
-          // Draw text
-          ctx.fillStyle = 'white';
+          // Draw text in black, smaller font
+          ctx.font = '10px monospace';
+          ctx.fillStyle = 'black';
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          ctx.textBaseline = 'bottom';
           ctx.fillText(positionText, textX, textY);
           
           // Reset text alignment
@@ -2849,6 +3151,34 @@ const CircularParticles = () => {
     
     // Update selected preset
     setSelectedPreset(presetName);
+  };
+
+  const handlePeriodChange = (periodName) => {
+    const period = periodPresets[periodName];
+    if (!period) return;
+    
+    // Apply complete config including all connector params (no preservation)
+    // Note: connectorColor can be null, which will use fallback colors in the rendering code
+    const periodConfig = { ...period.config };
+    
+    // Update config state
+    setConfig(periodConfig);
+    
+    // Update config ref immediately for smooth animation
+    if (configRef.current) {
+      configRef.current = { ...periodConfig };
+    }
+    
+    // Update gradients directly from preset
+    setEditableGradients(period.gradientStops.map(gradient => 
+      gradient.map(stop => ({ ...stop }))
+    ));
+    
+    // Update background color
+    setBackgroundColor(period.backgroundColor);
+    
+    // Update selected period
+    setSelectedPeriod(periodName);
   };
 
   const copyAllParams = () => {
@@ -3005,6 +3335,21 @@ const CircularParticles = () => {
                 {Object.keys(designPresets).map((presetName) => (
                   <option key={presetName} value={presetName}>
                     {presetName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs">PERIOD:</label>
+              <select
+                value={selectedPeriod || ''}
+                onChange={(e) => handlePeriodChange(e.target.value)}
+                className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
+              >
+                <option value="">--</option>
+                {Object.keys(periodPresets).map((periodName) => (
+                  <option key={periodName} value={periodName}>
+                    {periodName}
                   </option>
                 ))}
               </select>
