@@ -886,7 +886,7 @@ const CircularParticles = () => {
   const periodPresets = {
     '1': {
       config: {
-        particleCount: 105,
+        particleCount: 100,
         sphereRadius: 300,
         minRadius: 1,
         maxRadius: 1,
@@ -938,7 +938,7 @@ const CircularParticles = () => {
     },
     '2': {
       config: {
-        particleCount: 105,
+        particleCount: 100,
         sphereRadius: 239,
         minRadius: 1,
         maxRadius: 1,
@@ -990,7 +990,7 @@ const CircularParticles = () => {
     },
     '3': {
       config: {
-        particleCount: 105,
+        particleCount: 100,
         sphereRadius: 277,
         minRadius: 30,
         maxRadius: 80,
@@ -1042,7 +1042,7 @@ const CircularParticles = () => {
     },
     '4': {
       config: {
-        particleCount: 105,
+        particleCount: 100,
         sphereRadius: 194,
         minRadius: 30,
         maxRadius: 80,
@@ -1094,7 +1094,7 @@ const CircularParticles = () => {
     },
     '5': {
       config: {
-        particleCount: 92,
+        particleCount: 100,
         sphereRadius: 1,
         minRadius: 30,
         maxRadius: 80,
@@ -1146,7 +1146,7 @@ const CircularParticles = () => {
     },
     '6': {
       config: {
-        particleCount: 92,
+        particleCount: 100,
         sphereRadius: 116,
         minRadius: 5,
         maxRadius: 30,
