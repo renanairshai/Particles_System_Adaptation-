@@ -1031,6 +1031,119 @@ const CircularParticles = () => {
       ],
       backgroundColor: '#dbdbdb'
     },
+    '3': {
+      config: {
+        particleCount: 105,
+        sphereRadius: 277,
+        minRadius: 30,
+        maxRadius: 80,
+        rotationSpeedX: 0.0017,
+        rotationSpeedY: 0.0023,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 205,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 10,
+        bgMaxSize: 24,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.5,
+        bgParticleOpacity: 0.59,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 0,
+        connectorMaxDistance: 72,
+        connectorColor: null,
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorShowDots: true,
+        connectorDotSize: 9,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: true,
+        connectorDotFillConnected: true
+      },
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#000000', opacity: 1 },
+          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
+          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
+        ],
+        [
+          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
+          { position: 0.3103813559322034, color: '#bfbfbf', opacity: 1 },
+          { position: 0.475635593220339, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ],
+      backgroundColor: '#dbdbdb'
+    },
     '5': {
       config: {
         particleCount: 92,
@@ -3091,10 +3204,15 @@ const CircularParticles = () => {
   const updateConfig = (key, value) => {
     // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
     const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected'];
-    const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle'];
+    const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle', 'connectorColor'];
     let newValue;
     if (stringKeys.includes(key)) {
-      newValue = value;
+      // Handle connectorColor: allow empty string to set to null
+      if (key === 'connectorColor' && (value === '' || value === null)) {
+        newValue = null;
+      } else {
+        newValue = value;
+      }
     } else if (booleanKeys.includes(key)) {
       newValue = value;
     } else {
