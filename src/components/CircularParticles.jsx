@@ -56,6 +56,7 @@ const CircularParticles = () => {
     connectorMaxTotal: 20,
     connectorArcMode: false,
     connectorArcOutward: true,
+    connectorArcHeight: 0.3,
     connectorShowDots: true,
     connectorDotSize: 9,
     connectorLineStyle: 'solid',
@@ -522,6 +523,61 @@ const CircularParticles = () => {
           { position: 0.6584922797456857, color: '#ffccf4', opacity: 0 }
         ]
       ]
+    },
+    'Color Set J': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
     }
   };
 
@@ -638,6 +694,7 @@ const CircularParticles = () => {
         connectorMaxTotal: 60,
         connectorArcMode: true,
         connectorArcOutward: true,
+        connectorArcHeight: 0.3,
         connectorShowDots: true,
         connectorDotSize: 9,
         connectorLineStyle: 'dashed',
@@ -868,6 +925,7 @@ const CircularParticles = () => {
         connectorMaxTotal: 60,
         connectorArcMode: true,
         connectorArcOutward: true,
+        connectorArcHeight: 0.3,
         connectorShowDots: true,
         connectorDotSize: 9,
         connectorLineStyle: 'dashed',
@@ -875,58 +933,7 @@ const CircularParticles = () => {
         connectorDotStrokeOnly: true,
         connectorDotFillConnected: true
       },
-      gradientStops: [
-        [
-          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
-          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
-          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
-        ],
-        [
-          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
-          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
-        ],
-        [
-          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
-          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
-          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
-          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#318150', opacity: 1 },
-          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
-          { position: 0.5, color: '#DDA0DD', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#ffffff', opacity: 1 },
-          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
-          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
-        ],
-        [
-          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
-          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
-          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
-        ],
-        [
-          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
-          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
-          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
-          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
-        ],
-        [
-          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
-          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
-          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
-          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
-        ],
-        [
-          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
-          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
-          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
-          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
-        ]
-      ],
+      selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
     },
     '2': {
@@ -970,6 +977,7 @@ const CircularParticles = () => {
         connectorMaxTotal: 60,
         connectorArcMode: true,
         connectorArcOutward: true,
+        connectorArcHeight: 0.3,
         connectorShowDots: true,
         connectorDotSize: 9,
         connectorLineStyle: 'dashed',
@@ -977,58 +985,7 @@ const CircularParticles = () => {
         connectorDotStrokeOnly: true,
         connectorDotFillConnected: true
       },
-      gradientStops: [
-        [
-          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
-          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
-          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
-        ],
-        [
-          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
-          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
-        ],
-        [
-          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
-          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
-          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
-          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#318150', opacity: 1 },
-          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
-          { position: 0.5, color: '#DDA0DD', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#ffffff', opacity: 1 },
-          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
-          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
-        ],
-        [
-          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
-          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
-          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
-        ],
-        [
-          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
-          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
-          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
-          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
-        ],
-        [
-          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
-          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
-          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
-          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
-        ],
-        [
-          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
-          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
-          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
-          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
-        ]
-      ],
+      selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
     },
     '3': {
@@ -1072,6 +1029,7 @@ const CircularParticles = () => {
         connectorMaxTotal: 60,
         connectorArcMode: true,
         connectorArcOutward: true,
+        connectorArcHeight: 0.3,
         connectorShowDots: true,
         connectorDotSize: 9,
         connectorLineStyle: 'dashed',
@@ -1079,69 +1037,7 @@ const CircularParticles = () => {
         connectorDotStrokeOnly: true,
         connectorDotFillConnected: true
       },
-      gradientStops: [
-        [
-          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
-          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
-          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
-        ],
-        [
-          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
-          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
-        ],
-        [
-          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
-          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
-          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
-          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#318150', opacity: 1 },
-          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
-          { position: 0.5, color: '#DDA0DD', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#ffffff', opacity: 1 },
-          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
-          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
-        ],
-        [
-          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
-          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
-          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
-        ],
-        [
-          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
-          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
-          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
-          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
-        ],
-        [
-          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
-          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
-          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
-          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#000000', opacity: 1 },
-          { position: 0.27520435967302453, color: '#616161', opacity: 1 },
-          { position: 0.670299727520436, color: '#9e9e9e', opacity: 0 }
-        ],
-        [
-          { position: 0.07097457627118645, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#212121', opacity: 1 },
-          { position: 0.3103813559322034, color: '#bfbfbf', opacity: 1 },
-          { position: 0.475635593220339, color: '#ffffff', opacity: 0 }
-        ],
-        [
-          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
-          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
-          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
-          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
-        ]
-      ],
+      selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
     },
     '5': {
@@ -1185,6 +1081,7 @@ const CircularParticles = () => {
         connectorMaxTotal: 60,
         connectorArcMode: true,
         connectorArcOutward: true,
+        connectorArcHeight: 0.3,
         connectorShowDots: true,
         connectorDotSize: 9,
         connectorLineStyle: 'dashed',
@@ -1192,58 +1089,7 @@ const CircularParticles = () => {
         connectorDotStrokeOnly: true,
         connectorDotFillConnected: true
       },
-      gradientStops: [
-        [
-          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
-          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
-          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
-          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
-        ],
-        [
-          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
-          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
-          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
-        ],
-        [
-          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
-          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
-          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
-          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#318150', opacity: 1 },
-          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
-          { position: 0.5, color: '#DDA0DD', opacity: 0 }
-        ],
-        [
-          { position: 0, color: '#ffffff', opacity: 1 },
-          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
-          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
-        ],
-        [
-          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
-          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
-          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
-        ],
-        [
-          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
-          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
-          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
-          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
-        ],
-        [
-          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
-          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
-          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
-          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
-        ],
-        [
-          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
-          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
-          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
-          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
-        ]
-      ],
+      selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
     }
   };
@@ -2830,7 +2676,8 @@ const CircularParticles = () => {
       if (!cfg.connectorsEnabled) return;
       
       ctx.save();
-      ctx.strokeStyle = cfg.connectorColor || '#ffffff';
+      // Use black as fallback for null connectorColor (better visibility on light backgrounds)
+      ctx.strokeStyle = cfg.connectorColor || '#000000';
       ctx.lineWidth = cfg.connectorWidth || 1;
       ctx.globalAlpha = cfg.connectorOpacity || 0.3;
       ctx.globalCompositeOperation = cfg.connectorBlendMode || 'source-over';
@@ -2882,7 +2729,7 @@ const CircularParticles = () => {
               const dx = p2.x2d - p1.x2d;
               const dy = p2.y2d - p1.y2d;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              const arcHeight = distance * 0.3;
+              const arcHeight = distance * (cfg.connectorArcHeight || 0.3);
               const direction = cfg.connectorArcOutward !== false ? 1 : -1;
               controlX = midX + (-dy / distance) * arcHeight * direction;
               controlY = midY + (dx / distance) * arcHeight * direction;
@@ -3242,6 +3089,7 @@ const CircularParticles = () => {
       connectorMaxTotal: config.connectorMaxTotal,
       connectorArcMode: config.connectorArcMode,
       connectorArcOutward: config.connectorArcOutward,
+      connectorArcHeight: config.connectorArcHeight,
       connectorShowDots: config.connectorShowDots,
       connectorDotSize: config.connectorDotSize,
       connectorLineStyle: config.connectorLineStyle,
@@ -3287,10 +3135,10 @@ const CircularParticles = () => {
       configRef.current = { ...periodConfig };
     }
     
-    // Update gradients directly from preset
-    setEditableGradients(period.gradientStops.map(gradient => 
-      gradient.map(stop => ({ ...stop }))
-    ));
+    // Update color set from preset (which will update gradients via useEffect)
+    if (period.selectedColorSet) {
+      setSelectedColorSet(period.selectedColorSet);
+    }
     
     // Update background color
     setBackgroundColor(period.backgroundColor);
@@ -4157,21 +4005,37 @@ const CircularParticles = () => {
           </div>
 
           {config.connectorArcMode && (
-            <div>
-              <label className="text-xs block mb-1 text-green-400">Arc Direction</label>
-              <div className="flex items-center">
+            <>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Arc Direction</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={config.connectorArcOutward !== false}
+                    onChange={(e) => updateConfig('connectorArcOutward', e.target.checked)}
+                    className="w-4 h-4 accent-green-500"
+                    disabled={config.connectorsEnabled === false}
+                  />
+                  <span className="text-xs text-green-300 ml-2">
+                    {config.connectorArcOutward !== false ? 'Outward' : 'Inward'}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Arc Curve</label>
                 <input
-                  type="checkbox"
-                  checked={config.connectorArcOutward !== false}
-                  onChange={(e) => updateConfig('connectorArcOutward', e.target.checked)}
-                  className="w-4 h-4 accent-green-500"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={config.connectorArcHeight || 0.3}
+                  onChange={(e) => updateConfig('connectorArcHeight', e.target.value)}
+                  className="w-full accent-green-500"
                   disabled={config.connectorsEnabled === false}
                 />
-                <span className="text-xs text-green-300 ml-2">
-                  {config.connectorArcOutward !== false ? 'Outward' : 'Inward'}
-                </span>
+                <span className="text-xs text-green-300">{(config.connectorArcHeight || 0.3).toFixed(2)}</span>
               </div>
-            </div>
+            </>
           )}
 
           <div>
