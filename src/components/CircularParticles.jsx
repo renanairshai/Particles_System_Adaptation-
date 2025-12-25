@@ -62,7 +62,10 @@ const CircularParticles = () => {
     connectorLineStyle: 'solid',
     connectorBlendMode: 'source-over',
     connectorDotStrokeOnly: false,
-    connectorDotFillConnected: false
+    connectorDotFillConnected: false,
+    connectorWiggle: false,
+    connectorWiggleAmplitude: 5,
+    connectorWiggleFrequency: 2
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -576,6 +579,60 @@ const CircularParticles = () => {
           { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
           { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
           { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set 7': {
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: "#ffffff", opacity: 1 },
+          { position: 0.11016949152542373, color: "#bababa", opacity: 1 },
+          { position: 0.24258474576271186, color: "#ffffff", opacity: 1 },
+          { position: 0.4014830508474576, color: "#ffffff", opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: "#556812", opacity: 1 },
+          { position: 0.12076271186440678, color: "#557756", opacity: 1 },
+          { position: 0.508628519527702, color: "#f9a4ed", opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: "#638bb6", opacity: 1 },
+          { position: 0.09322033898305085, color: "#28496b", opacity: 1 },
+          { position: 0.1048728813559322, color: "#356935", opacity: 1 },
+          { position: 0.4555084745762712, color: "#5d745d", opacity: 0 }
+        ],
+        [
+          { position: 0, color: "#318150", opacity: 1 },
+          { position: 0.18528610354223432, color: "#5d6303", opacity: 1 },
+          { position: 0.5, color: "#DDA0DD", opacity: 0 }
+        ],
+        [
+          { position: 0, color: "#ffffff", opacity: 1 },
+          { position: 0.1880108991825613, color: "#bfa0ee", opacity: 1 },
+          { position: 0.5805084745762712, color: "#d9d9d9", opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: "#0a4461", opacity: 1 },
+          { position: 0.3220338983050847, color: "#ffccf4", opacity: 1 },
+          { position: 0.4608050847457627, color: "#ffccf4", opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: "#ff0000", opacity: 1 },
+          { position: 0.03072033898305085, color: "#610000", opacity: 1 },
+          { position: 0.17796610169491525, color: "#ff7300", opacity: 1 },
+          { position: 0.551906779661017, color: "#FFFF00", opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: "#5266ff", opacity: 1 },
+          { position: 0.06779661016949153, color: "#3e1560", opacity: 1 },
+          { position: 0.19385593220338984, color: "#004466", opacity: 0.7 },
+          { position: 0.388771186440678, color: "#b8edff", opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: "#ffffff", opacity: 1 },
+          { position: 0.028601694915254237, color: "#c03535", opacity: 1 },
+          { position: 0.3199152542372881, color: "#b082ad", opacity: 1 },
+          { position: 0.670299727520436, color: "#b082ad", opacity: 0 }
         ]
       ]
     }
@@ -1195,6 +1252,58 @@ const CircularParticles = () => {
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
+    },
+    '7': {
+      config: {
+        particleCount: 100,
+        sphereRadius: 167,
+        minRadius: 15,
+        maxRadius: 80,
+        rotationSpeedX: 0.01,
+        rotationSpeedY: 0.0091,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 66,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 10,
+        bgMaxSize: 24,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.55,
+        bgParticleOpacity: 0.59,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 0,
+        connectorMaxDistance: 72,
+        connectorColor: '#bababa',
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.3,
+        connectorShowDots: true,
+        connectorDotSize: 5,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: false,
+        connectorDotFillConnected: false
+      },
+      selectedColorSet: 'Color Set 7',
+      backgroundColor: '#dbdbdb'
     }
   };
 
@@ -1209,12 +1318,23 @@ const CircularParticles = () => {
     '3': true,
     '4': true,
     '5': true,
-    '6': true
+    '6': true,
+    '7': true
   });
   const [interpolateMode, setInterpolateMode] = useState(true);
+  const [whiteMode, setWhiteMode] = useState(false);
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1324',message:'convertToNewFormat entry',data:{colorSetExists:!!colorSet,hasGradientStops:!!colorSet?.gradientStops,hasColorPalette:!!colorSet?.colorPalette},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    if (!colorSet) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1326',message:'ERROR: colorSet is undefined',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
+      return [];
+    }
     // Check if it's already in new format (has gradientStops as array of arrays of stop objects)
     if (colorSet.gradientStops && 
         Array.isArray(colorSet.gradientStops) && 
@@ -1225,14 +1345,26 @@ const CircularParticles = () => {
         'position' in colorSet.gradientStops[0][0] &&
         'color' in colorSet.gradientStops[0][0]) {
       // Already in new format, just return it (make a deep copy to avoid mutations)
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1338',message:'using new format path',data:{gradientStopsLength:colorSet.gradientStops.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       return colorSet.gradientStops.map(gradient => 
         gradient.map(stop => ({ ...stop }))
       );
     }
     
     // Old format: convert colorPalette + gradientStops to new format
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1342',message:'using old format path',data:{hasColorPalette:!!colorSet.colorPalette,hasGradientStops:!!colorSet.gradientStops},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     const colorPalette = colorSet.colorPalette;
     const gradientStops = colorSet.gradientStops;
+    if (!colorPalette || !gradientStops) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1346',message:'ERROR: missing colorPalette or gradientStops in old format',data:{hasColorPalette:!!colorPalette,hasGradientStops:!!gradientStops},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
+      return [];
+    }
     return colorPalette.map((colors, index) => {
       const stops = gradientStops[index];
       return [
@@ -1246,13 +1378,45 @@ const CircularParticles = () => {
   // State for editable gradient values (new format: array of stops with position, color, opacity)
   const [editableGradients, setEditableGradients] = useState(() => {
     const currentSet = colorSets[selectedColorSet];
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1376',message:'initial editableGradients setup',data:{selectedColorSet,currentSetExists:!!currentSet,allColorSets:Object.keys(colorSets),hasColorSet7:!!colorSets['Color Set 7']},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     return convertToNewFormat(currentSet);
   });
   
+  // Log available periods on mount
+  useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1384',message:'component mount - periods available',data:{allPeriods:Object.keys(periodPresets),period7Exists:!!periodPresets['7'],colorSet7Exists:!!colorSets['Color Set 7']},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+  }, []);
+  
   // Update editable gradients when color set changes
   useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1360',message:'useEffect selectedColorSet entry',data:{selectedColorSet,colorSetExists:!!colorSets[selectedColorSet]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     const currentSet = colorSets[selectedColorSet];
-    setEditableGradients(convertToNewFormat(currentSet));
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1362',message:'before convertToNewFormat',data:{selectedColorSet,currentSetExists:!!currentSet,hasGradientStops:!!currentSet?.gradientStops,hasColorPalette:!!currentSet?.colorPalette},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    if (!currentSet) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1363',message:'ERROR: currentSet is undefined',data:{selectedColorSet},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
+      return;
+    }
+    try {
+      const converted = convertToNewFormat(currentSet);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1368',message:'convertToNewFormat success',data:{selectedColorSet,convertedLength:converted?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
+      setEditableGradients(converted);
+    } catch (error) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1372',message:'ERROR: convertToNewFormat failed',data:{selectedColorSet,error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
+    }
   }, [selectedColorSet]);
 
   useEffect(() => {
@@ -1267,6 +1431,7 @@ const CircularParticles = () => {
     
     // Get the current editable gradients (new format: array of gradient arrays)
     const gradientStopsArray = editableGradients;
+    const currentWhiteMode = whiteMode;
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -1329,9 +1494,11 @@ const CircularParticles = () => {
         // Circle keeps the original gradient fill behavior
         const gradient = offCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
         sortedStops.forEach(stop => {
+          // Use white if white mode is enabled
+          const color = currentWhiteMode ? '#ffffff' : stop.color;
           const colorWithOpacity = stop.opacity < 1 
-            ? stop.color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
-            : stop.color;
+            ? color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+            : color;
           gradient.addColorStop(stop.position, colorWithOpacity);
         });
         offCtx.fillStyle = gradient;
@@ -1381,14 +1548,16 @@ const CircularParticles = () => {
         };
         
         // Draw multiple glow layers using gradient stops (reverse order for outer to inner)
-        const glowMult = config.glowRadius || 1;
+        const glowMult = currentConfig.glowRadius || 1;
         const reversedStops = [...sortedStops].reverse();
         const glowLayers = reversedStops.map((stop, index) => {
           const scaleFactor = 1 + (reversedStops.length - index) * 0.5 * glowMult;
           const blurFactor = (reversedStops.length - index) * 60 * glowMult;
+          // Use white if white mode is enabled
+          const color = currentWhiteMode ? '#ffffff' : stop.color;
           return {
             blur: blurFactor,
-            color: stop.color,
+            color: color,
             opacity: stop.opacity,
             scale: scaleFactor
           };
@@ -1415,10 +1584,12 @@ const CircularParticles = () => {
         // Draw the solid shape on top with feathered edge (use first stop color)
         offCtx.save();
         const firstStop = sortedStops[0];
-        offCtx.shadowColor = firstStop.color;
+        // Use white if white mode is enabled
+        const firstColor = currentWhiteMode ? '#ffffff' : firstStop.color;
+        offCtx.shadowColor = firstColor;
         offCtx.shadowBlur = 6;
-        offCtx.fillStyle = firstStop.color;
-        offCtx.strokeStyle = firstStop.color;
+        offCtx.fillStyle = firstColor;
+        offCtx.strokeStyle = firstColor;
         const fillType = drawShapePath(offCtx, 1);
         if (fillType === 'stroke') {
           offCtx.stroke();
@@ -2677,9 +2848,132 @@ const CircularParticles = () => {
     // Helper function to draw a line with different styles
     // progress: 0-1, controls trim path effect (0 = no line, 1 = full line)
     // Draws from both ends toward center: 0→50% and 100%→50%
-    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null, progress = 1.0) => {
+    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null, progress = 1.0, cfg = null) => {
       const lineStyle = style || 'solid';
       const trimmedProgress = Math.max(0, Math.min(1, progress)); // Clamp to 0-1
+      
+      // Check if wiggle is enabled
+      const wiggleEnabled = cfg && cfg.connectorWiggle === true;
+      const wiggleAmplitude = cfg ? (cfg.connectorWiggleAmplitude || 5) : 5;
+      const wiggleFrequency = cfg ? (cfg.connectorWiggleFrequency || 2) : 2;
+      
+      // Helper function to get point on path at parameter t (0 to 1)
+      const getPointOnPath = (t) => {
+        if (isArc && controlX !== null && controlY !== null) {
+          // Quadratic bezier: P(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+          const mt = 1 - t;
+          const x = mt * mt * x1 + 2 * mt * t * controlX + t * t * x2;
+          const y = mt * mt * y1 + 2 * mt * t * controlY + t * t * y2;
+          return { x, y };
+        } else {
+          // Straight line
+          return {
+            x: x1 + (x2 - x1) * t,
+            y: y1 + (y2 - y1) * t
+          };
+        }
+      };
+      
+      // Helper function to get tangent direction at parameter t
+      const getTangentAt = (t) => {
+        if (isArc && controlX !== null && controlY !== null) {
+          // Derivative of quadratic bezier: P'(t) = 2(1-t)(P₁-P₀) + 2t(P₂-P₁)
+          const dx = 2 * (1 - t) * (controlX - x1) + 2 * t * (x2 - controlX);
+          const dy = 2 * (1 - t) * (controlY - y1) + 2 * t * (y2 - controlY);
+          const len = Math.sqrt(dx * dx + dy * dy);
+          return len > 0 ? { x: dx / len, y: dy / len } : { x: 1, y: 0 };
+        } else {
+          // Straight line tangent
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          return len > 0 ? { x: dx / len, y: dy / len } : { x: 1, y: 0 };
+        }
+      };
+      
+      // If wiggle is enabled, draw wiggly path
+      if (wiggleEnabled && wiggleAmplitude > 0) {
+        ctx.beginPath();
+        
+        // Calculate number of segments based on line length and frequency
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const lineLength = Math.sqrt(dx * dx + dy * dy);
+        const numSegments = Math.max(20, Math.floor(lineLength / 2)); // At least 20 segments, more for longer lines
+        
+        // Sample points along the path and apply wiggle
+        // Handle progress: draw from both ends toward center (like original)
+        const halfProgress = trimmedProgress * 2; // Scale to 0-2
+        
+        let firstPoint = true;
+        const segmentsToDraw = Math.ceil(numSegments * trimmedProgress);
+        
+        // Draw from start toward center (0 → 50%)
+        if (halfProgress > 0) {
+          const startProgress = Math.min(0.5, halfProgress * 0.5);
+          const startSegments = Math.ceil(numSegments * startProgress);
+          
+          for (let i = 0; i <= startSegments; i++) {
+            const t = i / numSegments;
+            if (t > startProgress) break;
+            
+            const point = getPointOnPath(t);
+            const tangent = getTangentAt(t);
+            const perpX = -tangent.y;
+            const perpY = tangent.x;
+            const wavePhase = t * wiggleFrequency * Math.PI * 2;
+            const offset = Math.sin(wavePhase) * wiggleAmplitude;
+            
+            const wiggledX = point.x + perpX * offset;
+            const wiggledY = point.y + perpY * offset;
+            
+            if (firstPoint) {
+              ctx.moveTo(wiggledX, wiggledY);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(wiggledX, wiggledY);
+            }
+          }
+        }
+        
+        // Draw from end toward center (100% → 50%)
+        if (halfProgress > 1) {
+          const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
+          const endSegments = Math.ceil(numSegments * (1 - endProgress));
+          
+          for (let i = numSegments; i >= endSegments; i--) {
+            const t = i / numSegments;
+            if (t < endProgress) break;
+            
+            const point = getPointOnPath(t);
+            const tangent = getTangentAt(t);
+            const perpX = -tangent.y;
+            const perpY = tangent.x;
+            const wavePhase = t * wiggleFrequency * Math.PI * 2;
+            const offset = Math.sin(wavePhase) * wiggleAmplitude;
+            
+            const wiggledX = point.x + perpX * offset;
+            const wiggledY = point.y + perpY * offset;
+            
+            ctx.lineTo(wiggledX, wiggledY);
+          }
+        }
+        
+        // Apply line style
+        if (lineStyle === 'solid') {
+          ctx.setLineDash([]);
+        } else if (lineStyle === 'dashed') {
+          ctx.setLineDash([5, 5]);
+        } else if (lineStyle === 'dotted') {
+          ctx.setLineDash([2, 3]);
+        }
+        
+        ctx.stroke();
+        if (lineStyle !== 'solid') {
+          ctx.setLineDash([]);
+        }
+        return;
+      }
       
       if (lineStyle === 'solid') {
         ctx.setLineDash([]);
@@ -3065,7 +3359,7 @@ const CircularParticles = () => {
             }
             
             // Draw line with selected style and progress (trim path effect)
-            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
             
             // Mark particles as connected
             connectedParticles.add(p1);
@@ -3100,7 +3394,7 @@ const CircularParticles = () => {
                 controlX = midX + (-dy / distance) * arcHeight * direction;
                 controlY = midY + (dx / distance) * arcHeight * direction;
               }
-              drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
+              drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
               newActiveConnections.set(key, { p1, p2, distance, progress });
             }
           }
@@ -3125,7 +3419,7 @@ const CircularParticles = () => {
               controlX = midX + (-dy / distance) * arcHeight * direction;
               controlY = midY + (dx / distance) * arcHeight * direction;
             }
-            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress);
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
             newActiveConnections.set(key, { p1, p2, distance, progress });
           }
         }
@@ -3204,7 +3498,7 @@ const CircularParticles = () => {
           const newProgress = 0; // Will animate to 1.0 over time
           
           // Draw line with selected style and progress (trim path effect)
-          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, newProgress);
+          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, newProgress, cfg);
           
           // Mark particles as connected
           connectedParticles.add(conn.p1);
@@ -3424,7 +3718,7 @@ const CircularParticles = () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet, editableGradients, backgroundColor]); // Re-run when color set, gradients, or background color change
+  }, [selectedColorSet, editableGradients, backgroundColor, whiteMode]); // Re-run when color set, gradients, background color, or white mode changes
 
   // Update state refs when state changes
   useEffect(() => {
@@ -3437,7 +3731,7 @@ const CircularParticles = () => {
 
   const updateConfig = (key, value) => {
     // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
-    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected'];
+    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected', 'connectorWiggle'];
     const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle', 'connectorColor'];
     let newValue;
     if (stringKeys.includes(key)) {
@@ -3450,7 +3744,16 @@ const CircularParticles = () => {
     } else if (booleanKeys.includes(key)) {
       newValue = value;
     } else {
-      newValue = parseFloat(value);
+      // For numeric values, if value is already a number, use it; otherwise parse it
+      newValue = typeof value === 'number' ? value : parseFloat(value);
+      // If parseFloat returns NaN, keep the previous value or use a default
+      if (isNaN(newValue)) {
+        const defaults = {
+          connectorWiggleAmplitude: 5,
+          connectorWiggleFrequency: 2
+        };
+        newValue = defaults[key] !== undefined ? defaults[key] : value;
+      }
     }
     // Update ref immediately for smooth animation
     if (configRef.current) {
@@ -3649,12 +3952,29 @@ const CircularParticles = () => {
   };
 
   const handlePeriodChange = (periodName) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3758',message:'handlePeriodChange entry',data:{periodName},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     const period = periodPresets[periodName];
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3760',message:'period lookup result',data:{periodName,periodExists:!!period,selectedColorSet:period?.selectedColorSet},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     if (!period) return;
     
     // Apply complete config including all connector params (no preservation)
     // Note: connectorColor can be null, which will use fallback colors in the rendering code
     const periodConfig = { ...period.config };
+    
+    // Preserve wiggle settings (not typically in period presets)
+    if (config.connectorWiggle !== undefined) {
+      periodConfig.connectorWiggle = config.connectorWiggle;
+    }
+    if (typeof config.connectorWiggleAmplitude === 'number') {
+      periodConfig.connectorWiggleAmplitude = config.connectorWiggleAmplitude;
+    }
+    if (typeof config.connectorWiggleFrequency === 'number') {
+      periodConfig.connectorWiggleFrequency = config.connectorWiggleFrequency;
+    }
     
     // Update config state
     setConfig(periodConfig);
@@ -3666,6 +3986,9 @@ const CircularParticles = () => {
     
     // Update color set from preset (which will update gradients via useEffect)
     if (period.selectedColorSet) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3775',message:'before setSelectedColorSet',data:{selectedColorSet:period.selectedColorSet,colorSetExists:!!colorSets[period.selectedColorSet],allColorSetKeys:Object.keys(colorSets),colorSet7DirectCheck:!!colorSets['Color Set 7'],colorSet7Value:colorSets['Color Set 7']?Object.keys(colorSets['Color Set 7']):'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       setSelectedColorSet(period.selectedColorSet);
     }
     
@@ -3674,10 +3997,23 @@ const CircularParticles = () => {
     
     // Update selected period
     setSelectedPeriod(periodName);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3783',message:'handlePeriodChange exit',data:{periodName},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
   };
 
   const copyAllParams = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3786',message:'copyAllParams entry',data:{selectedColorSet},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     const currentColorSet = colorSets[selectedColorSet];
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3788',message:'before accessing colorPalette',data:{selectedColorSet,currentColorSetExists:!!currentColorSet,hasColorPalette:!!currentColorSet?.colorPalette,hasGradientStops:!!currentColorSet?.gradientStops},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    if (!currentColorSet) {
+      alert('Color set not found!');
+      return;
+    }
     const params = {
       config: config,
       colorPalette: currentColorSet.colorPalette,
@@ -3838,7 +4174,23 @@ const CircularParticles = () => {
               <label className="text-xs">PERIOD:</label>
               <select
                 value={selectedPeriod || ''}
-                onChange={(e) => handlePeriodChange(e.target.value)}
+                onChange={(e) => {
+                  // #region agent log
+                  fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:4013',message:'dropdown onChange',data:{selectedValue:e.target.value,allPeriods:Object.keys(periodPresets)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+                  // #endregion
+                  if (e.target.value) {
+                    try {
+                      handlePeriodChange(e.target.value);
+                    } catch (error) {
+                      // #region agent log
+                      fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:4020',message:'ERROR: handlePeriodChange threw',data:{selectedValue:e.target.value,error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+                      // #endregion
+                      console.error('Error in handlePeriodChange:', error);
+                    }
+                  } else {
+                    setSelectedPeriod('');
+                  }
+                }}
                 className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
               >
                 <option value="">--</option>
@@ -4642,6 +4994,19 @@ const CircularParticles = () => {
             <span className="text-xs text-cyan-300">{config.bgParticleOpacity.toFixed(2)}</span>
           </div>
 
+          <div>
+            <label className="text-xs block mb-1 text-cyan-400">White Mode</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={whiteMode}
+                onChange={(e) => setWhiteMode(e.target.checked)}
+                className="w-4 h-4 accent-cyan-500 cursor-pointer"
+              />
+              <span className="text-xs text-cyan-300">{whiteMode ? 'On' : 'Off'}</span>
+            </div>
+          </div>
+
           <div className="col-span-2 md:col-span-4 border-t border-gray-600 pt-4 mt-2">
             <h3 className="text-sm font-semibold text-green-400 mb-3">Connectors</h3>
           </div>
@@ -4707,6 +5072,83 @@ const CircularParticles = () => {
                   disabled={config.connectorsEnabled === false}
                 />
                 <span className="text-xs text-green-300">{(config.connectorArcHeight || 0.3).toFixed(2)}</span>
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Wiggle Path</label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={config.connectorWiggle === true}
+                onChange={(e) => {
+                  const isEnabled = e.target.checked;
+                  updateConfig('connectorWiggle', isEnabled);
+                  // Initialize values if they don't exist when enabling
+                  if (isEnabled) {
+                    if (typeof config.connectorWiggleAmplitude !== 'number' || isNaN(config.connectorWiggleAmplitude)) {
+                      updateConfig('connectorWiggleAmplitude', 5);
+                    }
+                    if (typeof config.connectorWiggleFrequency !== 'number' || isNaN(config.connectorWiggleFrequency)) {
+                      updateConfig('connectorWiggleFrequency', 2);
+                    }
+                  }
+                }}
+                className="w-4 h-4 accent-green-500"
+                disabled={config.connectorsEnabled === false}
+              />
+              <span className="text-xs text-green-300 ml-2">
+                {config.connectorWiggle === true ? 'On' : 'Off'}
+              </span>
+            </div>
+          </div>
+
+          {config.connectorWiggle && (
+            <>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Wiggle Amplitude</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  step="0.5"
+                  value={(() => {
+                    const val = config.connectorWiggleAmplitude;
+                    return (typeof val === 'number' && !isNaN(val)) ? val : 5;
+                  })()}
+                  onChange={(e) => updateConfig('connectorWiggleAmplitude', e.target.value)}
+                  className="w-full accent-green-500"
+                  disabled={config.connectorsEnabled === false || config.connectorWiggle !== true}
+                />
+                <span className="text-xs text-green-300">
+                  {(() => {
+                    const val = config.connectorWiggleAmplitude;
+                    return ((typeof val === 'number' && !isNaN(val)) ? val : 5).toFixed(1);
+                  })()}
+                </span>
+              </div>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Wiggle Frequency</label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="10"
+                  step="0.1"
+                  value={(() => {
+                    const val = config.connectorWiggleFrequency;
+                    return (typeof val === 'number' && !isNaN(val)) ? val : 2;
+                  })()}
+                  onChange={(e) => updateConfig('connectorWiggleFrequency', e.target.value)}
+                  className="w-full accent-green-500"
+                  disabled={config.connectorsEnabled === false || config.connectorWiggle !== true}
+                />
+                <span className="text-xs text-green-300">
+                  {(() => {
+                    const val = config.connectorWiggleFrequency;
+                    return ((typeof val === 'number' && !isNaN(val)) ? val : 2).toFixed(1);
+                  })()}
+                </span>
               </div>
             </>
           )}
