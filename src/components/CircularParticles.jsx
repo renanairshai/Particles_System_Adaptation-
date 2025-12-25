@@ -2930,7 +2930,9 @@ const CircularParticles = () => {
                 const perpY = tangent.x;
                 // Add time-based animation offset using configurable speed
                 const wavePhase = t * wiggleFrequency * Math.PI * 2 + time * wiggleSpeed;
-                const offset = Math.sin(wavePhase) * wiggleAmplitude;
+                // Fade factor: 0 at t=0 and t=1, 1.0 at t=0.5 (pins ends to particles)
+                const fadeFactor = Math.sin(t * Math.PI);
+                const offset = Math.sin(wavePhase) * wiggleAmplitude * fadeFactor;
                 
                 const wiggledX = point.x + perpX * offset;
                 const wiggledY = point.y + perpY * offset;
@@ -2969,7 +2971,9 @@ const CircularParticles = () => {
                 const perpY = tangent.x;
                 // Add time-based animation offset using configurable speed
                 const wavePhase = t * wiggleFrequency * Math.PI * 2 + time * wiggleSpeed;
-                const offset = Math.sin(wavePhase) * wiggleAmplitude;
+                // Fade factor: 0 at t=0 and t=1, 1.0 at t=0.5 (pins ends to particles)
+                const fadeFactor = Math.sin(t * Math.PI);
+                const offset = Math.sin(wavePhase) * wiggleAmplitude * fadeFactor;
                 
                 const wiggledX = point.x + perpX * offset;
                 const wiggledY = point.y + perpY * offset;
