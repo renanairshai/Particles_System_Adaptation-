@@ -65,7 +65,8 @@ const CircularParticles = () => {
     connectorDotFillConnected: false,
     connectorWiggle: false,
     connectorWiggleAmplitude: 5,
-    connectorWiggleFrequency: 2
+    connectorWiggleFrequency: 2,
+    connectorWiggleSpeed: 0.01
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -2848,7 +2849,7 @@ const CircularParticles = () => {
     // Helper function to draw a line with different styles
     // progress: 0-1, controls trim path effect (0 = no line, 1 = full line)
     // Draws from both ends toward center: 0→50% and 100%→50%
-    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null, progress = 1.0, cfg = null) => {
+    const drawStyledLine = (ctx, x1, y1, x2, y2, style, isArc = false, controlX = null, controlY = null, progress = 1.0, cfg = null, time = 0) => {
       const lineStyle = style || 'solid';
       const trimmedProgress = Math.max(0, Math.min(1, progress)); // Clamp to 0-1
       
@@ -2856,6 +2857,7 @@ const CircularParticles = () => {
       const wiggleEnabled = cfg && cfg.connectorWiggle === true;
       const wiggleAmplitude = cfg ? (cfg.connectorWiggleAmplitude || 5) : 5;
       const wiggleFrequency = cfg ? (cfg.connectorWiggleFrequency || 2) : 2;
+      const wiggleSpeed = cfg ? (cfg.connectorWiggleSpeed || 0.01) : 0.01;
       
       // Helper function to get point on path at parameter t (0 to 1)
       const getPointOnPath = (t) => {
@@ -2892,89 +2894,127 @@ const CircularParticles = () => {
       };
       
       // If wiggle is enabled, draw wiggly path
-      if (wiggleEnabled && wiggleAmplitude > 0) {
-        ctx.beginPath();
-        
-        // Calculate number of segments based on line length and frequency
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const lineLength = Math.sqrt(dx * dx + dy * dy);
-        const numSegments = Math.max(20, Math.floor(lineLength / 2)); // At least 20 segments, more for longer lines
-        
-        // Sample points along the path and apply wiggle
-        // Handle progress: draw from both ends toward center (like original)
-        const halfProgress = trimmedProgress * 2; // Scale to 0-2
-        
-        let firstPoint = true;
-        const segmentsToDraw = Math.ceil(numSegments * trimmedProgress);
-        
-        // Draw from start toward center (0 → 50%)
-        if (halfProgress > 0) {
-          const startProgress = Math.min(0.5, halfProgress * 0.5);
-          const startSegments = Math.ceil(numSegments * startProgress);
+      if (wiggleEnabled && wiggleAmplitude > 0 && !isNaN(wiggleAmplitude) && !isNaN(wiggleFrequency) && !isNaN(wiggleSpeed) && isFinite(wiggleSpeed)) {
+        try {
+          ctx.beginPath();
           
-          for (let i = 0; i <= startSegments; i++) {
-            const t = i / numSegments;
-            if (t > startProgress) break;
+          // Calculate number of segments based on line length and frequency
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          const lineLength = Math.sqrt(dx * dx + dy * dy);
+          
+          // Safety check: if line length is 0 or invalid, fall through to normal drawing
+          if (lineLength > 0 && isFinite(lineLength)) {
+          const numSegments = Math.max(20, Math.floor(lineLength / 2)); // At least 20 segments, more for longer lines
+          
+          // Sample points along the path and apply wiggle
+          // Handle progress: draw from both ends toward center (like original)
+          const halfProgress = trimmedProgress * 2; // Scale to 0-2
+          
+          let firstPoint = true;
+          let hasPoints = false;
+          
+          // Draw from start toward center (0 → 50%)
+          if (halfProgress > 0) {
+            const startProgress = Math.min(0.5, halfProgress * 0.5);
+            const startSegments = Math.ceil(numSegments * startProgress);
             
-            const point = getPointOnPath(t);
-            const tangent = getTangentAt(t);
-            const perpX = -tangent.y;
-            const perpY = tangent.x;
-            const wavePhase = t * wiggleFrequency * Math.PI * 2;
-            const offset = Math.sin(wavePhase) * wiggleAmplitude;
-            
-            const wiggledX = point.x + perpX * offset;
-            const wiggledY = point.y + perpY * offset;
-            
-            if (firstPoint) {
-              ctx.moveTo(wiggledX, wiggledY);
-              firstPoint = false;
-            } else {
-              ctx.lineTo(wiggledX, wiggledY);
+            for (let i = 0; i <= startSegments; i++) {
+              const t = i / numSegments;
+              if (t > startProgress) break;
+              
+              try {
+                const point = getPointOnPath(t);
+                const tangent = getTangentAt(t);
+                const perpX = -tangent.y;
+                const perpY = tangent.x;
+                // Add time-based animation offset using configurable speed
+                const wavePhase = t * wiggleFrequency * Math.PI * 2 + time * wiggleSpeed;
+                const offset = Math.sin(wavePhase) * wiggleAmplitude;
+                
+                const wiggledX = point.x + perpX * offset;
+                const wiggledY = point.y + perpY * offset;
+                
+                // Check for valid coordinates
+                if (isFinite(wiggledX) && isFinite(wiggledY)) {
+                  if (firstPoint) {
+                    ctx.moveTo(wiggledX, wiggledY);
+                    firstPoint = false;
+                    hasPoints = true;
+                  } else {
+                    ctx.lineTo(wiggledX, wiggledY);
+                  }
+                }
+              } catch (e) {
+                // If there's an error, fall through to normal drawing
+                console.warn('Wiggle drawing error:', e);
+                break;
+              }
             }
           }
-        }
-        
-        // Draw from end toward center (100% → 50%)
-        if (halfProgress > 1) {
-          const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
-          const endSegments = Math.ceil(numSegments * (1 - endProgress));
           
-          for (let i = numSegments; i >= endSegments; i--) {
-            const t = i / numSegments;
-            if (t < endProgress) break;
+          // Draw from end toward center (100% → 50%)
+          if (halfProgress > 1) {
+            const endProgress = 1 - Math.min(0.5, (halfProgress - 1) * 0.5);
+            const endSegments = Math.ceil(numSegments * (1 - endProgress));
             
-            const point = getPointOnPath(t);
-            const tangent = getTangentAt(t);
-            const perpX = -tangent.y;
-            const perpY = tangent.x;
-            const wavePhase = t * wiggleFrequency * Math.PI * 2;
-            const offset = Math.sin(wavePhase) * wiggleAmplitude;
-            
-            const wiggledX = point.x + perpX * offset;
-            const wiggledY = point.y + perpY * offset;
-            
-            ctx.lineTo(wiggledX, wiggledY);
+            for (let i = numSegments; i >= endSegments; i--) {
+              const t = i / numSegments;
+              if (t < endProgress) break;
+              
+              try {
+                const point = getPointOnPath(t);
+                const tangent = getTangentAt(t);
+                const perpX = -tangent.y;
+                const perpY = tangent.x;
+                // Add time-based animation offset using configurable speed
+                const wavePhase = t * wiggleFrequency * Math.PI * 2 + time * wiggleSpeed;
+                const offset = Math.sin(wavePhase) * wiggleAmplitude;
+                
+                const wiggledX = point.x + perpX * offset;
+                const wiggledY = point.y + perpY * offset;
+                
+                // Check for valid coordinates
+                if (isFinite(wiggledX) && isFinite(wiggledY)) {
+                  ctx.lineTo(wiggledX, wiggledY);
+                  hasPoints = true;
+                }
+              } catch (e) {
+                // If there's an error, fall through to normal drawing
+                console.warn('Wiggle drawing error:', e);
+                break;
+              }
+            }
           }
+          
+          // Only draw if we have valid points
+          if (hasPoints) {
+            // Apply line style
+            if (lineStyle === 'solid') {
+              ctx.setLineDash([]);
+            } else if (lineStyle === 'dashed') {
+              ctx.setLineDash([5, 5]);
+            } else if (lineStyle === 'dotted') {
+              ctx.setLineDash([2, 3]);
+            }
+            
+            ctx.stroke();
+            if (lineStyle !== 'solid') {
+              ctx.setLineDash([]);
+            }
+            return;
+          }
+          // If no valid points, close the path and fall through to normal drawing
+          ctx.beginPath(); // Reset path for normal drawing
         }
-        
-        // Apply line style
-        if (lineStyle === 'solid') {
-          ctx.setLineDash([]);
-        } else if (lineStyle === 'dashed') {
-          ctx.setLineDash([5, 5]);
-        } else if (lineStyle === 'dotted') {
-          ctx.setLineDash([2, 3]);
+        } catch (e) {
+          // If wiggle drawing fails completely, fall through to normal drawing
+          console.warn('Wiggle drawing failed, using normal drawing:', e);
+          ctx.beginPath(); // Reset path for normal drawing
         }
-        
-        ctx.stroke();
-        if (lineStyle !== 'solid') {
-          ctx.setLineDash([]);
-        }
-        return;
       }
       
+      // Normal drawing code (when wiggle is disabled or failed)
       if (lineStyle === 'solid') {
         ctx.setLineDash([]);
         ctx.beginPath();
@@ -3280,7 +3320,7 @@ const CircularParticles = () => {
     };
 
     // Draw connectors between particles within distance range
-    const drawConnectors = (ctx, particles, cfg) => {
+    const drawConnectors = (ctx, particles, cfg, time = 0) => {
       if (!cfg.connectorsEnabled) return;
       
       ctx.save();
@@ -3359,7 +3399,7 @@ const CircularParticles = () => {
             }
             
             // Draw line with selected style and progress (trim path effect)
-            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg, time);
             
             // Mark particles as connected
             connectedParticles.add(p1);
@@ -3394,7 +3434,7 @@ const CircularParticles = () => {
                 controlX = midX + (-dy / distance) * arcHeight * direction;
                 controlY = midY + (dx / distance) * arcHeight * direction;
               }
-              drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
+              drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg, time);
               newActiveConnections.set(key, { p1, p2, distance, progress });
             }
           }
@@ -3419,7 +3459,7 @@ const CircularParticles = () => {
               controlX = midX + (-dy / distance) * arcHeight * direction;
               controlY = midY + (dx / distance) * arcHeight * direction;
             }
-            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg);
+            drawStyledLine(ctx, p1.x2d, p1.y2d, p2.x2d, p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, progress, cfg, time);
             newActiveConnections.set(key, { p1, p2, distance, progress });
           }
         }
@@ -3498,7 +3538,7 @@ const CircularParticles = () => {
           const newProgress = 0; // Will animate to 1.0 over time
           
           // Draw line with selected style and progress (trim path effect)
-          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, newProgress, cfg);
+          drawStyledLine(ctx, conn.p1.x2d, conn.p1.y2d, conn.p2.x2d, conn.p2.y2d, cfg.connectorLineStyle || 'solid', isArc, controlX, controlY, newProgress, cfg, time);
           
           // Mark particles as connected
           connectedParticles.add(conn.p1);
@@ -3654,7 +3694,7 @@ const CircularParticles = () => {
         });
 
         // Draw connectors between particles within distance range
-        drawConnectors(ctx, particlesRef.current, cfg);
+        drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
         const allParticles = currentStateRef.current === 'birth' 
@@ -3974,6 +4014,9 @@ const CircularParticles = () => {
     }
     if (typeof config.connectorWiggleFrequency === 'number') {
       periodConfig.connectorWiggleFrequency = config.connectorWiggleFrequency;
+    }
+    if (typeof config.connectorWiggleSpeed === 'number') {
+      periodConfig.connectorWiggleSpeed = config.connectorWiggleSpeed;
     }
     
     // Update config state
@@ -5093,6 +5136,9 @@ const CircularParticles = () => {
                     if (typeof config.connectorWiggleFrequency !== 'number' || isNaN(config.connectorWiggleFrequency)) {
                       updateConfig('connectorWiggleFrequency', 2);
                     }
+                    if (typeof config.connectorWiggleSpeed !== 'number' || isNaN(config.connectorWiggleSpeed)) {
+                      updateConfig('connectorWiggleSpeed', 0.01);
+                    }
                   }
                 }}
                 className="w-4 h-4 accent-green-500"
@@ -5147,6 +5193,28 @@ const CircularParticles = () => {
                   {(() => {
                     const val = config.connectorWiggleFrequency;
                     return ((typeof val === 'number' && !isNaN(val)) ? val : 2).toFixed(1);
+                  })()}
+                </span>
+              </div>
+              <div>
+                <label className="text-xs block mb-1 text-green-400">Wiggle Speed</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="0.1"
+                  step="0.001"
+                  value={(() => {
+                    const val = config.connectorWiggleSpeed;
+                    return (typeof val === 'number' && !isNaN(val)) ? val : 0.01;
+                  })()}
+                  onChange={(e) => updateConfig('connectorWiggleSpeed', e.target.value)}
+                  className="w-full accent-green-500"
+                  disabled={config.connectorsEnabled === false || config.connectorWiggle !== true}
+                />
+                <span className="text-xs text-green-300">
+                  {(() => {
+                    const val = config.connectorWiggleSpeed;
+                    return ((typeof val === 'number' && !isNaN(val)) ? val : 0.01).toFixed(3);
                   })()}
                 </span>
               </div>
