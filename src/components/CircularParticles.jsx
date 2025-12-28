@@ -50,8 +50,10 @@ const CircularParticles = () => {
     connectorMinDistance: 100,
     connectorMaxDistance: 112,
     connectorColor: '#000000',
+    connectorDotColor: null, // If null, falls back to connectorColor
     connectorWidth: 0.5,
     connectorOpacity: 1.00,
+    connectorDotOpacity: null, // If null, falls back to connectorOpacity
     connectorMaxPerParticle: 5,
     connectorMaxTotal: 20,
     connectorArcMode: false,
@@ -1391,6 +1393,7 @@ const CircularParticles = () => {
   });
   const [interpolateMode, setInterpolateMode] = useState(true);
   const [whiteMode, setWhiteMode] = useState(false);
+  const [whiteModeDotOriginalColor, setWhiteModeDotOriginalColor] = useState(false);
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
@@ -1500,6 +1503,7 @@ const CircularParticles = () => {
     // Get the current editable gradients (new format: array of gradient arrays)
     const gradientStopsArray = editableGradients;
     const currentWhiteMode = whiteMode;
+    const currentWhiteModeDotOriginalColor = whiteModeDotOriginalColor;
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -3391,7 +3395,7 @@ const CircularParticles = () => {
     };
 
     // Draw connectors between particles within distance range
-    const drawConnectors = (ctx, particles, cfg, time = 0) => {
+    const drawConnectors = (ctx, particles, cfg, time = 0, whiteModeFlag = false, whiteModeDotOriginalColorFlag = false) => {
       if (!cfg.connectorsEnabled) return;
       
       ctx.save();
@@ -3634,7 +3638,12 @@ const CircularParticles = () => {
         const savedAlpha = ctx.globalAlpha;
         const savedLineDash = ctx.getLineDash(); // Save current line dash pattern
         const fillConnected = cfg.connectorDotFillConnected === true;
-        ctx.globalAlpha = 1.0; // Use full opacity for dots to make them visible
+        
+        // Use separate dot opacity if specified, otherwise fall back to connectorOpacity
+        const dotOpacity = cfg.connectorDotOpacity !== null && cfg.connectorDotOpacity !== undefined
+          ? cfg.connectorDotOpacity
+          : (cfg.connectorOpacity || 1.0);
+        ctx.globalAlpha = dotOpacity;
         
         // Draw dots on all particles
         for (const particle of particles) {
@@ -3643,18 +3652,56 @@ const CircularParticles = () => {
           const isConnected = connectedParticles.has(particle);
           const shouldFill = fillConnected ? isConnected : !cfg.connectorDotStrokeOnly;
           
-          if (shouldFill) {
-            ctx.fillStyle = cfg.connectorColor || '#000000';
-            ctx.beginPath();
-            ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
-            ctx.fill();
+          // If white mode is on AND the toggle is enabled, use the full original gradient
+          if (whiteModeFlag && whiteModeDotOriginalColorFlag && particle.colorSet && particle.colorSet.length > 0) {
+            // Create a radial gradient for the dot using the particle's full gradient
+            const sortedStops = [...particle.colorSet].sort((a, b) => a.position - b.position);
+            const dotRadius = dotSize / 2;
+            const gradient = ctx.createRadialGradient(
+              particle.x2d, particle.y2d, 0,
+              particle.x2d, particle.y2d, dotRadius
+            );
+            
+            // Add all gradient stops from the particle's gradient
+            sortedStops.forEach(stop => {
+              const colorWithOpacity = stop.opacity < 1 
+                ? stop.color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+                : stop.color;
+              gradient.addColorStop(stop.position, colorWithOpacity);
+            });
+            
+            if (shouldFill) {
+              ctx.fillStyle = gradient;
+              ctx.beginPath();
+              ctx.arc(particle.x2d, particle.y2d, dotRadius, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.setLineDash([]); // Ensure solid line for dot stroke
+              ctx.strokeStyle = gradient;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(particle.x2d, particle.y2d, dotRadius, 0, Math.PI * 2);
+              ctx.stroke();
+            }
           } else {
-            ctx.setLineDash([]); // Ensure solid line for dot stroke
-            ctx.strokeStyle = cfg.connectorColor || '#000000';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
-            ctx.stroke();
+            // Use the configured dot color (or fallback to connector color)
+            const dotColor = cfg.connectorDotColor !== null && cfg.connectorDotColor !== undefined 
+              ? cfg.connectorDotColor 
+              : (cfg.connectorColor || '#000000');
+            
+            if (shouldFill) {
+              ctx.fillStyle = dotColor;
+              ctx.beginPath();
+              ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.setLineDash([]); // Ensure solid line for dot stroke
+              ctx.strokeStyle = dotColor;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(particle.x2d, particle.y2d, dotSize / 2, 0, Math.PI * 2);
+              ctx.stroke();
+            }
           }
         }
         
@@ -3766,7 +3813,7 @@ const CircularParticles = () => {
 
         // Draw connectors before particles if connectorDrawOnTop is false
         if (cfg.connectorDrawOnTop === false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentWhiteMode, currentWhiteModeDotOriginalColor);
         }
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
@@ -3785,7 +3832,7 @@ const CircularParticles = () => {
 
         // Draw connectors after particles if connectorDrawOnTop is true (default)
         if (cfg.connectorDrawOnTop !== false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentWhiteMode, currentWhiteModeDotOriginalColor);
         }
         
         const visibleCount = allParticles.filter(p => 
@@ -3836,7 +3883,7 @@ const CircularParticles = () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet, editableGradients, backgroundColor, whiteMode]); // Re-run when color set, gradients, background color, or white mode changes
+  }, [selectedColorSet, editableGradients, backgroundColor, whiteMode, whiteModeDotOriginalColor]); // Re-run when color set, gradients, background color, or white mode changes
 
   // Update state refs when state changes
   useEffect(() => {
@@ -3850,11 +3897,11 @@ const CircularParticles = () => {
   const updateConfig = (key, value) => {
     // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
     const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected', 'connectorWiggle'];
-    const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle', 'connectorColor'];
+    const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle', 'connectorColor', 'connectorDotColor'];
     let newValue;
     if (stringKeys.includes(key)) {
-      // Handle connectorColor: allow empty string to set to null
-      if (key === 'connectorColor' && (value === '' || value === null)) {
+      // Handle connectorColor and connectorDotColor: allow empty string to set to null
+      if ((key === 'connectorColor' || key === 'connectorDotColor') && (value === '' || value === null)) {
         newValue = null;
       } else {
         newValue = value;
@@ -5128,6 +5175,22 @@ const CircularParticles = () => {
             </div>
           </div>
 
+          {whiteMode && (
+            <div>
+              <label className="text-xs block mb-1 text-cyan-400">Use Original Dot Colors</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={whiteModeDotOriginalColor}
+                  onChange={(e) => setWhiteModeDotOriginalColor(e.target.checked)}
+                  className="w-4 h-4 accent-cyan-500 cursor-pointer"
+                />
+                <span className="text-xs text-cyan-300">{whiteModeDotOriginalColor ? 'On' : 'Off'}</span>
+              </div>
+              <span className="text-xs text-gray-400 italic block mt-1">Use first gradient color for connector dots</span>
+            </div>
+          )}
+
           <div className="col-span-2 md:col-span-4 border-t border-gray-600 pt-4 mt-2">
             <h3 className="text-sm font-semibold text-green-400 mb-3">Connectors</h3>
           </div>
@@ -5328,7 +5391,7 @@ const CircularParticles = () => {
           </div>
 
           <div>
-            <label className="text-xs block mb-1 text-green-400">Connector Color</label>
+            <label className="text-xs block mb-1 text-green-400">Connector Color (Strokes)</label>
             <div className="flex items-center gap-2 mb-2">
               <input
                 type="color"
@@ -5346,6 +5409,28 @@ const CircularParticles = () => {
                 disabled={config.connectorsEnabled === false}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Dot Color</label>
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="color"
+                value={config.connectorDotColor || config.connectorColor || '#ffffff'}
+                onChange={(e) => updateConfig('connectorDotColor', e.target.value)}
+                className="w-10 h-8 rounded border border-gray-500 cursor-pointer"
+                disabled={config.connectorsEnabled === false}
+              />
+              <input
+                type="text"
+                value={config.connectorDotColor || ''}
+                onChange={(e) => updateConfig('connectorDotColor', e.target.value === '' ? null : e.target.value)}
+                className="flex-1 bg-gray-700 text-white text-xs px-2 py-1 rounded border border-gray-500"
+                placeholder={config.connectorColor || '#ffffff'}
+                disabled={config.connectorsEnabled === false}
+              />
+            </div>
+            <span className="text-xs text-gray-400 italic">Leave empty to use stroke color</span>
           </div>
 
           <div>
@@ -5407,7 +5492,7 @@ const CircularParticles = () => {
           </div>
 
           <div>
-            <label className="text-xs block mb-1 text-green-400">Opacity</label>
+            <label className="text-xs block mb-1 text-green-400">Opacity (Strokes)</label>
             <input
               type="range"
               min="0"
@@ -5419,6 +5504,32 @@ const CircularParticles = () => {
               disabled={config.connectorsEnabled === false}
             />
             <span className="text-xs text-green-300">{(config.connectorOpacity || 0.3).toFixed(2)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-green-400">Dot Opacity</label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.connectorDotOpacity !== null && config.connectorDotOpacity !== undefined 
+                ? config.connectorDotOpacity 
+                : (config.connectorOpacity !== null && config.connectorOpacity !== undefined ? config.connectorOpacity : 1.0)}
+              onChange={(e) => updateConfig('connectorDotOpacity', parseFloat(e.target.value))}
+              className="w-full accent-green-500"
+              disabled={config.connectorsEnabled === false}
+            />
+            <span className="text-xs text-green-300">
+              {(config.connectorDotOpacity !== null && config.connectorDotOpacity !== undefined 
+                ? config.connectorDotOpacity 
+                : (config.connectorOpacity !== null && config.connectorOpacity !== undefined ? config.connectorOpacity : 1.0)).toFixed(2)}
+            </span>
+            <span className="text-xs text-gray-400 italic block mt-1">
+              {config.connectorDotOpacity === null || config.connectorDotOpacity === undefined 
+                ? '(Using stroke opacity)' 
+                : ''}
+            </span>
           </div>
 
           <div>
@@ -5470,8 +5581,8 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1 text-green-400">Dot Size</label>
             <input
               type="range"
-              min="1"
-              max="10"
+              min="0"
+              max="20"
               step="0.5"
               value={Number(config.connectorDotSize) || 3}
               onChange={(e) => updateConfig('connectorDotSize', Number(e.target.value))}
