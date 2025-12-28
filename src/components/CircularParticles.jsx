@@ -69,11 +69,19 @@ const CircularParticles = () => {
     connectorWiggleAmplitude: 5,
     connectorWiggleFrequency: 2,
     connectorWiggleSpeed: 0.01,
-    connectorDrawOnTop: true  // If true, connectors appear on top of particles; if false, behind
+    connectorDrawOnTop: true,  // If true, connectors appear on top of particles; if false, behind
+    gridRows: 12, // Grid rows (only used in grid state)
+    gridCols: 13, // Grid columns (only used in grid state)
+    gridWidth: 1950, // Total grid width in units (only used in grid state)
+    gridHeight: 1800  // Total grid height in units (only used in grid state)
   });
 
-  const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
+  const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth' | 'grid'
   const [divisionLevel, setDivisionLevel] = useState(0); // 0-7 for 8 levels
+  const [gridRows, setGridRows] = useState(12); // Grid rows (only used in grid state)
+  const [gridCols, setGridCols] = useState(13); // Grid columns (only used in grid state)
+  const [gridWidth, setGridWidth] = useState(1950); // Grid width in units (only used in grid state)
+  const [gridHeight, setGridHeight] = useState(1800); // Grid height in units (only used in grid state)
   const divisionProgressRef = useRef(0); // 0-1 for animation progress
   const divisionStartTimeRef = useRef(0);
   const isDividingRef = useRef(false); // Prevent multiple divisions at once
@@ -2230,6 +2238,17 @@ const CircularParticles = () => {
         this.unitY = Math.sin(phi) * Math.sin(theta);
         this.unitZ = Math.cos(phi);
         
+        // Calculate grid position (fixed per particle)
+        // Fill columns first (top-to-bottom, left-to-right)
+        // Use specified grid dimensions if available (grid state), otherwise calculate from particle count
+        const gridCols = cfg.gridCols || Math.ceil(Math.sqrt(cfg.particleCount));
+        const gridRows = cfg.gridRows || Math.ceil(cfg.particleCount / gridCols);
+        // Fill columns: particles go down each column before moving to next column
+        this.gridRow = index % gridRows;
+        this.gridCol = Math.floor(index / gridRows);
+        this.gridCols = gridCols; // Store for use in updateFromConfig
+        this.gridRows = gridRows; // Store for use in updateFromConfig
+        
         // Random values stored for consistent behavior
         this.scatterX = (Math.random() - 0.5) * 2;
         this.scatterY = (Math.random() - 0.5) * 2;
@@ -2303,9 +2322,35 @@ const CircularParticles = () => {
       
       // Recalculate base positions from current config (uses stored unit positions)
       updateFromConfig(cfg) {
+        // Sphere positions (for gathering/birth states)
         this.baseX = cfg.sphereRadius * this.unitX;
         this.baseY = cfg.sphereRadius * this.unitY;
         this.baseZ = cfg.sphereRadius * this.unitZ;
+        
+        // Grid positions (for grid state)
+        // Recalculate grid dimensions if they changed in config
+        const gridCols = cfg.gridCols || this.gridCols;
+        const gridRows = cfg.gridRows || this.gridRows;
+        // Update stored dimensions
+        this.gridCols = gridCols;
+        this.gridRows = gridRows;
+        // Recalculate grid position if dimensions changed
+        if (cfg.gridCols || cfg.gridRows) {
+          this.gridRow = this.index % gridRows;
+          this.gridCol = Math.floor(this.index / gridRows);
+        }
+        
+        // Calculate spacing based on grid width/height and number of rows/columns
+        const gridWidth = cfg.gridWidth || 1950;
+        const gridHeight = cfg.gridHeight || 1800;
+        // Calculate spacing: divide total size by number of cells (cols-1 and rows-1 for spacing between)
+        const gridSpacingX = gridCols > 1 ? gridWidth / (gridCols - 1) : 0;
+        const gridSpacingY = gridRows > 1 ? gridHeight / (gridRows - 1) : 0;
+        
+        // Position particles: center the grid and space evenly
+        this.gridBaseX = (this.gridCol - (gridCols - 1) / 2) * gridSpacingX;
+        this.gridBaseY = (this.gridRow - (gridRows - 1) / 2) * gridSpacingY;
+        this.gridBaseZ = 0; // Keep grid in 2D plane
         
         this.breathingSpeed = cfg.breathingSpeedMin + this.breathingSpeedRatio * (cfg.breathingSpeedMax - cfg.breathingSpeedMin);
         this.breathingAmount = cfg.breathingAmountMin + this.breathingAmountRatio * (cfg.breathingAmountMax - cfg.breathingAmountMin);
@@ -2371,6 +2416,11 @@ const CircularParticles = () => {
           this.x3d = baseX + orbitalOffsetX + wobbleX;
           this.y3d = baseY + orbitalOffsetY + wobbleY;
           this.z3d = baseZ + orbitalOffsetZ + wobbleZ;
+        } else if (state === 'grid') {
+          // Grid state: maintain exact grid positions - no scatter or breathing for clean grid appearance
+          this.x3d = this.gridBaseX;
+          this.y3d = this.gridBaseY;
+          this.z3d = this.gridBaseZ;
         } else {
           // Gathering state: original sphere movement logic
           const scatterOffset = cfg.scatter;
@@ -2392,27 +2442,39 @@ const CircularParticles = () => {
         }
       }
 
-      rotate(angleX, angleY, cfg, canvasWidth, canvasHeight) {
-        const cosX = Math.cos(angleX);
-        const sinX = Math.sin(angleX);
-        const y1 = this.y3d * cosX - this.z3d * sinX;
-        const z1 = this.y3d * sinX + this.z3d * cosX;
-        
-        const cosY = Math.cos(angleY);
-        const sinY = Math.sin(angleY);
-        const x2 = this.x3d * cosY + z1 * sinY;
-        const z2 = -this.x3d * sinY + z1 * cosY;
-        
-        this.depth = z2;
-        
-        const scale = cfg.perspective / (cfg.perspective + z2);
-        this.scale = scale;
-        
-        const centerX = canvasWidth / 2;
-        const centerY = canvasHeight / 2;
-        
-        this.x2d = centerX + x2 * scale;
-        this.y2d = centerY + y1 * scale;
+      rotate(angleX, angleY, cfg, canvasWidth, canvasHeight, state) {
+        // For grid state, directly project to 2D without 3D rotation
+        if (state === 'grid') {
+          const centerX = canvasWidth / 2;
+          const centerY = canvasHeight / 2;
+          // Direct 2D projection - no rotation, no perspective
+          this.x2d = centerX + this.x3d;
+          this.y2d = centerY + this.y3d;
+          this.depth = this.z3d;
+          this.scale = 1; // No perspective scaling for flat 2D grid
+        } else {
+          // Original 3D rotation logic for other states
+          const cosX = Math.cos(angleX);
+          const sinX = Math.sin(angleX);
+          const y1 = this.y3d * cosX - this.z3d * sinX;
+          const z1 = this.y3d * sinX + this.z3d * cosX;
+          
+          const cosY = Math.cos(angleY);
+          const sinY = Math.sin(angleY);
+          const x2 = this.x3d * cosY + z1 * sinY;
+          const z2 = -this.x3d * sinY + z1 * cosY;
+          
+          this.depth = z2;
+          
+          const scale = cfg.perspective / (cfg.perspective + z2);
+          this.scale = scale;
+          
+          const centerX = canvasWidth / 2;
+          const centerY = canvasHeight / 2;
+          
+          this.x2d = centerX + x2 * scale;
+          this.y2d = centerY + y1 * scale;
+        }
         
         // Store position in history for echo effect
         if (cfg.motionBlur > 0) {
@@ -3851,8 +3913,13 @@ const CircularParticles = () => {
           if (currentStateRef.current === 'birth') {
             // Transition to Birth: initialize with single particle
             initBirthState(cfg);
-          } else if (currentStateRef.current === 'gathering') {
-            // Transition to Gathering: restore normal particle distribution
+          } else if (currentStateRef.current === 'gathering' || currentStateRef.current === 'grid') {
+            // Transition to Gathering or Grid: restore normal particle distribution
+            // For grid state, ensure config has grid dimensions
+            if (currentStateRef.current === 'grid' && configRef.current) {
+              configRef.current.gridRows = gridRows;
+              configRef.current.gridCols = gridCols;
+            }
             particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
             divisionLevelRef.current = 0;
             divisionProgressRef.current = 0;
@@ -3873,8 +3940,8 @@ const CircularParticles = () => {
           }
         }
         
-        // Check if we need to recreate particles (only when counts change and in gathering state)
-        if (currentStateRef.current === 'gathering') {
+        // Check if we need to recreate particles (only when counts change and in gathering or grid state)
+        if (currentStateRef.current === 'gathering' || currentStateRef.current === 'grid') {
           if (particlesRef.current.length !== cfg.particleCount) {
             particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
           }
@@ -3885,6 +3952,11 @@ const CircularParticles = () => {
         
         // Only update particles when config actually changes
         const lastCfg = lastConfigRef.current;
+        // Check if grid dimensions changed (for grid state)
+        const gridDimensionsChanged = currentStateRef.current === 'grid' && lastCfg && 
+          (lastCfg.gridRows !== cfg.gridRows || lastCfg.gridCols !== cfg.gridCols ||
+           lastCfg.gridWidth !== cfg.gridWidth || lastCfg.gridHeight !== cfg.gridHeight);
+        
         if (!lastCfg || 
             lastCfg.sphereRadius !== cfg.sphereRadius ||
             lastCfg.scatter !== cfg.scatter ||
@@ -3893,8 +3965,14 @@ const CircularParticles = () => {
             lastCfg.breathingSpeedMin !== cfg.breathingSpeedMin ||
             lastCfg.breathingSpeedMax !== cfg.breathingSpeedMax ||
             lastCfg.breathingAmountMin !== cfg.breathingAmountMin ||
-            lastCfg.breathingAmountMax !== cfg.breathingAmountMax) {
-          particlesRef.current.forEach(particle => particle.updateFromConfig(cfg));
+            lastCfg.breathingAmountMax !== cfg.breathingAmountMax ||
+            gridDimensionsChanged) {
+          // If grid dimensions changed, recreate particles with new grid layout
+          if (gridDimensionsChanged && currentStateRef.current === 'grid') {
+            particlesRef.current = Array.from({ length: cfg.particleCount }, (_, i) => new Particle(i, cfg));
+          } else {
+            particlesRef.current.forEach(particle => particle.updateFromConfig(cfg));
+          }
         }
         
         if (!lastCfg ||
@@ -3910,8 +3988,11 @@ const CircularParticles = () => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         timeRef.current++;
-        angleXRef.current += cfg.rotationSpeedX;
-        angleYRef.current += cfg.rotationSpeedY;
+        // Skip rotation updates for grid state (purely 2D, no rotation)
+        if (currentStateRef.current !== 'grid') {
+          angleXRef.current += cfg.rotationSpeedX;
+          angleYRef.current += cfg.rotationSpeedY;
+        }
 
         // Skip background particles in Birth state
         if (currentStateRef.current !== 'birth') {
@@ -3923,7 +4004,7 @@ const CircularParticles = () => {
 
         particlesRef.current.forEach(particle => {
           particle.updatePosition(cfg, currentStateRef.current, divisionProgressRef.current, timeRef.current, Date.now());
-          particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height);
+          particle.rotate(angleXRef.current, angleYRef.current, cfg, canvas.width, canvas.height, currentStateRef.current);
         });
         
         // Update particle sizes with metaball effect (after positions and rotations are set)
@@ -4009,7 +4090,31 @@ const CircularParticles = () => {
   // Update state refs when state changes
   useEffect(() => {
     currentStateRef.current = currentState;
-  }, [currentState]);
+    // When switching to grid state, sync grid dimensions
+    if (currentState === 'grid' && configRef.current) {
+      // Use config values if they exist, otherwise use state values
+      if (configRef.current.gridRows && configRef.current.gridCols) {
+        setGridRows(configRef.current.gridRows);
+        setGridCols(configRef.current.gridCols);
+      } else {
+        configRef.current.gridRows = gridRows;
+        configRef.current.gridCols = gridCols;
+      }
+      if (configRef.current.gridWidth && configRef.current.gridHeight) {
+        setGridWidth(configRef.current.gridWidth);
+        setGridHeight(configRef.current.gridHeight);
+      } else {
+        configRef.current.gridWidth = gridWidth;
+        configRef.current.gridHeight = gridHeight;
+      }
+      // Ensure particle count matches grid dimensions
+      const targetCount = (configRef.current.gridRows || gridRows) * (configRef.current.gridCols || gridCols);
+      if (configRef.current.particleCount !== targetCount) {
+        configRef.current.particleCount = targetCount;
+        setConfig(prev => ({ ...prev, particleCount: targetCount }));
+      }
+    }
+  }, [currentState, gridRows, gridCols, gridWidth, gridHeight]);
 
   useEffect(() => {
     divisionLevelRef.current = divisionLevel;
@@ -4516,6 +4621,7 @@ const CircularParticles = () => {
               >
                 <option value="gathering">Gathering</option>
                 <option value="birth">Birth</option>
+                <option value="grid">Grid</option>
               </select>
             </div>
             {currentState === 'birth' && (
@@ -4525,6 +4631,82 @@ const CircularParticles = () => {
                   {divisionLevel}/7
                 </span>
               </div>
+            )}
+            {currentState === 'grid' && (
+              <>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Grid Rows:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={gridRows}
+                    onChange={(e) => {
+                      const rows = parseInt(e.target.value) || 1;
+                      setGridRows(rows);
+                      // Update config with new grid dimensions and particle count
+                      updateConfig('gridRows', rows);
+                      updateConfig('particleCount', rows * gridCols);
+                    }}
+                    className="w-16 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Grid Columns:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={gridCols}
+                    onChange={(e) => {
+                      const cols = parseInt(e.target.value) || 1;
+                      setGridCols(cols);
+                      // Update config with new grid dimensions and particle count
+                      updateConfig('gridCols', cols);
+                      updateConfig('particleCount', gridRows * cols);
+                    }}
+                    className="w-16 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Total Particles:</label>
+                  <span className="text-xs font-mono bg-gray-700 px-2 py-1 rounded">
+                    {gridRows * gridCols}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Grid Width:</label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="5000"
+                    step="50"
+                    value={gridWidth}
+                    onChange={(e) => {
+                      const width = parseInt(e.target.value) || 100;
+                      setGridWidth(width);
+                      updateConfig('gridWidth', width);
+                    }}
+                    className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Grid Height:</label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="5000"
+                    step="50"
+                    value={gridHeight}
+                    onChange={(e) => {
+                      const height = parseInt(e.target.value) || 100;
+                      setGridHeight(height);
+                      updateConfig('gridHeight', height);
+                    }}
+                    className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                  />
+                </div>
+              </>
             )}
             <div className="flex items-center gap-2">
               <button
