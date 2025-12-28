@@ -66,7 +66,8 @@ const CircularParticles = () => {
     connectorWiggle: false,
     connectorWiggleAmplitude: 5,
     connectorWiggleFrequency: 2,
-    connectorWiggleSpeed: 0.01
+    connectorWiggleSpeed: 0.01,
+    connectorDrawOnTop: true  // If true, connectors appear on top of particles; if false, behind
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth'
@@ -758,7 +759,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: false,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set H',
       backgroundColor: '#dbdbdb'
@@ -989,7 +991,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1041,7 +1044,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1093,7 +1097,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1145,7 +1150,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1197,7 +1203,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1249,7 +1256,8 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: true,
-        connectorDotFillConnected: true
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true
       },
       selectedColorSet: 'Color Set J',
       backgroundColor: '#dbdbdb'
@@ -1301,7 +1309,65 @@ const CircularParticles = () => {
         connectorLineStyle: 'dashed',
         connectorBlendMode: 'source-over',
         connectorDotStrokeOnly: false,
-        connectorDotFillConnected: false
+        connectorDotFillConnected: false,
+        connectorDrawOnTop: true
+      },
+      selectedColorSet: 'Color Set 7',
+      backgroundColor: '#dbdbdb'
+    },
+    '8': {
+      config: {
+        particleCount: 100,
+        sphereRadius: 167,
+        minRadius: 15,
+        maxRadius: 80,
+        rotationSpeedX: 0.0035,
+        rotationSpeedY: 0.0061,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 113,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 10,
+        bgMaxSize: 24,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.55,
+        bgParticleOpacity: 0.59,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: true,
+        connectorMinDistance: 34,
+        connectorMaxDistance: 195,
+        connectorColor: '#ffffff',
+        connectorWidth: 0.8,
+        connectorOpacity: 0.71,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 20,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.3,
+        connectorShowDots: true,
+        connectorDotSize: 6.5,
+        connectorLineStyle: 'solid',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: false,
+        connectorDotFillConnected: false,
+        connectorDrawOnTop: true,
+        connectorWiggle: true,
+        connectorWiggleAmplitude: 9.5,
+        connectorWiggleFrequency: 0.7,
+        connectorWiggleSpeed: 0.038
       },
       selectedColorSet: 'Color Set 7',
       backgroundColor: '#dbdbdb'
@@ -1320,7 +1386,8 @@ const CircularParticles = () => {
     '4': true,
     '5': true,
     '6': true,
-    '7': true
+    '7': true,
+    '8': true
   });
   const [interpolateMode, setInterpolateMode] = useState(true);
   const [whiteMode, setWhiteMode] = useState(false);
@@ -3697,8 +3764,10 @@ const CircularParticles = () => {
           particle.update(timeRef.current, cfg, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
         });
 
-        // Draw connectors between particles within distance range
-        drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
+        // Draw connectors before particles if connectorDrawOnTop is false
+        if (cfg.connectorDrawOnTop === false) {
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
+        }
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
         const allParticles = currentStateRef.current === 'birth' 
@@ -3713,6 +3782,11 @@ const CircularParticles = () => {
             particle.draw(ctx, cfg, timeRef.current, currentStateRef.current, particlesRef.current, divisionProgressRef.current, currentTime);
           }
         });
+
+        // Draw connectors after particles if connectorDrawOnTop is true (default)
+        if (cfg.connectorDrawOnTop !== false) {
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current);
+        }
         
         const visibleCount = allParticles.filter(p => 
           p.x2d >= 0 && p.x2d <= canvas.width && 
