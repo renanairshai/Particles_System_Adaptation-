@@ -40,6 +40,7 @@ const CircularParticles = () => {
     motionBlurSteps: 20,
     particleOpacity: 0.23,
     bgParticleOpacity: 0.43,
+    particleNoise: 0, // Noise amount for particle positions (0-100)
     particleShape: 'circle',
     autoRotateShapes: true,
     glowRadius: 1,
@@ -73,7 +74,12 @@ const CircularParticles = () => {
     gridRows: 12, // Grid rows (only used in grid state)
     gridCols: 13, // Grid columns (only used in grid state)
     gridWidth: 1950, // Total grid width in units (only used in grid state)
-    gridHeight: 1800  // Total grid height in units (only used in grid state)
+    gridHeight: 1800, // Total grid height in units (only used in grid state)
+    gridVerticalMovementEnabled: false, // Enable vertical movement in grid state
+    gridVerticalSpeedMin: 0.01, // Minimum vertical oscillation speed
+    gridVerticalSpeedMax: 0.02, // Maximum vertical oscillation speed
+    gridVerticalAmplitudeMin: 20, // Minimum vertical movement distance
+    gridVerticalAmplitudeMax: 40  // Maximum vertical movement distance
   });
 
   const [currentState, setCurrentState] = useState('gathering'); // 'gathering' | 'birth' | 'grid'
@@ -700,6 +706,116 @@ const CircularParticles = () => {
           { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
           { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
           { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set L': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#5e6935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#6a745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.10477299185098952, color: '#5f4e79', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#764c4c', opacity: 1 },
+          { position: 0.220023282887078, color: '#593412', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set M': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#5e6935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#6a745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.10477299185098952, color: '#5f4e79', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff0000', opacity: 1 },
+          { position: 0.03072033898305085, color: '#610000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff7300', opacity: 1 },
+          { position: 0.551906779661017, color: '#FFFF00', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#5266ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#764c4c', opacity: 1 },
+          { position: 0.21420256111757857, color: '#522d31', opacity: 0.8 },
+          { position: 0.4039580908032596, color: '#ffa575', opacity: 0 }
         ]
       ]
     }
@@ -1514,8 +1630,9 @@ const CircularParticles = () => {
     '9': true
   });
   const [interpolateMode, setInterpolateMode] = useState(true);
-  const [whiteMode, setWhiteMode] = useState(false);
-  const [whiteModeDotOriginalColor, setWhiteModeDotOriginalColor] = useState(false);
+  const [oneColorMode, setOneColorMode] = useState(false);
+  const [oneColorModeColor, setOneColorModeColor] = useState('#ffffff');
+  const [oneColorModeDotOriginalColor, setOneColorModeDotOriginalColor] = useState(false);
   
   // Convert old format (colorPalette + gradientStops) to new format (gradientStops with colors)
   const convertToNewFormat = (colorSet) => {
@@ -1631,8 +1748,9 @@ const CircularParticles = () => {
     
     // Get the current editable gradients (new format: array of gradient arrays)
     const gradientStopsArray = editableGradients;
-    const currentWhiteMode = whiteMode;
-    const currentWhiteModeDotOriginalColor = whiteModeDotOriginalColor;
+    const currentOneColorMode = oneColorMode;
+    const currentOneColorModeColor = oneColorModeColor;
+    const currentOneColorModeDotOriginalColor = oneColorModeDotOriginalColor;
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -1695,8 +1813,8 @@ const CircularParticles = () => {
         // Circle keeps the original gradient fill behavior
         const gradient = offCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
         sortedStops.forEach(stop => {
-          // Use white if white mode is enabled
-          const color = currentWhiteMode ? '#ffffff' : stop.color;
+          // Use selected color if one color mode is enabled
+          const color = currentOneColorMode ? currentOneColorModeColor : stop.color;
           const colorWithOpacity = stop.opacity < 1 
             ? color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
             : color;
@@ -1754,8 +1872,8 @@ const CircularParticles = () => {
         const glowLayers = reversedStops.map((stop, index) => {
           const scaleFactor = 1 + (reversedStops.length - index) * 0.5 * glowMult;
           const blurFactor = (reversedStops.length - index) * 60 * glowMult;
-          // Use white if white mode is enabled
-          const color = currentWhiteMode ? '#ffffff' : stop.color;
+          // Use selected color if one color mode is enabled
+          const color = currentOneColorMode ? currentOneColorModeColor : stop.color;
           return {
             blur: blurFactor,
             color: color,
@@ -1785,8 +1903,8 @@ const CircularParticles = () => {
         // Draw the solid shape on top with feathered edge (use first stop color)
         offCtx.save();
         const firstStop = sortedStops[0];
-        // Use white if white mode is enabled
-        const firstColor = currentWhiteMode ? '#ffffff' : firstStop.color;
+        // Use selected color if one color mode is enabled
+        const firstColor = currentOneColorMode ? currentOneColorModeColor : firstStop.color;
         offCtx.shadowColor = firstColor;
         offCtx.shadowBlur = 6;
         offCtx.fillStyle = firstColor;
@@ -2267,6 +2385,15 @@ const CircularParticles = () => {
         this.breathingPhase = Math.random() * Math.PI * 2;
         this.radiusRatio = Math.random();
         
+        // Grid vertical movement properties
+        this.gridVerticalSpeedRatio = Math.random();
+        this.gridVerticalAmplitudeRatio = Math.random();
+        this.gridVerticalPhase = Math.random() * Math.PI * 2;
+        
+        // Noise offsets (consistent per particle)
+        this.noiseOffsetX = (Math.random() - 0.5) * 2;
+        this.noiseOffsetY = (Math.random() - 0.5) * 2;
+        
         this.colorSetIndex = Math.floor(Math.random() * gradientStopsArray.length);
         this.colorSet = gradientStopsArray[this.colorSetIndex];
         this.pulseOffset = index * 0.05;
@@ -2352,6 +2479,14 @@ const CircularParticles = () => {
         this.gridBaseY = (this.gridRow - (gridRows - 1) / 2) * gridSpacingY;
         this.gridBaseZ = 0; // Keep grid in 2D plane
         
+        // Calculate per-particle vertical movement values (with fallback defaults)
+        const speedMin = cfg.gridVerticalSpeedMin ?? 0.01;
+        const speedMax = cfg.gridVerticalSpeedMax ?? 0.02;
+        const ampMin = cfg.gridVerticalAmplitudeMin ?? 20;
+        const ampMax = cfg.gridVerticalAmplitudeMax ?? 40;
+        this.gridVerticalSpeed = speedMin + this.gridVerticalSpeedRatio * (speedMax - speedMin);
+        this.gridVerticalAmplitude = ampMin + this.gridVerticalAmplitudeRatio * (ampMax - ampMin);
+        
         this.breathingSpeed = cfg.breathingSpeedMin + this.breathingSpeedRatio * (cfg.breathingSpeedMax - cfg.breathingSpeedMin);
         this.breathingAmount = cfg.breathingAmountMin + this.breathingAmountRatio * (cfg.breathingAmountMax - cfg.breathingAmountMin);
         this.baseRadius = cfg.minRadius + this.radiusRatio * (cfg.maxRadius - cfg.minRadius);
@@ -2417,10 +2552,18 @@ const CircularParticles = () => {
           this.y3d = baseY + orbitalOffsetY + wobbleY;
           this.z3d = baseZ + orbitalOffsetZ + wobbleZ;
         } else if (state === 'grid') {
-          // Grid state: maintain exact grid positions - no scatter or breathing for clean grid appearance
+          // Grid state: maintain grid positions with optional vertical movement
           this.x3d = this.gridBaseX;
-          this.y3d = this.gridBaseY;
           this.z3d = this.gridBaseZ;
+          // Apply vertical oscillation if enabled
+          if (cfg.gridVerticalMovementEnabled && 
+              typeof this.gridVerticalSpeed !== 'undefined' && 
+              typeof this.gridVerticalAmplitude !== 'undefined' &&
+              typeof this.gridVerticalPhase !== 'undefined') {
+            this.y3d = this.gridBaseY + Math.sin(time * this.gridVerticalSpeed + this.gridVerticalPhase) * this.gridVerticalAmplitude;
+          } else {
+            this.y3d = this.gridBaseY;
+          }
         } else {
           // Gathering state: original sphere movement logic
           const scatterOffset = cfg.scatter;
@@ -2721,8 +2864,15 @@ const CircularParticles = () => {
               ? 2 * transitionProgress * transitionProgress * transitionProgress * transitionProgress
               : 1 - Math.pow(-2 * transitionProgress + 2, 4) / 2;
             
+            // Apply noise to transition drawing
+            const noiseAmount = cfg.particleNoise || 0;
+            const noiseX = this.noiseOffsetX * noiseAmount;
+            const noiseY = this.noiseOffsetY * noiseAmount;
+            const drawX = this.x2d + noiseX;
+            const drawY = this.y2d + noiseY;
+            
             ctx.save();
-            ctx.translate(this.x2d, this.y2d);
+            ctx.translate(drawX, drawY);
             if (shouldRotate) {
               ctx.rotate(rotationToUse);
             }
@@ -2747,28 +2897,40 @@ const CircularParticles = () => {
             }
             
             ctx.restore();
-          } else {
-            // Normal drawing after transition
-            if (shouldRotate) {
-              ctx.save();
-              ctx.translate(this.x2d, this.y2d);
-              ctx.rotate(rotationToUse);
-              ctx.drawImage(cache, -size/2, -size/2, size, size);
-              ctx.restore();
             } else {
-              ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+              // Normal drawing after transition with noise
+              const noiseAmount = cfg.particleNoise || 0;
+              const noiseX = this.noiseOffsetX * noiseAmount;
+              const noiseY = this.noiseOffsetY * noiseAmount;
+              const drawX = this.x2d + noiseX;
+              const drawY = this.y2d + noiseY;
+              
+              if (shouldRotate) {
+                ctx.save();
+                ctx.translate(drawX, drawY);
+                ctx.rotate(rotationToUse);
+                ctx.drawImage(cache, -size/2, -size/2, size, size);
+                ctx.restore();
+              } else {
+                ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
+              }
             }
-          }
         } else {
-          // Normal drawing
+          // Normal drawing with noise
+          const noiseAmount = cfg.particleNoise || 0;
+          const noiseX = this.noiseOffsetX * noiseAmount;
+          const noiseY = this.noiseOffsetY * noiseAmount;
+          const drawX = this.x2d + noiseX;
+          const drawY = this.y2d + noiseY;
+          
           if (shouldRotate) {
             ctx.save();
-            ctx.translate(this.x2d, this.y2d);
+            ctx.translate(drawX, drawY);
             ctx.rotate(rotationToUse);
             ctx.drawImage(cache, -size/2, -size/2, size, size);
             ctx.restore();
           } else {
-            ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+            ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
           }
         }
         ctx.globalAlpha = 1;
@@ -3578,7 +3740,7 @@ const CircularParticles = () => {
     };
 
     // Draw connectors between particles within distance range
-    const drawConnectors = (ctx, particles, cfg, time = 0, whiteModeFlag = false, whiteModeDotOriginalColorFlag = false) => {
+    const drawConnectors = (ctx, particles, cfg, time = 0, oneColorModeFlag = false, oneColorModeDotOriginalColorFlag = false) => {
       if (!cfg.connectorsEnabled) return;
       
       ctx.save();
@@ -3835,8 +3997,8 @@ const CircularParticles = () => {
           const isConnected = connectedParticles.has(particle);
           const shouldFill = fillConnected ? isConnected : !cfg.connectorDotStrokeOnly;
           
-          // If white mode is on AND the toggle is enabled, use the full original gradient
-          if (whiteModeFlag && whiteModeDotOriginalColorFlag && particle.colorSet && particle.colorSet.length > 0) {
+          // If one color mode is on AND the toggle is enabled, use the full original gradient
+          if (oneColorModeFlag && oneColorModeDotOriginalColorFlag && particle.colorSet && particle.colorSet.length > 0) {
             // Create a radial gradient for the dot using the particle's full gradient
             const sortedStops = [...particle.colorSet].sort((a, b) => a.position - b.position);
             const dotRadius = dotSize / 2;
@@ -3966,6 +4128,10 @@ const CircularParticles = () => {
             lastCfg.breathingSpeedMax !== cfg.breathingSpeedMax ||
             lastCfg.breathingAmountMin !== cfg.breathingAmountMin ||
             lastCfg.breathingAmountMax !== cfg.breathingAmountMax ||
+            lastCfg.gridVerticalSpeedMin !== cfg.gridVerticalSpeedMin ||
+            lastCfg.gridVerticalSpeedMax !== cfg.gridVerticalSpeedMax ||
+            lastCfg.gridVerticalAmplitudeMin !== cfg.gridVerticalAmplitudeMin ||
+            lastCfg.gridVerticalAmplitudeMax !== cfg.gridVerticalAmplitudeMax ||
             gridDimensionsChanged) {
           // If grid dimensions changed, recreate particles with new grid layout
           if (gridDimensionsChanged && currentStateRef.current === 'grid') {
@@ -4015,7 +4181,7 @@ const CircularParticles = () => {
 
         // Draw connectors before particles if connectorDrawOnTop is false
         if (cfg.connectorDrawOnTop === false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentWhiteMode, currentWhiteModeDotOriginalColor);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor);
         }
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
@@ -4034,7 +4200,7 @@ const CircularParticles = () => {
 
         // Draw connectors after particles if connectorDrawOnTop is true (default)
         if (cfg.connectorDrawOnTop !== false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentWhiteMode, currentWhiteModeDotOriginalColor);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor);
         }
         
         const visibleCount = allParticles.filter(p => 
@@ -4085,7 +4251,7 @@ const CircularParticles = () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet, editableGradients, backgroundColor, whiteMode, whiteModeDotOriginalColor]); // Re-run when color set, gradients, background color, or white mode changes
+  }, [selectedColorSet, editableGradients, backgroundColor, oneColorMode, oneColorModeColor, oneColorModeDotOriginalColor]); // Re-run when color set, gradients, background color, or one color mode changes
 
   // Update state refs when state changes
   useEffect(() => {
@@ -4122,7 +4288,7 @@ const CircularParticles = () => {
 
   const updateConfig = (key, value) => {
     // Handle string values (like trailType, streakColor, blendMode, connectorColor) vs numeric values vs boolean values
-    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected', 'connectorWiggle'];
+    const booleanKeys = ['autoRotateShapes', 'connectorsEnabled', 'connectorArcMode', 'connectorArcOutward', 'connectorShowDots', 'connectorDotStrokeOnly', 'connectorDotFillConnected', 'connectorWiggle', 'gridVerticalMovementEnabled'];
     const stringKeys = ['particleShape', 'trailType', 'streakColor', 'blendMode', 'connectorBlendMode', 'connectorLineStyle', 'connectorColor', 'connectorDotColor'];
     let newValue;
     if (stringKeys.includes(key)) {
@@ -4706,6 +4872,77 @@ const CircularParticles = () => {
                     className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
                   />
                 </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs">Enable Vertical Movement:</label>
+                  <input
+                    type="checkbox"
+                    checked={config.gridVerticalMovementEnabled}
+                    onChange={(e) => {
+                      updateConfig('gridVerticalMovementEnabled', e.target.checked);
+                    }}
+                    className="w-4 h-4"
+                  />
+                </div>
+                {config.gridVerticalMovementEnabled && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs">Vertical Speed Min:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="0.1"
+                        step="0.001"
+                        value={config.gridVerticalSpeedMin}
+                        onChange={(e) => {
+                          updateConfig('gridVerticalSpeedMin', parseFloat(e.target.value) || 0);
+                        }}
+                        className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs">Vertical Speed Max:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="0.1"
+                        step="0.001"
+                        value={config.gridVerticalSpeedMax}
+                        onChange={(e) => {
+                          updateConfig('gridVerticalSpeedMax', parseFloat(e.target.value) || 0);
+                        }}
+                        className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs">Vertical Amplitude Min:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="200"
+                        step="1"
+                        value={config.gridVerticalAmplitudeMin}
+                        onChange={(e) => {
+                          updateConfig('gridVerticalAmplitudeMin', parseFloat(e.target.value) || 0);
+                        }}
+                        className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs">Vertical Amplitude Max:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="200"
+                        step="1"
+                        value={config.gridVerticalAmplitudeMax}
+                        onChange={(e) => {
+                          updateConfig('gridVerticalAmplitudeMax', parseFloat(e.target.value) || 0);
+                        }}
+                        className="w-20 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                      />
+                    </div>
+                  </>
+                )}
               </>
             )}
             <div className="flex items-center gap-2">
@@ -5110,7 +5347,7 @@ const CircularParticles = () => {
             <label className="text-xs block mb-1">Particle Count</label>
             <input
               type="range"
-              min="30"
+              min="1"
               max="150"
               value={config.particleCount}
               onChange={(e) => updateConfig('particleCount', e.target.value)}
@@ -5163,7 +5400,7 @@ const CircularParticles = () => {
             <input
               type="range"
               min="1"
-              max="80"
+              max="200"
               value={config.maxRadius}
               onChange={(e) => updateConfig('maxRadius', e.target.value)}
               className="w-full"
@@ -5452,6 +5689,20 @@ const CircularParticles = () => {
           </div>
 
           <div>
+            <label className="text-xs block mb-1 text-cyan-400">Particle Noise</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={config.particleNoise}
+              onChange={(e) => updateConfig('particleNoise', parseFloat(e.target.value) || 0)}
+              className="w-full accent-cyan-500"
+            />
+            <span className="text-xs text-cyan-300">{config.particleNoise}</span>
+          </div>
+
+          <div>
             <label className="text-xs block mb-1 text-cyan-400">BG Particle Opacity</label>
             <input
               type="range"
@@ -5466,32 +5717,52 @@ const CircularParticles = () => {
           </div>
 
           <div>
-            <label className="text-xs block mb-1 text-cyan-400">White Mode</label>
+            <label className="text-xs block mb-1 text-cyan-400">One Color Mode</label>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={whiteMode}
-                onChange={(e) => setWhiteMode(e.target.checked)}
+                checked={oneColorMode}
+                onChange={(e) => setOneColorMode(e.target.checked)}
                 className="w-4 h-4 accent-cyan-500 cursor-pointer"
               />
-              <span className="text-xs text-cyan-300">{whiteMode ? 'On' : 'Off'}</span>
+              <span className="text-xs text-cyan-300">{oneColorMode ? 'On' : 'Off'}</span>
             </div>
           </div>
 
-          {whiteMode && (
-            <div>
-              <label className="text-xs block mb-1 text-cyan-400">Use Original Dot Colors</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={whiteModeDotOriginalColor}
-                  onChange={(e) => setWhiteModeDotOriginalColor(e.target.checked)}
-                  className="w-4 h-4 accent-cyan-500 cursor-pointer"
-                />
-                <span className="text-xs text-cyan-300">{whiteModeDotOriginalColor ? 'On' : 'Off'}</span>
+          {oneColorMode && (
+            <>
+              <div>
+                <label className="text-xs block mb-1 text-cyan-400">Color</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={oneColorModeColor}
+                    onChange={(e) => setOneColorModeColor(e.target.value)}
+                    className="w-12 h-8 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={oneColorModeColor}
+                    onChange={(e) => setOneColorModeColor(e.target.value)}
+                    className="flex-1 bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                    placeholder="#ffffff"
+                  />
+                </div>
               </div>
-              <span className="text-xs text-gray-400 italic block mt-1">Use first gradient color for connector dots</span>
-            </div>
+              <div>
+                <label className="text-xs block mb-1 text-cyan-400">Use Original Dot Colors</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={oneColorModeDotOriginalColor}
+                    onChange={(e) => setOneColorModeDotOriginalColor(e.target.checked)}
+                    className="w-4 h-4 accent-cyan-500 cursor-pointer"
+                  />
+                  <span className="text-xs text-cyan-300">{oneColorModeDotOriginalColor ? 'On' : 'Off'}</span>
+                </div>
+                <span className="text-xs text-gray-400 italic block mt-1">Use first gradient color for connector dots</span>
+              </div>
+            </>
           )}
 
           <div className="col-span-2 md:col-span-4 border-t border-gray-600 pt-4 mt-2">
