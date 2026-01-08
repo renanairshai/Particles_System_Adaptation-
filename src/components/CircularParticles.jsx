@@ -38,6 +38,7 @@ const CircularParticles = () => {
     bgMaxSize: 18,
     motionBlur: 0.78,
     motionBlurSteps: 20,
+    trailInterval: 1,
     particleOpacity: 0.23,
     bgParticleOpacity: 0.43,
     particleNoise: 0, // Noise amount for particle positions (0-100)
@@ -816,6 +817,62 @@ const CircularParticles = () => {
           { position: 0.028601694915254237, color: '#764c4c', opacity: 1 },
           { position: 0.21420256111757857, color: '#522d31', opacity: 0.8 },
           { position: 0.4039580908032596, color: '#ffa575', opacity: 0 }
+        ]
+      ]
+    },
+    'Color Set N': {
+      // New format: array of gradient stop arrays
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#556812', opacity: 1 },
+          { position: 0.12076271186440678, color: '#557756', opacity: 1 },
+          { position: 0.508628519527702, color: '#f9a4ed', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#638bb6', opacity: 1 },
+          { position: 0.09322033898305085, color: '#28496b', opacity: 1 },
+          { position: 0.1048728813559322, color: '#356935', opacity: 1 },
+          { position: 0.4555084745762712, color: '#5d745d', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#318150', opacity: 1 },
+          { position: 0.18528610354223432, color: '#5d6303', opacity: 1 },
+          { position: 0.5, color: '#DDA0DD', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#bfa0ee', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0a4461', opacity: 1 },
+          { position: 0.2114256684985914, color: '#ffccf4', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffccf4', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffccf4', opacity: 0 }
+        ],
+        [
+          { position: 0.24781181619256018, color: '#ffff75', opacity: 1 },
+          { position: 0.31017505470459517, color: '#ff7300', opacity: 1 },
+          { position: 0.35311816192560175, color: '#ff5900', opacity: 0.2 },
+          { position: 0.4190371991247265, color: '#ff0000', opacity: 0 }
+        ],
+        [
+          { position: 0.162472647702407, color: '#5266ff', opacity: 1 },
+          { position: 0.16411378555798686, color: '#3e1560', opacity: 1 },
+          { position: 0.19385593220338984, color: '#004466', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#b8edff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
+          { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
+          { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
         ]
       ]
     }
@@ -1610,6 +1667,123 @@ const CircularParticles = () => {
       },
       selectedColorSet: 'Color Set K',
       backgroundColor: '#dbdbdb'
+    },
+    '10': {
+      config: {
+        particleCount: 150,
+        sphereRadius: 300,
+        minRadius: 15,
+        maxRadius: 80,
+        rotationSpeedX: 0.0018,
+        rotationSpeedY: 0.0042,
+        pulseSpeed: 0.05,
+        perspective: 1200,
+        scatter: 300,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 22,
+        bgMaxSize: 28,
+        motionBlur: 0.58,
+        motionBlurSteps: 50,
+        particleOpacity: 0.96,
+        bgParticleOpacity: 0,
+        particleNoise: 88,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'color',
+        connectorsEnabled: true,
+        connectorMinDistance: 3,
+        connectorMaxDistance: 187,
+        connectorColor: '#ffffff',
+        connectorWidth: 0.8,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 20,
+        connectorMaxTotal: 490,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.3,
+        connectorShowDots: true,
+        connectorDotSize: 11,
+        connectorLineStyle: 'arrows',
+        connectorBlendMode: 'source-over',
+        connectorDotStrokeOnly: false,
+        connectorDotFillConnected: true,
+        connectorDrawOnTop: true,
+        connectorWiggle: false,
+        connectorWiggleAmplitude: 5,
+        connectorWiggleFrequency: 2,
+        connectorWiggleSpeed: 0.01,
+        connectorDotColor: '#ffffff'
+      },
+      selectedColorSet: 'Color Set L',
+      backgroundColor: '#d4d4d4'
+    },
+    '11': {
+      config: {
+        particleCount: 5,
+        sphereRadius: 300,
+        minRadius: 20,
+        maxRadius: 159,
+        rotationSpeedX: 0.01,
+        rotationSpeedY: 0.0091,
+        pulseSpeed: 0.009,
+        perspective: 1200,
+        scatter: 300,
+        breathingSpeedMin: 0.0086,
+        breathingSpeedMax: 0.01,
+        breathingAmountMin: 7,
+        breathingAmountMax: 100,
+        backgroundParticles: 69,
+        blobDistortion: 0.3,
+        bgDriftSpeedMin: 0.48,
+        bgDriftSpeedMax: 0.94,
+        bgMinSize: 27,
+        bgMaxSize: 76,
+        motionBlur: 0.58,
+        motionBlurSteps: 37,
+        particleOpacity: 0.84,
+        bgParticleOpacity: 1,
+        particleShape: 'circle',
+        autoRotateShapes: true,
+        glowRadius: 1,
+        trailType: 'echo',
+        streakColor: '#d1e9ff',
+        blendMode: 'soft-light',
+        connectorsEnabled: false,
+        connectorMinDistance: 195,
+        connectorMaxDistance: 72,
+        connectorColor: '#ffffff',
+        connectorWidth: 0.5,
+        connectorOpacity: 1,
+        connectorMaxPerParticle: 3,
+        connectorMaxTotal: 60,
+        connectorArcMode: true,
+        connectorArcOutward: true,
+        connectorArcHeight: 0.3,
+        connectorShowDots: true,
+        connectorDotSize: 8,
+        connectorLineStyle: 'dashed',
+        connectorBlendMode: 'overlay',
+        connectorDotStrokeOnly: false,
+        connectorDotFillConnected: false,
+        connectorDrawOnTop: true,
+        connectorWiggle: false,
+        connectorWiggleAmplitude: 5,
+        connectorWiggleFrequency: 2,
+        connectorWiggleSpeed: 0.01,
+        connectorDotColor: '#000000'
+      },
+      selectedColorSet: 'Color Set N',
+      backgroundColor: '#ffffff'
     }
   };
 
@@ -1627,7 +1801,9 @@ const CircularParticles = () => {
     '6': true,
     '7': true,
     '8': true,
-    '9': true
+    '9': true,
+    '10': true,
+    '11': true
   });
   const [interpolateMode, setInterpolateMode] = useState(true);
   const [oneColorMode, setOneColorMode] = useState(false);
@@ -1967,6 +2143,27 @@ const CircularParticles = () => {
       }
       
       return interpolated;
+    };
+    
+    // Helper function to draw a circle with offset radial gradient
+    const drawCircleWithOffsetGradient = (ctx, x, y, radius, stops, offsetX, offsetY, currentOneColorMode, currentOneColorModeColor) => {
+      const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+      const centerX = x + offsetX;
+      const centerY = y + offsetY;
+      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+      
+      sortedStops.forEach(stop => {
+        const color = currentOneColorMode ? currentOneColorModeColor : stop.color;
+        const colorWithOpacity = stop.opacity < 1 
+          ? color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+          : color;
+        gradient.addColorStop(stop.position, colorWithOpacity);
+      });
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
     };
     
     // Create caches for all shapes and gradients
@@ -2406,6 +2603,12 @@ const CircularParticles = () => {
         // Initialize positions based on config
         this.updateFromConfig(cfg);
         
+        // Calculate gradient offset for organic feel (15-30% of radius)
+        const offsetRange = 0.15 + Math.random() * 0.15; // 15-30% range
+        const maxOffset = this.baseRadius * offsetRange;
+        this.gradientOffsetX = (Math.random() - 0.5) * maxOffset * 2;
+        this.gradientOffsetY = (Math.random() - 0.5) * maxOffset * 2;
+        
         this.x3d = this.baseX;
         this.y3d = this.baseY;
         this.z3d = this.baseZ;
@@ -2418,6 +2621,7 @@ const CircularParticles = () => {
         
         // Store position history for echo effect
         this.positionHistory = [];
+        this.trailFrameCounter = 0;
         
         // Division properties for Birth state
         this.parentId = null;
@@ -2622,17 +2826,28 @@ const CircularParticles = () => {
         // Store position in history for echo effect
         if (cfg.motionBlur > 0) {
           const maxHistory = cfg.motionBlurSteps;
-          this.positionHistory.push({
-            x: this.x2d,
-            y: this.y2d,
-            radius: this.currentRadius
-          });
+          const trailInterval = cfg.trailInterval || 1;
+          
+          // Increment frame counter
+          this.trailFrameCounter++;
+          
+          // Only store position every N frames (based on trailInterval)
+          if (this.trailFrameCounter >= trailInterval) {
+            this.positionHistory.push({
+              x: this.x2d,
+              y: this.y2d,
+              radius: this.currentRadius
+            });
+            this.trailFrameCounter = 0; // Reset counter
+          }
+          
           // Trim to max length
           while (this.positionHistory.length > maxHistory) {
             this.positionHistory.shift();
           }
         } else if (this.positionHistory.length > 0) {
           this.positionHistory.length = 0;
+          this.trailFrameCounter = 0;
         }
       }
 
@@ -2877,23 +3092,49 @@ const CircularParticles = () => {
               ctx.rotate(rotationToUse);
             }
             
-            // Create intermediate gradient cache that interpolates through color space
-            // This smoothly passes through intermediate colors, avoiding saturation spikes
-            try {
-              const intermediateCache = createIntermediateCache(
-                cfg.particleShape || 'circle',
-                this.originalColorIndex,
-                this.targetColorIndex,
-                easedProgress
-              );
+            // For circles, create interpolated gradient with offset
+            if (cfg.particleShape === 'circle') {
+              // Interpolate between original and target color sets
+              const originalStops = gradientStopsArray[this.originalColorIndex];
+              const targetStops = gradientStopsArray[this.targetColorIndex];
+              const interpolatedStops = interpolateStops(originalStops, targetStops, easedProgress);
               
-              // Draw the interpolated color (single smooth transition through color space)
+              // Scale offset to current radius
+              const offsetScale = this.currentRadius / this.baseRadius;
+              const scaledOffsetX = this.gradientOffsetX * offsetScale;
+              const scaledOffsetY = this.gradientOffsetY * offsetScale;
+              
               ctx.globalAlpha = finalOpacity;
-              ctx.drawImage(intermediateCache, -size/2, -size/2, size, size);
-            } catch (e) {
-              // Fallback to normal drawing if interpolation fails
-              ctx.globalAlpha = finalOpacity;
-              ctx.drawImage(cache, -size/2, -size/2, size, size);
+              drawCircleWithOffsetGradient(
+                ctx, 
+                0, 
+                0, 
+                this.currentRadius, 
+                interpolatedStops, 
+                scaledOffsetX, 
+                scaledOffsetY,
+                currentOneColorMode,
+                currentOneColorModeColor
+              );
+            } else {
+              // Create intermediate gradient cache that interpolates through color space
+              // This smoothly passes through intermediate colors, avoiding saturation spikes
+              try {
+                const intermediateCache = createIntermediateCache(
+                  cfg.particleShape || 'circle',
+                  this.originalColorIndex,
+                  this.targetColorIndex,
+                  easedProgress
+                );
+                
+                // Draw the interpolated color (single smooth transition through color space)
+                ctx.globalAlpha = finalOpacity;
+                ctx.drawImage(intermediateCache, -size/2, -size/2, size, size);
+              } catch (e) {
+                // Fallback to normal drawing if interpolation fails
+                ctx.globalAlpha = finalOpacity;
+                ctx.drawImage(cache, -size/2, -size/2, size, size);
+              }
             }
             
             ctx.restore();
@@ -2905,14 +3146,34 @@ const CircularParticles = () => {
               const drawX = this.x2d + noiseX;
               const drawY = this.y2d + noiseY;
               
-              if (shouldRotate) {
-                ctx.save();
-                ctx.translate(drawX, drawY);
-                ctx.rotate(rotationToUse);
-                ctx.drawImage(cache, -size/2, -size/2, size, size);
-                ctx.restore();
+              // For circles, use offset gradient for organic feel
+              if (cfg.particleShape === 'circle') {
+                // Scale offset to current radius
+                const offsetScale = this.currentRadius / this.baseRadius;
+                const scaledOffsetX = this.gradientOffsetX * offsetScale;
+                const scaledOffsetY = this.gradientOffsetY * offsetScale;
+                drawCircleWithOffsetGradient(
+                  ctx, 
+                  drawX, 
+                  drawY, 
+                  this.currentRadius, 
+                  this.colorSet, 
+                  scaledOffsetX, 
+                  scaledOffsetY,
+                  currentOneColorMode,
+                  currentOneColorModeColor
+                );
               } else {
-                ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
+                // For other shapes, use cached image
+                if (shouldRotate) {
+                  ctx.save();
+                  ctx.translate(drawX, drawY);
+                  ctx.rotate(rotationToUse);
+                  ctx.drawImage(cache, -size/2, -size/2, size, size);
+                  ctx.restore();
+                } else {
+                  ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
+                }
               }
             }
         } else {
@@ -2923,14 +3184,34 @@ const CircularParticles = () => {
           const drawX = this.x2d + noiseX;
           const drawY = this.y2d + noiseY;
           
-          if (shouldRotate) {
-            ctx.save();
-            ctx.translate(drawX, drawY);
-            ctx.rotate(rotationToUse);
-            ctx.drawImage(cache, -size/2, -size/2, size, size);
-            ctx.restore();
+          // For circles, use offset gradient for organic feel
+          if (cfg.particleShape === 'circle') {
+            // Scale offset to current radius
+            const offsetScale = this.currentRadius / this.baseRadius;
+            const scaledOffsetX = this.gradientOffsetX * offsetScale;
+            const scaledOffsetY = this.gradientOffsetY * offsetScale;
+            drawCircleWithOffsetGradient(
+              ctx, 
+              drawX, 
+              drawY, 
+              this.currentRadius, 
+              this.colorSet, 
+              scaledOffsetX, 
+              scaledOffsetY,
+              currentOneColorMode,
+              currentOneColorModeColor
+            );
           } else {
-            ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
+            // For other shapes, use cached image
+            if (shouldRotate) {
+              ctx.save();
+              ctx.translate(drawX, drawY);
+              ctx.rotate(rotationToUse);
+              ctx.drawImage(cache, -size/2, -size/2, size, size);
+              ctx.restore();
+            } else {
+              ctx.drawImage(cache, drawX - size/2, drawY - size/2, size, size);
+            }
           }
         }
         ctx.globalAlpha = 1;
@@ -2948,6 +3229,7 @@ const CircularParticles = () => {
         this.pulsePhase = Math.random() * Math.PI * 2;
         this.pulseSpeed = 0.01 + Math.random() * 0.02;
         this.positionHistory = [];
+        this.trailFrameCounter = 0;
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() - 0.5) * 0.06;
         this.lastX2d = 0;
@@ -2965,6 +3247,16 @@ const CircularParticles = () => {
         this.z3d = -200 - Math.random() * 600;
         
         this.updateDrift(cfg);
+        
+        // Calculate gradient offset for organic feel (15-30% of radius)
+        // Use average size for offset calculation
+        const minSize = Math.min(cfg.bgMinSize, cfg.bgMaxSize);
+        const maxSize = Math.max(cfg.bgMinSize, cfg.bgMaxSize);
+        const avgRadius = (minSize + maxSize) / 2;
+        const offsetRange = 0.15 + Math.random() * 0.15; // 15-30% range
+        const maxOffset = avgRadius * offsetRange;
+        this.gradientOffsetX = (Math.random() - 0.5) * maxOffset * 2;
+        this.gradientOffsetY = (Math.random() - 0.5) * maxOffset * 2;
         
         this.x2d = 0;
         this.y2d = 0;
@@ -3013,16 +3305,27 @@ const CircularParticles = () => {
         // Store position in history for echo effect
         if (cfg.motionBlur > 0) {
           const maxHistory = cfg.motionBlurSteps;
-          this.positionHistory.push({
-            x: this.x2d,
-            y: this.y2d,
-            radius: this.currentRadius
-          });
+          const trailInterval = cfg.trailInterval || 1;
+          
+          // Increment frame counter
+          this.trailFrameCounter++;
+          
+          // Only store position every N frames (based on trailInterval)
+          if (this.trailFrameCounter >= trailInterval) {
+            this.positionHistory.push({
+              x: this.x2d,
+              y: this.y2d,
+              radius: this.currentRadius
+            });
+            this.trailFrameCounter = 0; // Reset counter
+          }
+          
           while (this.positionHistory.length > maxHistory) {
             this.positionHistory.shift();
           }
         } else if (this.positionHistory.length > 0) {
           this.positionHistory.length = 0;
+          this.trailFrameCounter = 0;
         }
       }
 
@@ -3052,17 +3355,41 @@ const CircularParticles = () => {
         // Draw trail effect
         drawTrail(ctx, this.positionHistory, cfg, finalOpacity, cache, shouldRotate, rotationToUse, this.rotationSpeed, cfg.particleShape);
         
-        // Draw main particle using cached image
+        // Draw main particle
         const size = this.currentRadius * 2;
         ctx.globalAlpha = finalOpacity;
-        if (shouldRotate) {
-          ctx.save();
-          ctx.translate(this.x2d, this.y2d);
-          ctx.rotate(rotationToUse);
-          ctx.drawImage(cache, -size/2, -size/2, size, size);
-          ctx.restore();
+        
+        // For circles, use offset gradient for organic feel
+        if (cfg.particleShape === 'circle') {
+          // Scale offset to current radius (use average of min/max for background particles)
+          const minSize = Math.min(cfg.bgMinSize, cfg.bgMaxSize);
+          const maxSize = Math.max(cfg.bgMinSize, cfg.bgMaxSize);
+          const avgRadius = (minSize + maxSize) / 2;
+          const offsetScale = this.currentRadius / avgRadius;
+          const scaledOffsetX = this.gradientOffsetX * offsetScale;
+          const scaledOffsetY = this.gradientOffsetY * offsetScale;
+          drawCircleWithOffsetGradient(
+            ctx, 
+            this.x2d, 
+            this.y2d, 
+            this.currentRadius, 
+            this.colorSet, 
+            scaledOffsetX, 
+            scaledOffsetY,
+            currentOneColorMode,
+            currentOneColorModeColor
+          );
         } else {
-          ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+          // For other shapes, use cached image
+          if (shouldRotate) {
+            ctx.save();
+            ctx.translate(this.x2d, this.y2d);
+            ctx.rotate(rotationToUse);
+            ctx.drawImage(cache, -size/2, -size/2, size, size);
+            ctx.restore();
+          } else {
+            ctx.drawImage(cache, this.x2d - size/2, this.y2d - size/2, size, size);
+          }
         }
         ctx.globalAlpha = 1;
       }
@@ -3740,7 +4067,7 @@ const CircularParticles = () => {
     };
 
     // Draw connectors between particles within distance range
-    const drawConnectors = (ctx, particles, cfg, time = 0, oneColorModeFlag = false, oneColorModeDotOriginalColorFlag = false) => {
+    const drawConnectors = (ctx, particles, cfg, time = 0, oneColorModeFlag = false, oneColorModeDotOriginalColorFlag = false, oneColorModeColorValue = '#ffffff') => {
       if (!cfg.connectorsEnabled) return;
       
       ctx.save();
@@ -3999,19 +4326,28 @@ const CircularParticles = () => {
           
           // If one color mode is on AND the toggle is enabled, use the full original gradient
           if (oneColorModeFlag && oneColorModeDotOriginalColorFlag && particle.colorSet && particle.colorSet.length > 0) {
-            // Create a radial gradient for the dot using the particle's full gradient
+            // Create a radial gradient for the dot using the particle's full gradient with offset
             const sortedStops = [...particle.colorSet].sort((a, b) => a.position - b.position);
             const dotRadius = dotSize / 2;
+            
+            // Scale offset to dot size (proportional to particle radius)
+            const offsetScale = dotRadius / particle.currentRadius;
+            const scaledOffsetX = (particle.gradientOffsetX || 0) * offsetScale;
+            const scaledOffsetY = (particle.gradientOffsetY || 0) * offsetScale;
+            
+            const centerX = particle.x2d + scaledOffsetX;
+            const centerY = particle.y2d + scaledOffsetY;
             const gradient = ctx.createRadialGradient(
-              particle.x2d, particle.y2d, 0,
-              particle.x2d, particle.y2d, dotRadius
+              centerX, centerY, 0,
+              centerX, centerY, dotRadius
             );
             
             // Add all gradient stops from the particle's gradient
             sortedStops.forEach(stop => {
+              const color = oneColorModeFlag ? oneColorModeColorValue : stop.color;
               const colorWithOpacity = stop.opacity < 1 
-                ? stop.color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
-                : stop.color;
+                ? color + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+                : color;
               gradient.addColorStop(stop.position, colorWithOpacity);
             });
             
@@ -4181,7 +4517,7 @@ const CircularParticles = () => {
 
         // Draw connectors before particles if connectorDrawOnTop is false
         if (cfg.connectorDrawOnTop === false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor, currentOneColorModeColor);
         }
 
         // Reuse array to reduce GC pressure - exclude background particles in Birth state
@@ -4200,7 +4536,7 @@ const CircularParticles = () => {
 
         // Draw connectors after particles if connectorDrawOnTop is true (default)
         if (cfg.connectorDrawOnTop !== false) {
-          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor);
+          drawConnectors(ctx, particlesRef.current, cfg, timeRef.current, currentOneColorMode, currentOneColorModeDotOriginalColor, currentOneColorModeColor);
         }
         
         const visibleCount = allParticles.filter(p => 
@@ -5672,6 +6008,19 @@ const CircularParticles = () => {
               className="w-full accent-orange-500"
             />
             <span className="text-xs text-orange-300">{config.motionBlurSteps}</span>
+          </div>
+
+          <div>
+            <label className="text-xs block mb-1 text-orange-400">Trail Interval (gap between echoes)</label>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={config.trailInterval || 1}
+              onChange={(e) => updateConfig('trailInterval', parseInt(e.target.value))}
+              className="w-full accent-orange-500"
+            />
+            <span className="text-xs text-orange-300">{config.trailInterval || 1} frame{(config.trailInterval || 1) !== 1 ? 's' : ''}</span>
           </div>
 
           <div>
