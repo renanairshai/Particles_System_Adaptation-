@@ -95,6 +95,481 @@ const CircularParticles = () => {
   const divisionDuration = 2000; // 2 seconds per division cycle
   const separationDistance = 100; // Distance particles move apart
 
+  // Define color palettes - simple color lists that can be applied to gradients
+  // Each palette is an array of hex color strings
+  const colorPalettes = {
+    // Default palettes
+    'Default': ['#ffffff', '#050a2e', '#004466', '#b8edff'],
+    'Warm Sunset': ['#ff6b6b', '#ffa500', '#ffd93d', '#ff6b9d'],
+    'Cool Ocean': ['#006994', '#00a8cc', '#4ecdc4', '#95e1d3'],
+    'Forest': ['#2d5016', '#3d7c47', '#6b8e23', '#9acd32'],
+    'Purple Dream': ['#6c5ce7', '#a29bfe', '#fd79a8', '#fdcb6e'],
+    // Custom palettes
+    'Vibrant Spectrum': ['#FF714A', '#2E32FF', '#FBF99F', '#F2262A', '#284D41', '#B7E5FF', '#5E4E3A'],
+    'Bold Gradient': ['#FF5616', '#022FCD', '#CA7D00', '#FD98EA', '#8E151A', '#013605', '#74AB34', '#797791'],
+    // Add more custom palettes below - format: 'Palette Name': ['#color1', '#color2', '#color3', ...]
+  };
+
+  // Function to apply Custom-1 color set with exact arrangement
+  const applyCustom1 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom1Gradients = [
+      // Gradient 1: Pale sky blue outer → Brown-orange inner
+      [
+        { position: 0, color: '#C3F0FF', opacity: 1 },
+        { position: 0.3, color: '#C3F0FF', opacity: 1 },
+        { position: 0.7, color: '#CA7D00', opacity: 1 },
+        { position: 1, color: '#CA7D00', opacity: 0 }
+      ],
+      // Gradient 2: Light pink outer → Vibrant red inner
+      [
+        { position: 0, color: '#FCAFBA', opacity: 1 },
+        { position: 0.3, color: '#FCAFBA', opacity: 1 },
+        { position: 0.7, color: '#FE5E40', opacity: 1 },
+        { position: 1, color: '#FE5E40', opacity: 0 }
+      ],
+      // Gradient 3: Brown-orange outer → Bright yellow inner
+      [
+        { position: 0, color: '#CA7D00', opacity: 1 },
+        { position: 0.3, color: '#CA7D00', opacity: 1 },
+        { position: 0.7, color: '#FFFF8D', opacity: 1 },
+        { position: 1, color: '#FFFF8D', opacity: 0 }
+      ],
+      // Gradient 4: Pale sky blue outer → Deep royal blue inner
+      [
+        { position: 0, color: '#C3F0FF', opacity: 1 },
+        { position: 0.3, color: '#C3F0FF', opacity: 1 },
+        { position: 0.7, color: '#022FCD', opacity: 1 },
+        { position: 1, color: '#022FCD', opacity: 0 }
+      ],
+      // Gradient 5: Vibrant red outer → Bright yellow inner
+      [
+        { position: 0, color: '#FE5E40', opacity: 1 },
+        { position: 0.3, color: '#FE5E40', opacity: 1 },
+        { position: 0.7, color: '#FFFF8D', opacity: 1 },
+        { position: 1, color: '#FFFF8D', opacity: 0 }
+      ],
+      // Gradient 6: Deep royal blue outer → Vibrant red-orange inner
+      [
+        { position: 0, color: '#022FCD', opacity: 1 },
+        { position: 0.3, color: '#022FCD', opacity: 1 },
+        { position: 0.7, color: '#FE5E40', opacity: 1 },
+        { position: 1, color: '#FE5E40', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom1Gradients);
+    setSelectedColorSet('Custom-1');
+    // Enable all 6 gradients for Custom-1
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-2 color set with exact arrangement
+  const applyCustom2 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom2Gradients = [
+      // Gradient 1: Light blue outer → Brown-orange inner
+      [
+        { position: 0, color: '#A4D2E1', opacity: 1 },
+        { position: 0.3, color: '#A4D2E1', opacity: 1 },
+        { position: 0.7, color: '#CA7D00', opacity: 1 },
+        { position: 1, color: '#CA7D00', opacity: 0 }
+      ],
+      // Gradient 2: Light pink outer → Red inner
+      [
+        { position: 0, color: '#FCAFBA', opacity: 1 },
+        { position: 0.3, color: '#FCAFBA', opacity: 1 },
+        { position: 0.7, color: '#F7452F', opacity: 1 },
+        { position: 1, color: '#F7452F', opacity: 0 }
+      ],
+      // Gradient 3: Brown-orange outer → Bright yellow inner
+      [
+        { position: 0, color: '#CA7D00', opacity: 1 },
+        { position: 0.3, color: '#CA7D00', opacity: 1 },
+        { position: 0.7, color: '#FFFF8D', opacity: 1 },
+        { position: 1, color: '#FFFF8D', opacity: 0 }
+      ],
+      // Gradient 4: Light blue outer → White inner
+      [
+        { position: 0, color: '#A4D2E1', opacity: 1 },
+        { position: 0.3, color: '#A4D2E1', opacity: 1 },
+        { position: 0.7, color: '#FAFBFF', opacity: 1 },
+        { position: 1, color: '#FAFBFF', opacity: 0 }
+      ],
+      // Gradient 5: Red outer → Bright yellow inner
+      [
+        { position: 0, color: '#F7452F', opacity: 1 },
+        { position: 0.3, color: '#F7452F', opacity: 1 },
+        { position: 0.7, color: '#FFFF8D', opacity: 1 },
+        { position: 1, color: '#FFFF8D', opacity: 0 }
+      ],
+      // Gradient 6: White outer → Red inner
+      [
+        { position: 0, color: '#FAFBFF', opacity: 1 },
+        { position: 0.3, color: '#FAFBFF', opacity: 1 },
+        { position: 0.7, color: '#F7452F', opacity: 1 },
+        { position: 1, color: '#F7452F', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom2Gradients);
+    setSelectedColorSet('Custom-2');
+    // Enable all 6 gradients for Custom-2
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-3 color set with exact arrangement
+  const applyCustom3 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom3Gradients = [
+      // Gradient 1: Royal blue outer → Golden-brown inner
+      [
+        { position: 0, color: '#022FCD', opacity: 1 },
+        { position: 0.3, color: '#022FCD', opacity: 1 },
+        { position: 0.7, color: '#CA7D00', opacity: 1 },
+        { position: 1, color: '#CA7D00', opacity: 0 }
+      ],
+      // Gradient 2: Dark teal outer → Pale yellow inner
+      [
+        { position: 0, color: '#005442', opacity: 1 },
+        { position: 0.3, color: '#005442', opacity: 1 },
+        { position: 0.7, color: '#FFFF8D', opacity: 1 },
+        { position: 1, color: '#FFFF8D', opacity: 0 }
+      ],
+      // Gradient 3: Sky blue outer (halo) → Golden-brown inner
+      [
+        { position: 0, color: '#A4D2E1', opacity: 1 },
+        { position: 0.3, color: '#A4D2E1', opacity: 1 },
+        { position: 0.7, color: '#CA7D00', opacity: 1 },
+        { position: 1, color: '#CA7D00', opacity: 0 }
+      ],
+      // Gradient 4: Dark teal outer → Light pink inner
+      [
+        { position: 0, color: '#005442', opacity: 1 },
+        { position: 0.3, color: '#005442', opacity: 1 },
+        { position: 0.7, color: '#FCAFBA', opacity: 1 },
+        { position: 1, color: '#FCAFBA', opacity: 0 }
+      ],
+      // Gradient 5: Coral/reddish-orange outer → Golden-brown inner
+      [
+        { position: 0, color: '#FE5E40', opacity: 1 },
+        { position: 0.3, color: '#FE5E40', opacity: 1 },
+        { position: 0.7, color: '#CA7D00', opacity: 1 },
+        { position: 1, color: '#CA7D00', opacity: 0 }
+      ],
+      // Gradient 6: Pale yellow outer → Royal blue inner
+      [
+        { position: 0, color: '#FFFF8D', opacity: 1 },
+        { position: 0.3, color: '#FFFF8D', opacity: 1 },
+        { position: 0.7, color: '#022FCD', opacity: 1 },
+        { position: 1, color: '#022FCD', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom3Gradients);
+    setSelectedColorSet('Custom-3');
+    // Enable all 6 gradients for Custom-3
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-4 color set with exact arrangement
+  const applyCustom4 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom4Gradients = [
+      // Gradient 1: Light pink outer → Dark gray inner (large circle)
+      [
+        { position: 0, color: '#FD98EA', opacity: 1 },
+        { position: 0.3, color: '#FD98EA', opacity: 1 },
+        { position: 0.7, color: '#797791', opacity: 1 },
+        { position: 1, color: '#797791', opacity: 0 }
+      ],
+      // Gradient 2: Vibrant orange outer → Deep dark red inner (small circle)
+      [
+        { position: 0, color: '#FF5616', opacity: 1 },
+        { position: 0.3, color: '#FF5616', opacity: 1 },
+        { position: 0.7, color: '#8E151A', opacity: 1 },
+        { position: 1, color: '#8E151A', opacity: 0 }
+      ],
+      // Gradient 3: Warm earthy brown outer → Bright solid blue inner (medium-large circle)
+      [
+        { position: 0, color: '#CA7D00', opacity: 1 },
+        { position: 0.3, color: '#CA7D00', opacity: 1 },
+        { position: 0.7, color: '#022FCD', opacity: 1 },
+        { position: 1, color: '#022FCD', opacity: 0 }
+      ],
+      // Gradient 4: Muted green outer → Lighter vibrant green inner (medium circle)
+      [
+        { position: 0, color: '#013605', opacity: 1 },
+        { position: 0.3, color: '#013605', opacity: 1 },
+        { position: 0.7, color: '#74AB34', opacity: 1 },
+        { position: 1, color: '#74AB34', opacity: 0 }
+      ],
+      // Gradient 5: Bright blue outer → Soft light pink inner (small circle)
+      [
+        { position: 0, color: '#022FCD', opacity: 1 },
+        { position: 0.3, color: '#022FCD', opacity: 1 },
+        { position: 0.7, color: '#FD98EA', opacity: 1 },
+        { position: 1, color: '#FD98EA', opacity: 0 }
+      ],
+      // Gradient 6: Bold orange outer → Deep dark red inner (largest circle)
+      [
+        { position: 0, color: '#FF5616', opacity: 1 },
+        { position: 0.3, color: '#FF5616', opacity: 1 },
+        { position: 0.7, color: '#8E151A', opacity: 1 },
+        { position: 1, color: '#8E151A', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom4Gradients);
+    setSelectedColorSet('Custom-4');
+    // Enable all 6 gradients for Custom-4
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-5 color set with exact arrangement
+  const applyCustom5 = () => {
+    // Based on the image: 7 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom5Gradients = [
+      // Gradient 1: Periwinkle blue outer → Light pastel green inner (large circle)
+      [
+        { position: 0, color: '#7098FA', opacity: 1 },
+        { position: 0.3, color: '#7098FA', opacity: 1 },
+        { position: 0.7, color: '#80EB91', opacity: 1 },
+        { position: 1, color: '#80EB91', opacity: 0 }
+      ],
+      // Gradient 2: Light pink outer → Bright yellow inner (small circle)
+      [
+        { position: 0, color: '#FFC6DD', opacity: 1 },
+        { position: 0.3, color: '#FFC6DD', opacity: 1 },
+        { position: 0.7, color: '#FAFE45', opacity: 1 },
+        { position: 1, color: '#FAFE45', opacity: 0 }
+      ],
+      // Gradient 3: Warm orange outer → Light pastel pink inner (very large circle)
+      [
+        { position: 0, color: '#FF8C4A', opacity: 1 },
+        { position: 0.3, color: '#FF8C4A', opacity: 1 },
+        { position: 0.7, color: '#FFC6DD', opacity: 1 },
+        { position: 1, color: '#FFC6DD', opacity: 0 }
+      ],
+      // Gradient 4: Blue outer → Light pastel green inner (medium circle)
+      [
+        { position: 0, color: '#7098FA', opacity: 1 },
+        { position: 0.3, color: '#7098FA', opacity: 1 },
+        { position: 0.7, color: '#80EB91', opacity: 1 },
+        { position: 1, color: '#80EB91', opacity: 0 }
+      ],
+      // Gradient 5: Yellow-green outer → Warm orange inner (small circle)
+      [
+        { position: 0, color: '#D4EF3B', opacity: 1 },
+        { position: 0.3, color: '#D4EF3B', opacity: 1 },
+        { position: 0.7, color: '#FF8C4A', opacity: 1 },
+        { position: 1, color: '#FF8C4A', opacity: 0 }
+      ],
+      // Gradient 6: Blue outer → Blue inner (medium circle - using same blue as provided)
+      [
+        { position: 0, color: '#7098FA', opacity: 1 },
+        { position: 0.3, color: '#7098FA', opacity: 1 },
+        { position: 0.7, color: '#7098FA', opacity: 0.7 },
+        { position: 1, color: '#7098FA', opacity: 0 }
+      ],
+      // Gradient 7: Light blue outer → Darker blue inner (large circle - using same blue with reduced opacity for darker effect)
+      [
+        { position: 0, color: '#7098FA', opacity: 1 },
+        { position: 0.3, color: '#7098FA', opacity: 0.8 },
+        { position: 0.7, color: '#7098FA', opacity: 0.5 },
+        { position: 1, color: '#7098FA', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom5Gradients);
+    setSelectedColorSet('Custom-5');
+    // Enable all 7 gradients for Custom-5
+    setEnabledGradients(Array(7).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-6 color set with exact arrangement
+  const applyCustom6 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom6Gradients = [
+      // Gradient 1: Orange/red outer → Light blue inner (light blue central with orange outer)
+      [
+        { position: 0, color: '#F2262A', opacity: 1 },
+        { position: 0.3, color: '#F2262A', opacity: 1 },
+        { position: 0.7, color: '#B7E5FF', opacity: 1 },
+        { position: 1, color: '#B7E5FF', opacity: 0 }
+      ],
+      // Gradient 2: Light pink/whitish outer → Red inner (small red central with faint pink halo)
+      [
+        { position: 0, color: '#FAE5EF', opacity: 1 },
+        { position: 0.3, color: '#FAE5EF', opacity: 0.5 },
+        { position: 0.7, color: '#F2262A', opacity: 1 },
+        { position: 1, color: '#F2262A', opacity: 0 }
+      ],
+      // Gradient 3: Royal blue outer → Light yellow inner (light yellow central with royal blue outer)
+      [
+        { position: 0, color: '#2E32FF', opacity: 1 },
+        { position: 0.3, color: '#2E32FF', opacity: 1 },
+        { position: 0.7, color: '#FBF99F', opacity: 1 },
+        { position: 1, color: '#FBF99F', opacity: 0 }
+      ],
+      // Gradient 4: Light blue outer → Dark teal inner (dark teal central with light blue outer)
+      [
+        { position: 0, color: '#B7E5FF', opacity: 1 },
+        { position: 0.3, color: '#B7E5FF', opacity: 1 },
+        { position: 0.7, color: '#284D41', opacity: 1 },
+        { position: 1, color: '#284D41', opacity: 0 }
+      ],
+      // Gradient 5: Red/orange outer → Dark brown inner (dark brown central with orange outer)
+      [
+        { position: 0, color: '#F2262A', opacity: 1 },
+        { position: 0.3, color: '#F2262A', opacity: 1 },
+        { position: 0.7, color: '#5E4E3A', opacity: 1 },
+        { position: 1, color: '#5E4E3A', opacity: 0 }
+      ],
+      // Gradient 6: Light pink outer → Red inner (red central with large light pink outer)
+      [
+        { position: 0, color: '#FAE5EF', opacity: 1 },
+        { position: 0.3, color: '#FAE5EF', opacity: 1 },
+        { position: 0.7, color: '#F2262A', opacity: 1 },
+        { position: 1, color: '#F2262A', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom6Gradients);
+    setSelectedColorSet('Custom-6');
+    // Enable all 6 gradients for Custom-6
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-7 color set with exact arrangement
+  const applyCustom7 = () => {
+    // Based on the image: 6 gradients with specific color pairs
+    // Each gradient goes from outer color to inner color
+    const custom7Gradients = [
+      // Gradient 1: Dark olive green outer → Light lavender/pale purple inner (large circle)
+      [
+        { position: 0, color: '#013605', opacity: 1 },
+        { position: 0.3, color: '#013605', opacity: 1 },
+        { position: 0.7, color: '#FD98EA', opacity: 1 },
+        { position: 1, color: '#FD98EA', opacity: 0 }
+      ],
+      // Gradient 2: Bright pink outer → Vibrant orange-red inner (small circle)
+      [
+        { position: 0, color: '#FD98EA', opacity: 1 },
+        { position: 0.3, color: '#FD98EA', opacity: 1 },
+        { position: 0.7, color: '#F54114', opacity: 1 },
+        { position: 1, color: '#F54114', opacity: 0 }
+      ],
+      // Gradient 3: Golden-brown/light brown outer → Deep royal blue inner (large circle)
+      [
+        { position: 0, color: '#CA7D00', opacity: 1 },
+        { position: 0.3, color: '#CA7D00', opacity: 1 },
+        { position: 0.7, color: '#022FCD', opacity: 1 },
+        { position: 1, color: '#022FCD', opacity: 0 }
+      ],
+      // Gradient 4: Green outer → Very dark blue/almost black inner (medium circle)
+      [
+        { position: 0, color: '#48881E', opacity: 1 },
+        { position: 0.3, color: '#48881E', opacity: 1 },
+        { position: 0.7, color: '#0E0033', opacity: 1 },
+        { position: 1, color: '#0E0033', opacity: 0 }
+      ],
+      // Gradient 5: Coral/reddish-orange outer → Light pink inner (medium circle)
+      [
+        { position: 0, color: '#F54114', opacity: 1 },
+        { position: 0.3, color: '#F54114', opacity: 1 },
+        { position: 0.7, color: '#FD98EA', opacity: 1 },
+        { position: 1, color: '#FD98EA', opacity: 0 }
+      ],
+      // Gradient 6: Dark forest green outer → Vibrant orange-red inner (large circle)
+      [
+        { position: 0, color: '#013605', opacity: 1 },
+        { position: 0.3, color: '#013605', opacity: 1 },
+        { position: 0.7, color: '#F54114', opacity: 1 },
+        { position: 1, color: '#F54114', opacity: 0 }
+      ]
+    ];
+    
+    setEditableGradients(custom7Gradients);
+    setSelectedColorSet('Custom-7');
+    // Enable all 6 gradients for Custom-7
+    setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply a color palette to all gradients
+  const applyColorPalette = (paletteName) => {
+    const palette = colorPalettes[paletteName];
+    if (!palette || palette.length === 0) return;
+
+    setEditableGradients(prev => {
+      return prev.map((gradient, gradientIndex) => {
+        // Distribute palette colors across the gradient stops
+        // Keep the positions and opacity, but update colors
+        const sortedStops = [...gradient].sort((a, b) => a.position - b.position);
+        
+        return sortedStops.map((stop, stopIndex) => {
+          // Calculate which palette color to use based on position
+          // Map stop position (0-1) to palette index
+          const paletteIndex = Math.floor((stop.position * (palette.length - 1)) % palette.length);
+          const nextPaletteIndex = Math.min(paletteIndex + 1, palette.length - 1);
+          
+          // Interpolate between two palette colors based on position
+          const localPosition = (stop.position * (palette.length - 1)) % 1;
+          const color1 = palette[paletteIndex];
+          const color2 = palette[nextPaletteIndex];
+          
+          // Simple interpolation - you could use the interpolateColor function here
+          let newColor = color1;
+          if (localPosition > 0.1 && palette.length > 1) {
+            // Blend between colors
+            const hexToRgb = (hex) => {
+              const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+              return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+              } : null;
+            };
+            const rgbToHex = (r, g, b) => {
+              return "#" + [r, g, b].map(x => {
+                const hex = Math.round(x).toString(16);
+                return hex.length === 1 ? "0" + hex : hex;
+              }).join("");
+            };
+            const rgb1 = hexToRgb(color1);
+            const rgb2 = hexToRgb(color2);
+            if (rgb1 && rgb2) {
+              const r = Math.round(rgb1.r + (rgb2.r - rgb1.r) * localPosition);
+              const g = Math.round(rgb1.g + (rgb2.g - rgb1.g) * localPosition);
+              const b = Math.round(rgb1.b + (rgb2.b - rgb1.b) * localPosition);
+              newColor = rgbToHex(r, g, b);
+            }
+          } else {
+            newColor = color1;
+          }
+          
+          return {
+            ...stop,
+            color: newColor
+          };
+        });
+      });
+    });
+  };
+
   // Define color sets - each set contains 8 gradients (color palettes + gradient stops)
   const colorSets = {
     'Color Set A': {
@@ -873,6 +1348,342 @@ const CircularParticles = () => {
           { position: 0.028601694915254237, color: '#c03535', opacity: 1 },
           { position: 0.3199152542372881, color: '#b082ad', opacity: 1 },
           { position: 0.670299727520436, color: '#b082ad', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-1': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Pale sky blue outer → Brown-orange inner
+        [
+          { position: 0, color: '#C3F0FF', opacity: 1 },
+          { position: 0.3, color: '#C3F0FF', opacity: 1 },
+          { position: 0.7, color: '#CA7D00', opacity: 1 },
+          { position: 1, color: '#CA7D00', opacity: 0 }
+        ],
+        // Gradient 2: Light pink outer → Vibrant red inner
+        [
+          { position: 0, color: '#FCAFBA', opacity: 1 },
+          { position: 0.3, color: '#FCAFBA', opacity: 1 },
+          { position: 0.7, color: '#FE5E40', opacity: 1 },
+          { position: 1, color: '#FE5E40', opacity: 0 }
+        ],
+        // Gradient 3: Brown-orange outer → Bright yellow inner
+        [
+          { position: 0, color: '#CA7D00', opacity: 1 },
+          { position: 0.3, color: '#CA7D00', opacity: 1 },
+          { position: 0.7, color: '#FFFF8D', opacity: 1 },
+          { position: 1, color: '#FFFF8D', opacity: 0 }
+        ],
+        // Gradient 4: Pale sky blue outer → Deep royal blue inner
+        [
+          { position: 0, color: '#C3F0FF', opacity: 1 },
+          { position: 0.3, color: '#C3F0FF', opacity: 1 },
+          { position: 0.7, color: '#022FCD', opacity: 1 },
+          { position: 1, color: '#022FCD', opacity: 0 }
+        ],
+        // Gradient 5: Vibrant red outer → Bright yellow inner
+        [
+          { position: 0, color: '#FE5E40', opacity: 1 },
+          { position: 0.3, color: '#FE5E40', opacity: 1 },
+          { position: 0.7, color: '#FFFF8D', opacity: 1 },
+          { position: 1, color: '#FFFF8D', opacity: 0 }
+        ],
+        // Gradient 6: Deep royal blue outer → Vibrant red-orange inner
+        [
+          { position: 0, color: '#022FCD', opacity: 1 },
+          { position: 0.3, color: '#022FCD', opacity: 1 },
+          { position: 0.7, color: '#FE5E40', opacity: 1 },
+          { position: 1, color: '#FE5E40', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-2': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Light blue outer → Brown-orange inner
+        [
+          { position: 0, color: '#A4D2E1', opacity: 1 },
+          { position: 0.3, color: '#A4D2E1', opacity: 1 },
+          { position: 0.7, color: '#CA7D00', opacity: 1 },
+          { position: 1, color: '#CA7D00', opacity: 0 }
+        ],
+        // Gradient 2: Light pink outer → Red inner
+        [
+          { position: 0, color: '#FCAFBA', opacity: 1 },
+          { position: 0.3, color: '#FCAFBA', opacity: 1 },
+          { position: 0.7, color: '#F7452F', opacity: 1 },
+          { position: 1, color: '#F7452F', opacity: 0 }
+        ],
+        // Gradient 3: Brown-orange outer → Bright yellow inner
+        [
+          { position: 0, color: '#CA7D00', opacity: 1 },
+          { position: 0.3, color: '#CA7D00', opacity: 1 },
+          { position: 0.7, color: '#FFFF8D', opacity: 1 },
+          { position: 1, color: '#FFFF8D', opacity: 0 }
+        ],
+        // Gradient 4: Light blue outer → White inner
+        [
+          { position: 0, color: '#A4D2E1', opacity: 1 },
+          { position: 0.3, color: '#A4D2E1', opacity: 1 },
+          { position: 0.7, color: '#FAFBFF', opacity: 1 },
+          { position: 1, color: '#FAFBFF', opacity: 0 }
+        ],
+        // Gradient 5: Red outer → Bright yellow inner
+        [
+          { position: 0, color: '#F7452F', opacity: 1 },
+          { position: 0.3, color: '#F7452F', opacity: 1 },
+          { position: 0.7, color: '#FFFF8D', opacity: 1 },
+          { position: 1, color: '#FFFF8D', opacity: 0 }
+        ],
+        // Gradient 6: White outer → Red inner
+        [
+          { position: 0, color: '#FAFBFF', opacity: 1 },
+          { position: 0.3, color: '#FAFBFF', opacity: 1 },
+          { position: 0.7, color: '#F7452F', opacity: 1 },
+          { position: 1, color: '#F7452F', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-3': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Royal blue outer → Golden-brown inner
+        [
+          { position: 0, color: '#022FCD', opacity: 1 },
+          { position: 0.3, color: '#022FCD', opacity: 1 },
+          { position: 0.7, color: '#CA7D00', opacity: 1 },
+          { position: 1, color: '#CA7D00', opacity: 0 }
+        ],
+        // Gradient 2: Dark teal outer → Pale yellow inner
+        [
+          { position: 0, color: '#005442', opacity: 1 },
+          { position: 0.3, color: '#005442', opacity: 1 },
+          { position: 0.7, color: '#FFFF8D', opacity: 1 },
+          { position: 1, color: '#FFFF8D', opacity: 0 }
+        ],
+        // Gradient 3: Sky blue outer (halo) → Golden-brown inner
+        [
+          { position: 0, color: '#A4D2E1', opacity: 1 },
+          { position: 0.3, color: '#A4D2E1', opacity: 1 },
+          { position: 0.7, color: '#CA7D00', opacity: 1 },
+          { position: 1, color: '#CA7D00', opacity: 0 }
+        ],
+        // Gradient 4: Dark teal outer → Light pink inner
+        [
+          { position: 0, color: '#005442', opacity: 1 },
+          { position: 0.3, color: '#005442', opacity: 1 },
+          { position: 0.7, color: '#FCAFBA', opacity: 1 },
+          { position: 1, color: '#FCAFBA', opacity: 0 }
+        ],
+        // Gradient 5: Coral/reddish-orange outer → Golden-brown inner
+        [
+          { position: 0, color: '#FE5E40', opacity: 1 },
+          { position: 0.3, color: '#FE5E40', opacity: 1 },
+          { position: 0.7, color: '#CA7D00', opacity: 1 },
+          { position: 1, color: '#CA7D00', opacity: 0 }
+        ],
+        // Gradient 6: Pale yellow outer → Royal blue inner
+        [
+          { position: 0, color: '#FFFF8D', opacity: 1 },
+          { position: 0.3, color: '#FFFF8D', opacity: 1 },
+          { position: 0.7, color: '#022FCD', opacity: 1 },
+          { position: 1, color: '#022FCD', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-4': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Light pink outer → Dark gray inner (large circle)
+        [
+          { position: 0, color: '#FD98EA', opacity: 1 },
+          { position: 0.3, color: '#FD98EA', opacity: 1 },
+          { position: 0.7, color: '#797791', opacity: 1 },
+          { position: 1, color: '#797791', opacity: 0 }
+        ],
+        // Gradient 2: Vibrant orange outer → Deep dark red inner (small circle)
+        [
+          { position: 0, color: '#FF5616', opacity: 1 },
+          { position: 0.3, color: '#FF5616', opacity: 1 },
+          { position: 0.7, color: '#8E151A', opacity: 1 },
+          { position: 1, color: '#8E151A', opacity: 0 }
+        ],
+        // Gradient 3: Warm earthy brown outer → Bright solid blue inner (medium-large circle)
+        [
+          { position: 0, color: '#CA7D00', opacity: 1 },
+          { position: 0.3, color: '#CA7D00', opacity: 1 },
+          { position: 0.7, color: '#022FCD', opacity: 1 },
+          { position: 1, color: '#022FCD', opacity: 0 }
+        ],
+        // Gradient 4: Muted green outer → Lighter vibrant green inner (medium circle)
+        [
+          { position: 0, color: '#013605', opacity: 1 },
+          { position: 0.3, color: '#013605', opacity: 1 },
+          { position: 0.7, color: '#74AB34', opacity: 1 },
+          { position: 1, color: '#74AB34', opacity: 0 }
+        ],
+        // Gradient 5: Bright blue outer → Soft light pink inner (small circle)
+        [
+          { position: 0, color: '#022FCD', opacity: 1 },
+          { position: 0.3, color: '#022FCD', opacity: 1 },
+          { position: 0.7, color: '#FD98EA', opacity: 1 },
+          { position: 1, color: '#FD98EA', opacity: 0 }
+        ],
+        // Gradient 6: Bold orange outer → Deep dark red inner (largest circle)
+        [
+          { position: 0, color: '#FF5616', opacity: 1 },
+          { position: 0.3, color: '#FF5616', opacity: 1 },
+          { position: 0.7, color: '#8E151A', opacity: 1 },
+          { position: 1, color: '#8E151A', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-5': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Periwinkle blue outer → Light pastel green inner (large circle)
+        [
+          { position: 0, color: '#7098FA', opacity: 1 },
+          { position: 0.3, color: '#7098FA', opacity: 1 },
+          { position: 0.7, color: '#80EB91', opacity: 1 },
+          { position: 1, color: '#80EB91', opacity: 0 }
+        ],
+        // Gradient 2: Light pink outer → Bright yellow inner (small circle)
+        [
+          { position: 0, color: '#FFC6DD', opacity: 1 },
+          { position: 0.3, color: '#FFC6DD', opacity: 1 },
+          { position: 0.7, color: '#FAFE45', opacity: 1 },
+          { position: 1, color: '#FAFE45', opacity: 0 }
+        ],
+        // Gradient 3: Warm orange outer → Light pastel pink inner (very large circle)
+        [
+          { position: 0, color: '#FF8C4A', opacity: 1 },
+          { position: 0.3, color: '#FF8C4A', opacity: 1 },
+          { position: 0.7, color: '#FFC6DD', opacity: 1 },
+          { position: 1, color: '#FFC6DD', opacity: 0 }
+        ],
+        // Gradient 4: Blue outer → Light pastel green inner (medium circle)
+        [
+          { position: 0, color: '#7098FA', opacity: 1 },
+          { position: 0.3, color: '#7098FA', opacity: 1 },
+          { position: 0.7, color: '#80EB91', opacity: 1 },
+          { position: 1, color: '#80EB91', opacity: 0 }
+        ],
+        // Gradient 5: Yellow-green outer → Warm orange inner (small circle)
+        [
+          { position: 0, color: '#D4EF3B', opacity: 1 },
+          { position: 0.3, color: '#D4EF3B', opacity: 1 },
+          { position: 0.7, color: '#FF8C4A', opacity: 1 },
+          { position: 1, color: '#FF8C4A', opacity: 0 }
+        ],
+        // Gradient 6: Blue outer → Blue inner (medium circle - using same blue as provided)
+        [
+          { position: 0, color: '#7098FA', opacity: 1 },
+          { position: 0.3, color: '#7098FA', opacity: 1 },
+          { position: 0.7, color: '#7098FA', opacity: 0.7 },
+          { position: 1, color: '#7098FA', opacity: 0 }
+        ],
+        // Gradient 7: Light blue outer → Darker blue inner (large circle - using same blue with reduced opacity for darker effect)
+        [
+          { position: 0, color: '#7098FA', opacity: 1 },
+          { position: 0.3, color: '#7098FA', opacity: 0.8 },
+          { position: 0.7, color: '#7098FA', opacity: 0.5 },
+          { position: 1, color: '#7098FA', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-6': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Orange/red outer → Light blue inner (light blue central with orange outer)
+        [
+          { position: 0, color: '#F2262A', opacity: 1 },
+          { position: 0.3, color: '#F2262A', opacity: 1 },
+          { position: 0.7, color: '#B7E5FF', opacity: 1 },
+          { position: 1, color: '#B7E5FF', opacity: 0 }
+        ],
+        // Gradient 2: Light pink/whitish outer → Red inner (small red central with faint pink halo)
+        [
+          { position: 0, color: '#FAE5EF', opacity: 1 },
+          { position: 0.3, color: '#FAE5EF', opacity: 0.5 },
+          { position: 0.7, color: '#F2262A', opacity: 1 },
+          { position: 1, color: '#F2262A', opacity: 0 }
+        ],
+        // Gradient 3: Royal blue outer → Light yellow inner (light yellow central with royal blue outer)
+        [
+          { position: 0, color: '#2E32FF', opacity: 1 },
+          { position: 0.3, color: '#2E32FF', opacity: 1 },
+          { position: 0.7, color: '#FBF99F', opacity: 1 },
+          { position: 1, color: '#FBF99F', opacity: 0 }
+        ],
+        // Gradient 4: Light blue outer → Dark teal inner (dark teal central with light blue outer)
+        [
+          { position: 0, color: '#B7E5FF', opacity: 1 },
+          { position: 0.3, color: '#B7E5FF', opacity: 1 },
+          { position: 0.7, color: '#284D41', opacity: 1 },
+          { position: 1, color: '#284D41', opacity: 0 }
+        ],
+        // Gradient 5: Red/orange outer → Dark brown inner (dark brown central with orange outer)
+        [
+          { position: 0, color: '#F2262A', opacity: 1 },
+          { position: 0.3, color: '#F2262A', opacity: 1 },
+          { position: 0.7, color: '#5E4E3A', opacity: 1 },
+          { position: 1, color: '#5E4E3A', opacity: 0 }
+        ],
+        // Gradient 6: Light pink outer → Red inner (red central with large light pink outer)
+        [
+          { position: 0, color: '#FAE5EF', opacity: 1 },
+          { position: 0.3, color: '#FAE5EF', opacity: 1 },
+          { position: 0.7, color: '#F2262A', opacity: 1 },
+          { position: 1, color: '#F2262A', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-7': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Dark olive green outer → Light lavender/pale purple inner (large circle)
+        [
+          { position: 0, color: '#013605', opacity: 1 },
+          { position: 0.3, color: '#013605', opacity: 1 },
+          { position: 0.7, color: '#FD98EA', opacity: 1 },
+          { position: 1, color: '#FD98EA', opacity: 0 }
+        ],
+        // Gradient 2: Bright pink outer → Vibrant orange-red inner (small circle)
+        [
+          { position: 0, color: '#FD98EA', opacity: 1 },
+          { position: 0.3, color: '#FD98EA', opacity: 1 },
+          { position: 0.7, color: '#F54114', opacity: 1 },
+          { position: 1, color: '#F54114', opacity: 0 }
+        ],
+        // Gradient 3: Golden-brown/light brown outer → Deep royal blue inner (large circle)
+        [
+          { position: 0, color: '#CA7D00', opacity: 1 },
+          { position: 0.3, color: '#CA7D00', opacity: 1 },
+          { position: 0.7, color: '#022FCD', opacity: 1 },
+          { position: 1, color: '#022FCD', opacity: 0 }
+        ],
+        // Gradient 4: Green outer → Very dark blue/almost black inner (medium circle)
+        [
+          { position: 0, color: '#48881E', opacity: 1 },
+          { position: 0.3, color: '#48881E', opacity: 1 },
+          { position: 0.7, color: '#0E0033', opacity: 1 },
+          { position: 1, color: '#0E0033', opacity: 0 }
+        ],
+        // Gradient 5: Coral/reddish-orange outer → Light pink inner (medium circle)
+        [
+          { position: 0, color: '#F54114', opacity: 1 },
+          { position: 0.3, color: '#F54114', opacity: 1 },
+          { position: 0.7, color: '#FD98EA', opacity: 1 },
+          { position: 1, color: '#FD98EA', opacity: 0 }
+        ],
+        // Gradient 6: Dark forest green outer → Vibrant orange-red inner (large circle)
+        [
+          { position: 0, color: '#013605', opacity: 1 },
+          { position: 0.3, color: '#013605', opacity: 1 },
+          { position: 0.7, color: '#F54114', opacity: 1 },
+          { position: 1, color: '#F54114', opacity: 0 }
         ]
       ]
     }
@@ -1789,8 +2600,23 @@ const CircularParticles = () => {
 
   const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
   const [showGradientEditor, setShowGradientEditor] = useState(false);
+  const [showColorControls, setShowColorControls] = useState(true); // New state for color controls panel
+  const [selectedGradientIndex, setSelectedGradientIndex] = useState(null); // Track which gradient is being edited
+  const [selectedPalette, setSelectedPalette] = useState(null); // Selected color palette name
+  const gradientEditorRefs = useRef({}); // Refs for scrolling to specific gradients
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [selectedPreset, setSelectedPreset] = useState('Default');
+  // New color control states
+  const [colorBrightness, setColorBrightness] = useState(1.0); // 0.5 to 2.0 multiplier
+  const [colorSaturation, setColorSaturation] = useState(1.0); // 0.0 to 2.0 multiplier
+  const [enabledGradients, setEnabledGradients] = useState(() => {
+    // Initialize all gradients as enabled
+    const currentSet = colorSets[selectedColorSet];
+    if (currentSet && currentSet.gradientStops) {
+      return currentSet.gradientStops.map((_, i) => true);
+    }
+    return [];
+  });
   const [selectedPeriod, setSelectedPeriod] = useState('9');
   const [enabledPeriods, setEnabledPeriods] = useState({
     '1': true,
@@ -1923,7 +2749,24 @@ const CircularParticles = () => {
     let currentConfig = { ...config };
     
     // Get the current editable gradients (new format: array of gradient arrays)
-    const gradientStopsArray = editableGradients;
+    // Filter to only include enabled gradients and apply color adjustments
+    const filteredGradients = editableGradients.filter((_, index) => enabledGradients[index] !== false);
+    // Safety check: if no gradients are enabled, use all gradients
+    const gradientsToUse = filteredGradients.length > 0 ? filteredGradients : editableGradients;
+    const gradientStopsArray = gradientsToUse.map(gradient => 
+      gradient.map(stop => {
+        let adjustedColor = stop.color;
+        // Apply brightness adjustment if needed
+        if (colorBrightness !== 1.0) {
+          adjustedColor = adjustBrightness(adjustedColor, colorBrightness);
+        }
+        // Apply saturation adjustment if needed
+        if (colorSaturation !== 1.0) {
+          adjustedColor = adjustSaturation(adjustedColor, colorSaturation);
+        }
+        return { ...stop, color: adjustedColor };
+      })
+    );
     const currentOneColorMode = oneColorMode;
     const currentOneColorModeColor = oneColorModeColor;
     const currentOneColorModeDotOriginalColor = oneColorModeDotOriginalColor;
@@ -4587,7 +5430,20 @@ const CircularParticles = () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [selectedColorSet, editableGradients, backgroundColor, oneColorMode, oneColorModeColor, oneColorModeDotOriginalColor]); // Re-run when color set, gradients, background color, or one color mode changes
+  }, [selectedColorSet, editableGradients, backgroundColor, oneColorMode, oneColorModeColor, oneColorModeDotOriginalColor, enabledGradients, colorBrightness, colorSaturation]); // Re-run when color set, gradients, background color, one color mode, enabled gradients, or color adjustments change
+
+  // Update enabled gradients when color set changes or editableGradients updates
+  useEffect(() => {
+    if (editableGradients.length > 0) {
+      setEnabledGradients(Array(editableGradients.length).fill(true));
+    } else {
+      const currentSet = colorSets[selectedColorSet];
+      if (currentSet) {
+        const gradientCount = currentSet.gradientStops ? currentSet.gradientStops.length : 8; // Default to 8 if unknown
+        setEnabledGradients(Array(gradientCount).fill(true));
+      }
+    }
+  }, [selectedColorSet, editableGradients.length]);
 
   // Update state refs when state changes
   useEffect(() => {
@@ -4731,6 +5587,57 @@ const CircularParticles = () => {
     const g = rgb1.g + (rgb2.g - rgb1.g) * factor;
     const b = rgb1.b + (rgb2.b - rgb1.b) * factor;
 
+    return rgbToHex(r, g, b);
+  };
+
+  // Helper function to adjust color brightness
+  const adjustBrightness = (hex, multiplier) => {
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    };
+    const rgbToHex = (r, g, b) => {
+      return "#" + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      }).join("");
+    };
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    const r = Math.max(0, Math.min(255, rgb.r * multiplier));
+    const g = Math.max(0, Math.min(255, rgb.g * multiplier));
+    const b = Math.max(0, Math.min(255, rgb.b * multiplier));
+    return rgbToHex(r, g, b);
+  };
+
+  // Helper function to adjust color saturation
+  const adjustSaturation = (hex, multiplier) => {
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    };
+    const rgbToHex = (r, g, b) => {
+      return "#" + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      }).join("");
+    };
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    // Convert to grayscale (luminance)
+    const gray = rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
+    // Interpolate between grayscale and original color based on multiplier
+    const r = Math.max(0, Math.min(255, gray + (rgb.r - gray) * multiplier));
+    const g = Math.max(0, Math.min(255, gray + (rgb.g - gray) * multiplier));
+    const b = Math.max(0, Math.min(255, gray + (rgb.b - gray) * multiplier));
     return rgbToHex(r, g, b);
   };
 
@@ -5111,6 +6018,12 @@ const CircularParticles = () => {
                 ))}
               </select>
             </div>
+            <button
+              onClick={() => setShowColorControls(!showColorControls)}
+              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 rounded text-xs"
+            >
+              {showColorControls ? 'Hide' : 'Show'} Color Controls
+            </button>
             <div className="flex items-center gap-2">
               <label className="text-xs">State:</label>
               <select
@@ -5146,7 +6059,6 @@ const CircularParticles = () => {
                     onChange={(e) => {
                       const rows = parseInt(e.target.value) || 1;
                       setGridRows(rows);
-                      // Update config with new grid dimensions and particle count
                       updateConfig('gridRows', rows);
                       updateConfig('particleCount', rows * gridCols);
                     }}
@@ -5163,7 +6075,6 @@ const CircularParticles = () => {
                     onChange={(e) => {
                       const cols = parseInt(e.target.value) || 1;
                       setGridCols(cols);
-                      // Update config with new grid dimensions and particle count
                       updateConfig('gridCols', cols);
                       updateConfig('particleCount', gridRows * cols);
                     }}
@@ -5330,6 +6241,320 @@ const CircularParticles = () => {
             </div>
           </div>
         </div>
+
+        {/* Color Control Panel */}
+        {showColorControls && (
+          <div className="mb-4 p-4 bg-gray-800 rounded border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-indigo-400">🎨 Color Controls</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setColorBrightness(1.0);
+                    setColorSaturation(1.0);
+                    const currentSet = colorSets[selectedColorSet];
+                    if (currentSet) {
+                      const gradientCount = currentSet.gradientStops ? currentSet.gradientStops.length : editableGradients.length;
+                      setEnabledGradients(Array(gradientCount).fill(true));
+                    }
+                  }}
+                  className="px-3 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs"
+                >
+                  Reset All
+                </button>
+              </div>
+            </div>
+
+            {/* Color Palette Selector */}
+            <div className="mb-6 p-3 bg-gray-700 rounded border border-gray-600">
+              <h4 className="text-sm font-medium text-gray-300 mb-3">Color Palettes</h4>
+              <div className="mb-3">
+                <label className="text-xs text-gray-400 block mb-2">
+                  Quick Apply Palette:
+                </label>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <select
+                    value={selectedPalette || ''}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        applyColorPalette(e.target.value);
+                      }
+                    }}
+                    className="bg-gray-800 text-white text-xs px-3 py-2 rounded border border-gray-600 flex-1 min-w-[200px]"
+                  >
+                    <option value="">-- Select a palette --</option>
+                    {Object.keys(colorPalettes).map((paletteName) => (
+                      <option key={paletteName} value={paletteName}>
+                        {paletteName}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedPalette && (
+                    <button
+                      onClick={() => {
+                        setSelectedPalette(null);
+                      }}
+                      className="px-3 py-2 bg-gray-600 hover:bg-gray-500 rounded text-xs"
+                      title="Clear palette selection"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* Custom Color Sets */}
+              <div className="mt-3 pt-3 border-t border-gray-600">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={applyCustom1}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-1: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-1
+                  </button>
+                  <button
+                    onClick={applyCustom2}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-2: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-2
+                  </button>
+                  <button
+                    onClick={applyCustom3}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-3: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-3
+                  </button>
+                  <button
+                    onClick={applyCustom4}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-4: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-4
+                  </button>
+                  <button
+                    onClick={applyCustom5}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-5: Exact arrangement with 7 specific gradients"
+                  >
+                    Custom-5
+                  </button>
+                  <button
+                    onClick={applyCustom6}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-6: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-6
+                  </button>
+                  <button
+                    onClick={applyCustom7}
+                    className="px-2 py-2 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-7: Exact arrangement with 6 specific gradients"
+                  >
+                    Custom-7
+                  </button>
+                </div>
+                <div className="mt-2 text-xs text-gray-400 text-center space-y-1">
+                  <div>Custom-1: #022FCD, #CA7D00, #FE5E40, #FFFF8D, #FCAFBA, #C3F0FF</div>
+                  <div>Custom-2: #FAFBFF, #CA7D00, #F7452F, #FFFF8D, #FCAFBA, #A4D2E1</div>
+                  <div>Custom-3: #022FCD, #CA7D00, #FE5E40, #FFFF8D, #FCAFBA, #A4D2E1, #005442</div>
+                  <div>Custom-4: #FF5616, #8E151A, #022FCD, #FD98EA, #013605, #74AB34, #CA7D00, #797791</div>
+                  <div>Custom-5: #7098FA, #FF8C4A, #FFC6DD, #FAFE45, #D4EF3B, #80EB91</div>
+                  <div>Custom-6: #FAE5EF, #F2262A, #2E32FF, #FBF99F, #284D41, #B7E5FF, #5E4E3A</div>
+                  <div>Custom-7: #013605, #F54114, #FD98EA, #022FCD, #CA7D00, #0E0033, #48881E</div>
+                </div>
+              </div>
+              {/* Palette Preview */}
+              {selectedPalette && colorPalettes[selectedPalette] && (
+                <div className="mt-3">
+                  <div className="text-xs text-gray-400 mb-2">Palette Preview:</div>
+                  <div className="flex gap-1 flex-wrap">
+                    {colorPalettes[selectedPalette].map((color, idx) => (
+                      <div
+                        key={idx}
+                        className="w-12 h-12 rounded border-2 border-gray-500"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Global Color Adjustments */}
+            <div className="mb-6 p-3 bg-gray-700 rounded border border-gray-600">
+              <h4 className="text-sm font-medium text-gray-300 mb-3">Global Adjustments</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-2">
+                    Brightness: {(colorBrightness * 100).toFixed(0)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.0"
+                    step="0.05"
+                    value={colorBrightness}
+                    onChange={(e) => setColorBrightness(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>50%</span>
+                    <span>100%</span>
+                    <span>200%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-2">
+                    Saturation: {(colorSaturation * 100).toFixed(0)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0.0"
+                    max="2.0"
+                    step="0.05"
+                    value={colorSaturation}
+                    onChange={(e) => setColorSaturation(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0%</span>
+                    <span>100%</span>
+                    <span>200%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Gradient Previews */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-300 mb-3">Gradient Previews</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {editableGradients.map((stops, gradientIndex) => {
+                  const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+                  const gradientString = sortedStops.map((stop, idx) => {
+                    // Apply brightness and saturation adjustments
+                    let adjustedColor = stop.color;
+                    if (colorBrightness !== 1.0) {
+                      adjustedColor = adjustBrightness(adjustedColor, colorBrightness);
+                    }
+                    if (colorSaturation !== 1.0) {
+                      adjustedColor = adjustSaturation(adjustedColor, colorSaturation);
+                    }
+                    const colorWithOpacity = stop.opacity < 1 
+                      ? adjustedColor + Math.round(stop.opacity * 255).toString(16).padStart(2, '0')
+                      : adjustedColor;
+                    return `${colorWithOpacity} ${stop.position * 100}%`;
+                  }).join(', ');
+
+                  const isEnabled = enabledGradients[gradientIndex] !== false;
+                  const isSelected = selectedGradientIndex === gradientIndex;
+
+                  // Handler for clicking on the gradient card to edit it
+                  const handleGradientClick = (e) => {
+                    // Don't trigger if clicking on the toggle switch
+                    if (e.target.closest('label') || e.target.closest('input[type="checkbox"]')) {
+                      return;
+                    }
+                    // Set this gradient as selected and open the editor
+                    setSelectedGradientIndex(gradientIndex);
+                    setShowGradientEditor(true);
+                    // Scroll to the gradient in the editor after a brief delay to allow it to render
+                    setTimeout(() => {
+                      const gradientElement = gradientEditorRefs.current[gradientIndex];
+                      if (gradientElement) {
+                        gradientElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add a highlight effect
+                        gradientElement.classList.add('ring-4', 'ring-yellow-400');
+                        setTimeout(() => {
+                          gradientElement.classList.remove('ring-4', 'ring-yellow-400');
+                        }, 2000);
+                      }
+                    }, 100);
+                  };
+
+                  return (
+                    <div
+                      key={gradientIndex}
+                      onClick={handleGradientClick}
+                      className={`p-3 rounded border-2 transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-indigo-600 border-yellow-400 ring-2 ring-yellow-400'
+                          : isEnabled
+                          ? 'bg-gray-700 border-indigo-500 hover:border-indigo-400 hover:bg-gray-600'
+                          : 'bg-gray-800 border-gray-600 opacity-50'
+                      }`}
+                      title="Click to edit this gradient"
+                    >
+                      <div className="mb-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-white">
+                            Gradient {gradientIndex + 1}
+                            {isSelected && <span className="ml-2 text-yellow-300">✏️ Editing</span>}
+                          </span>
+                          <label 
+                            className="relative inline-flex items-center cursor-pointer"
+                            onClick={(e) => e.stopPropagation()} // Prevent card click when toggling
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isEnabled}
+                              onChange={(e) => {
+                                const newEnabled = [...enabledGradients];
+                                newEnabled[gradientIndex] = e.target.checked;
+                                setEnabledGradients(newEnabled);
+                              }}
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                          </label>
+                        </div>
+                        <div
+                          className="h-16 rounded border border-gray-500 mb-2"
+                          style={{
+                            background: `radial-gradient(circle, ${gradientString})`,
+                            opacity: isEnabled ? 1 : 0.5
+                          }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-400 flex items-center justify-between">
+                        <span>{sortedStops.length} stops</span>
+                        <span className="text-indigo-300">Click to edit →</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setEnabledGradients(Array(editableGradients.length).fill(true))}
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+              >
+                Enable All
+              </button>
+              <button
+                onClick={() => setEnabledGradients(Array(editableGradients.length).fill(false))}
+                className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+              >
+                Disable All
+              </button>
+              <button
+                onClick={() => {
+                  const newEnabled = enabledGradients.map((_, i) => i % 2 === 0);
+                  setEnabledGradients(newEnabled);
+                }}
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
+              >
+                Toggle Alternating
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Period Slider */}
         <div className="mb-4 py-4 px-4 bg-gray-800 rounded border border-gray-700">
@@ -5496,11 +6721,24 @@ const CircularParticles = () => {
                   return `${colorWithOpacity} ${stop.position * 100}%`;
                 }).join(', ');
                 
+                const isSelected = selectedGradientIndex === gradientIndex;
+                
                 return (
-                  <div key={gradientIndex} className="p-3 bg-gray-700 rounded border border-gray-600">
+                  <div 
+                    key={gradientIndex} 
+                    ref={(el) => { gradientEditorRefs.current[gradientIndex] = el; }}
+                    className={`p-3 rounded border-2 transition-all ${
+                      isSelected 
+                        ? 'bg-indigo-800 border-yellow-400 ring-2 ring-yellow-400' 
+                        : 'bg-gray-700 border-gray-600'
+                    }`}
+                  >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-medium text-white">Gradient {gradientIndex + 1}</h4>
+                        <h4 className={`text-sm font-medium ${isSelected ? 'text-yellow-300' : 'text-white'}`}>
+                          Gradient {gradientIndex + 1}
+                          {isSelected && <span className="ml-2">✏️</span>}
+                        </h4>
                         {editableGradients.length > 1 && (
                           <button
                             onClick={() => removeGradient(gradientIndex)}
