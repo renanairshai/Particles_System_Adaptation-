@@ -686,7 +686,377 @@ const CircularParticles = () => {
     // Set blend mode to normal (source-over)
     updateConfig('blendMode', 'source-over');
     // Set background color
-    setBackgroundColor('#f9f9f9');
+    setBackgroundColor('#EEEEEE');
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-10: Same structure as Default but with new color palette
+  const applyCustom10 = () => {
+    // Get the Default color set structure (exact same positions and opacities)
+    const defaultSet = colorSets['Default'];
+    if (!defaultSet || !defaultSet.gradientStops) {
+      console.error('Default color set not found');
+      return;
+    }
+    
+    // Helper function to map colors based on color family
+    const mapColor = (originalColor) => {
+      const color = originalColor.toLowerCase();
+      
+      // Keep white as white
+      if (color === '#ffffff' || color === '#ffffff') {
+        return '#ffffff';
+      }
+      
+      // Map blues (various shades) to new blue or light blue
+      // Darker blues → #4891EA, lighter blues → #D1EDFF
+      if (color.includes('7aa4d4') || color.includes('325a7e') || color.includes('6379ff') || 
+          color.includes('0d5578') || color.includes('005277') || color.includes('4891ea')) {
+        // Check if it's a darker blue (like #325a7e, #0d5578, #005277) → use #4891EA
+        if (color.includes('325a7e') || color.includes('0d5578') || color.includes('005277') || 
+            color.includes('6379ff') || color.includes('4a1a73')) {
+          return '#4891EA';
+        }
+        // Lighter blues → use #D1EDFF
+        return '#D1EDFF';
+      }
+      
+      // Map greens (various shades) to #d1ff39
+      if (color.includes('6a7d1a') || color.includes('6a8d6a') || color.includes('407d40') || 
+          color.includes('3d9a5f') || color.includes('6f7504') || color.includes('61b361') ||
+          color.includes('6f8a6f') || color.includes('48881e') || color.includes('74ab34')) {
+        return '#d1ff39';
+      }
+      
+      // Map reds (various shades) to #FB5558
+      if (color.includes('ff1a1a') || color.includes('750000') || color.includes('e03f3f') || 
+          color.includes('f2262a') || color.includes('f54114') || color.includes('8e151a')) {
+        return '#FB5558';
+      }
+      
+      // Map yellows/oranges to #FFED8A
+      if (color.includes('ff8a1a') || color.includes('ffff1a') || color.includes('f4d529') || 
+          color.includes('fafe45') || color.includes('fbf99f') || color.includes('ffff8d')) {
+        return '#FFED8A';
+      }
+      
+      // Map pinks/lavenders to #FFB8F2 (keep same)
+      if (color.includes('ffb8f5') || color.includes('f5b8f5') || color.includes('ffe0ff') || 
+          color.includes('d299c6') || color.includes('ffb8f2') || color.includes('f98ea') ||
+          color.includes('ffc6dd') || color.includes('fcafba')) {
+        return '#FFB8F2';
+      }
+      
+      // Map purples/lavenders to #ECB8F6
+      if (color.includes('d4b3ff') || color.includes('ecb8f6')) {
+        return '#ECB8F6';
+      }
+      
+      // Map light grays to purple
+      if (color.includes('f3f3f3') || color.includes('d9d9d9') || color.includes('bababa')) {
+        return '#ECB8F6';
+      }
+      
+      // Default: return original color if no match
+      return originalColor;
+    };
+    
+    // Apply color mapping to Default structure (keep exact same positions and opacities)
+    const custom10Gradients = defaultSet.gradientStops.map((gradient) => {
+      return gradient.map((stop) => {
+        return {
+          ...stop,
+          color: mapColor(stop.color)
+        };
+      });
+    });
+    
+    setEditableGradients(custom10Gradients);
+    setSelectedColorSet('Custom-10');
+    // Enable all gradients (same count as Default - 9 gradients)
+    setEnabledGradients(Array(9).fill(true));
+    // Set blend mode to normal (source-over) - same as Default
+    updateConfig('blendMode', 'source-over');
+    // Set background color - same as Default
+    setBackgroundColor('#EEEEEE');
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-11: Same structure as Custom-10 but with new color palette
+  const applyCustom11 = () => {
+    // Get the Custom-10 color set structure (or Default, since Custom-10 uses Default structure)
+    // We'll use Default as the base since Custom-10 is based on it
+    const defaultSet = colorSets['Default'];
+    if (!defaultSet || !defaultSet.gradientStops) {
+      console.error('Default color set not found');
+      return;
+    }
+    
+    // New color palette for Custom-11 (from the image)
+    // Mapping from Custom-10 colors to Custom-11 colors:
+    // Blue: #4891EA → #75B0F5
+    // Light Blue: #D1EDFF → #A7BFD2
+    // Green: #d1ff39 → #A5D1AE
+    // Red: #FB5558 → #DE6352
+    // Yellow: #FFED8A → #EFD885
+    // Pink: #FFB8F2 → #F3BDED
+    // Purple: #ECB8F6 → #ECB8F6 (same)
+    // Light Gray: #F3F3F3 → #F3F3F3 (same, or map to purple if needed)
+    
+    // Helper function to map colors from Custom-10 to Custom-11
+    const mapColor = (originalColor) => {
+      const color = originalColor.toLowerCase();
+      
+      // Keep white as white
+      if (color === '#ffffff' || color === '#ffffff') {
+        return '#ffffff';
+      }
+      
+      // Map blues
+      // #4891EA (Custom-10 blue) → #75B0F5 (Custom-11 blue)
+      if (color === '#4891ea' || color.includes('4891ea')) {
+        return '#75B0F5';
+      }
+      // #D1EDFF (Custom-10 light blue) → #A7BFD2 (Custom-11 light blue)
+      if (color === '#d1edff' || color.includes('d1edff')) {
+        return '#A7BFD2';
+      }
+      
+      // Map greens
+      // #d1ff39 (Custom-10 green) → #A5D1AE (Custom-11 green)
+      if (color === '#d1ff39' || color.includes('d1ff39')) {
+        return '#A5D1AE';
+      }
+      
+      // Map reds
+      // #FB5558 (Custom-10 red) → #DE6352 (Custom-11 orange-red)
+      if (color === '#fb5558' || color.includes('fb5558')) {
+        return '#DE6352';
+      }
+      
+      // Map yellows
+      // #FFED8A (Custom-10 yellow) → #EFD885 (Custom-11 yellow)
+      if (color === '#ffed8a' || color.includes('ffed8a')) {
+        return '#EFD885';
+      }
+      
+      // Map pinks
+      // #FFB8F2 (Custom-10 pink) → #F3BDED (Custom-11 pink)
+      if (color === '#ffb8f2' || color.includes('ffb8f2')) {
+        return '#F3BDED';
+      }
+      
+      // Map purples
+      // #ECB8F6 (Custom-10 purple) → #ECB8F6 (Custom-11 purple - same)
+      if (color === '#ecb8f6' || color.includes('ecb8f6')) {
+        return '#ECB8F6';
+      }
+      
+      // Map light grays - if they were mapped to purple in Custom-10, keep as purple
+      // Otherwise map to #F3F3F3
+      if (color.includes('f3f3f3') || color.includes('d9d9d9') || color.includes('bababa')) {
+        // If it was a light gray that became purple in Custom-10, keep it as purple
+        // Otherwise use #F3F3F3
+        return '#F3F3F3';
+      }
+      
+      // Also check for any other blues, greens, reds, yellows, pinks that might be variations
+      // Blues (various shades that might have been mapped)
+      if (color.includes('7aa4d4') || color.includes('325a7e') || color.includes('6379ff') || 
+          color.includes('0d5578') || color.includes('005277')) {
+        // Darker blues → #75B0F5, lighter → #A7BFD2
+        if (color.includes('325a7e') || color.includes('0d5578') || color.includes('005277') || 
+            color.includes('6379ff') || color.includes('4a1a73')) {
+          return '#75B0F5';
+        }
+        return '#A7BFD2';
+      }
+      
+      // Greens
+      if (color.includes('6a7d1a') || color.includes('6a8d6a') || color.includes('407d40') || 
+          color.includes('3d9a5f') || color.includes('6f7504') || color.includes('61b361') ||
+          color.includes('6f8a6f') || color.includes('48881e') || color.includes('74ab34')) {
+        return '#A5D1AE';
+      }
+      
+      // Reds
+      if (color.includes('ff1a1a') || color.includes('750000') || color.includes('e03f3f') || 
+          color.includes('f2262a') || color.includes('f54114') || color.includes('8e151a')) {
+        return '#DE6352';
+      }
+      
+      // Yellows/oranges
+      if (color.includes('ff8a1a') || color.includes('ffff1a') || color.includes('f4d529') || 
+          color.includes('fafe45') || color.includes('fbf99f') || color.includes('ffff8d')) {
+        return '#EFD885';
+      }
+      
+      // Pinks/lavenders
+      if (color.includes('ffb8f5') || color.includes('f5b8f5') || color.includes('ffe0ff') || 
+          color.includes('d299c6') || color.includes('ffb8f2') || color.includes('f98ea') ||
+          color.includes('ffc6dd') || color.includes('fcafba')) {
+        return '#F3BDED';
+      }
+      
+      // Purples
+      if (color.includes('d4b3ff') || color.includes('ecb8f6')) {
+        return '#ECB8F6';
+      }
+      
+      // Default: return original color if no match
+      return originalColor;
+    };
+    
+    // Apply color mapping to Default structure (keep exact same positions and opacities)
+    const custom11Gradients = defaultSet.gradientStops.map((gradient) => {
+      return gradient.map((stop) => {
+        return {
+          ...stop,
+          color: mapColor(stop.color)
+        };
+      });
+    });
+    
+    setEditableGradients(custom11Gradients);
+    setSelectedColorSet('Custom-11');
+    // Enable all gradients (same count as Default - 9 gradients)
+    setEnabledGradients(Array(9).fill(true));
+    // Set blend mode to normal (source-over) - same as Default
+    updateConfig('blendMode', 'source-over');
+    // Set background color - same as Default
+    setBackgroundColor('#EEEEEE');
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-12: Same structure as Custom-11 but with updated blue and purple
+  const applyCustom12 = () => {
+    // Get the Default color set structure (same base as Custom-11)
+    const defaultSet = colorSets['Default'];
+    if (!defaultSet || !defaultSet.gradientStops) {
+      console.error('Default color set not found');
+      return;
+    }
+    
+    // Helper function to map colors from Custom-11 to Custom-12
+    // Only changes: dark blue #75B0F5 → #214DFD, purple #ECB8F6 → #BB9BFB
+    const mapColor = (originalColor) => {
+      const color = originalColor.toLowerCase();
+      
+      // Keep white as white
+      if (color === '#ffffff' || color === '#ffffff') {
+        return '#ffffff';
+      }
+      
+      // Map dark blue: #75B0F5 (Custom-11) → #214DFD (Custom-12)
+      if (color === '#75b0f5' || color.includes('75b0f5')) {
+        return '#214DFD';
+      }
+      // Also map the original blue that Custom-11 replaced
+      if (color === '#4891ea' || color.includes('4891ea')) {
+        return '#214DFD';
+      }
+      
+      // Map purple: #ECB8F6 (Custom-11) → #BB9BFB (Custom-12)
+      if (color === '#ecb8f6' || color.includes('ecb8f6')) {
+        return '#BB9BFB';
+      }
+      
+      // Map light blue: #D1EDFF → #A7BFD2 (same as Custom-11)
+      if (color === '#d1edff' || color.includes('d1edff')) {
+        return '#A7BFD2';
+      }
+      
+      // Map greens: #d1ff39 → #A5D1AE (same as Custom-11)
+      if (color === '#d1ff39' || color.includes('d1ff39')) {
+        return '#A5D1AE';
+      }
+      
+      // Map reds: #FB5558 → #DE6352 (same as Custom-11)
+      if (color === '#fb5558' || color.includes('fb5558')) {
+        return '#DE6352';
+      }
+      
+      // Map yellows: #FFED8A → #EFD885 (same as Custom-11)
+      if (color === '#ffed8a' || color.includes('ffed8a')) {
+        return '#EFD885';
+      }
+      
+      // Map pinks: #FFB8F2 → #F3BDED (same as Custom-11)
+      if (color === '#ffb8f2' || color.includes('ffb8f2')) {
+        return '#F3BDED';
+      }
+      
+      // Map light grays
+      if (color.includes('f3f3f3') || color.includes('d9d9d9') || color.includes('bababa')) {
+        return '#F3F3F3';
+      }
+      
+      // Also check for any other blues, greens, reds, yellows, pinks that might be variations
+      // Blues (various shades)
+      if (color.includes('7aa4d4') || color.includes('325a7e') || color.includes('6379ff') || 
+          color.includes('0d5578') || color.includes('005277')) {
+        // Darker blues → #214DFD (new dark blue)
+        if (color.includes('325a7e') || color.includes('0d5578') || color.includes('005277') || 
+            color.includes('6379ff') || color.includes('4a1a73')) {
+          return '#214DFD';
+        }
+        // Lighter blues → #A7BFD2 (same as Custom-11)
+        return '#A7BFD2';
+      }
+      
+      // Greens
+      if (color.includes('6a7d1a') || color.includes('6a8d6a') || color.includes('407d40') || 
+          color.includes('3d9a5f') || color.includes('6f7504') || color.includes('61b361') ||
+          color.includes('6f8a6f') || color.includes('48881e') || color.includes('74ab34')) {
+        return '#A5D1AE';
+      }
+      
+      // Reds
+      if (color.includes('ff1a1a') || color.includes('750000') || color.includes('e03f3f') || 
+          color.includes('f2262a') || color.includes('f54114') || color.includes('8e151a')) {
+        return '#DE6352';
+      }
+      
+      // Yellows/oranges
+      if (color.includes('ff8a1a') || color.includes('ffff1a') || color.includes('f4d529') || 
+          color.includes('fafe45') || color.includes('fbf99f') || color.includes('ffff8d')) {
+        return '#EFD885';
+      }
+      
+      // Pinks/lavenders
+      if (color.includes('ffb8f5') || color.includes('f5b8f5') || color.includes('ffe0ff') || 
+          color.includes('d299c6') || color.includes('ffb8f2') || color.includes('f98ea') ||
+          color.includes('ffc6dd') || color.includes('fcafba')) {
+        return '#F3BDED';
+      }
+      
+      // Purples (map to new purple)
+      if (color.includes('d4b3ff') || color.includes('ecb8f6')) {
+        return '#BB9BFB';
+      }
+      
+      // Default: return original color if no match
+      return originalColor;
+    };
+    
+    // Apply color mapping to Default structure (keep exact same positions and opacities)
+    const custom12Gradients = defaultSet.gradientStops.map((gradient) => {
+      return gradient.map((stop) => {
+        return {
+          ...stop,
+          color: mapColor(stop.color)
+        };
+      });
+    });
+    
+    setEditableGradients(custom12Gradients);
+    setSelectedColorSet('Custom-12');
+    // Enable all gradients (same count as Default - 9 gradients)
+    setEnabledGradients(Array(9).fill(true));
+    // Set blend mode to normal (source-over) - same as Default
+    updateConfig('blendMode', 'source-over');
+    // Set background color - same as Default
+    setBackgroundColor('#EEEEEE');
     setSelectedPalette(null); // Clear any palette selection
   };
 
@@ -2019,6 +2389,172 @@ const CircularParticles = () => {
           { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
         ]
       ]
+    },
+    'Custom-10': {
+      // Same structure as Default - colors will be applied by applyCustom10 function
+      // Using a copy of Default's structure
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 0.3 },
+          { position: 0.11016949152542373, color: '#ffffff', opacity: 0.3 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 0.3 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#6a7d1a', opacity: 0.6 },
+          { position: 0.12076271186440678, color: '#6a8d6a', opacity: 0.6 },
+          { position: 0.508628519527702, color: '#ffb8f5', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#7aa4d4', opacity: 0.6 },
+          { position: 0.09322033898305085, color: '#325a7e', opacity: 0.6 },
+          { position: 0.1048728813559322, color: '#407d40', opacity: 0.6 },
+          { position: 0.4555084745762712, color: '#6f8a6f', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3d9a5f', opacity: 0.6 },
+          { position: 0.18528610354223432, color: '#6f7504', opacity: 0.6 },
+          { position: 0.5, color: '#f5b8f5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 0.6 },
+          { position: 0.1880108991825613, color: '#d4b3ff', opacity: 0.6 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0d5578', opacity: 0.6 },
+          { position: 0.3220338983050847, color: '#ffe0ff', opacity: 0.6 },
+          { position: 0.4608050847457627, color: '#ffe0ff', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff1a1a', opacity: 0.6 },
+          { position: 0.03072033898305085, color: '#750000', opacity: 0.6 },
+          { position: 0.17796610169491525, color: '#ff8a1a', opacity: 0.6 },
+          { position: 0.551906779661017, color: '#ffff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#6379ff', opacity: 0.6 },
+          { position: 0.06779661016949153, color: '#4a1a73', opacity: 0.6 },
+          { position: 0.19385593220338984, color: '#005277', opacity: 0.42 },
+          { position: 0.388771186440678, color: '#d4f5ff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 0.6 },
+          { position: 0.028601694915254237, color: '#e03f3f', opacity: 0.6 },
+          { position: 0.3199152542372881, color: '#d299c6', opacity: 0.6 },
+          { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-11': {
+      // Same structure as Default - colors will be applied by applyCustom11 function
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 0.3 },
+          { position: 0.11016949152542373, color: '#ffffff', opacity: 0.3 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 0.3 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#6a7d1a', opacity: 0.6 },
+          { position: 0.12076271186440678, color: '#6a8d6a', opacity: 0.6 },
+          { position: 0.508628519527702, color: '#ffb8f5', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#7aa4d4', opacity: 0.6 },
+          { position: 0.09322033898305085, color: '#325a7e', opacity: 0.6 },
+          { position: 0.1048728813559322, color: '#407d40', opacity: 0.6 },
+          { position: 0.4555084745762712, color: '#6f8a6f', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3d9a5f', opacity: 0.6 },
+          { position: 0.18528610354223432, color: '#6f7504', opacity: 0.6 },
+          { position: 0.5, color: '#f5b8f5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 0.6 },
+          { position: 0.1880108991825613, color: '#d4b3ff', opacity: 0.6 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0d5578', opacity: 0.6 },
+          { position: 0.3220338983050847, color: '#ffe0ff', opacity: 0.6 },
+          { position: 0.4608050847457627, color: '#ffe0ff', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff1a1a', opacity: 0.6 },
+          { position: 0.03072033898305085, color: '#750000', opacity: 0.6 },
+          { position: 0.17796610169491525, color: '#ff8a1a', opacity: 0.6 },
+          { position: 0.551906779661017, color: '#ffff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#6379ff', opacity: 0.6 },
+          { position: 0.06779661016949153, color: '#4a1a73', opacity: 0.6 },
+          { position: 0.19385593220338984, color: '#005277', opacity: 0.42 },
+          { position: 0.388771186440678, color: '#d4f5ff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 0.6 },
+          { position: 0.028601694915254237, color: '#e03f3f', opacity: 0.6 },
+          { position: 0.3199152542372881, color: '#d299c6', opacity: 0.6 },
+          { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-12': {
+      // Same structure as Default - colors will be applied by applyCustom12 function
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 0.3 },
+          { position: 0.11016949152542373, color: '#ffffff', opacity: 0.3 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 0.3 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#6a7d1a', opacity: 0.6 },
+          { position: 0.12076271186440678, color: '#6a8d6a', opacity: 0.6 },
+          { position: 0.508628519527702, color: '#ffb8f5', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#7aa4d4', opacity: 0.6 },
+          { position: 0.09322033898305085, color: '#325a7e', opacity: 0.6 },
+          { position: 0.1048728813559322, color: '#407d40', opacity: 0.6 },
+          { position: 0.4555084745762712, color: '#6f8a6f', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3d9a5f', opacity: 0.6 },
+          { position: 0.18528610354223432, color: '#6f7504', opacity: 0.6 },
+          { position: 0.5, color: '#f5b8f5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 0.6 },
+          { position: 0.1880108991825613, color: '#d4b3ff', opacity: 0.6 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0d5578', opacity: 0.6 },
+          { position: 0.3220338983050847, color: '#ffe0ff', opacity: 0.6 },
+          { position: 0.4608050847457627, color: '#ffe0ff', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff1a1a', opacity: 0.6 },
+          { position: 0.03072033898305085, color: '#750000', opacity: 0.6 },
+          { position: 0.17796610169491525, color: '#ff8a1a', opacity: 0.6 },
+          { position: 0.551906779661017, color: '#ffff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#6379ff', opacity: 0.6 },
+          { position: 0.06779661016949153, color: '#4a1a73', opacity: 0.6 },
+          { position: 0.19385593220338984, color: '#005277', opacity: 0.42 },
+          { position: 0.388771186440678, color: '#d4f5ff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 0.6 },
+          { position: 0.028601694915254237, color: '#e03f3f', opacity: 0.6 },
+          { position: 0.3199152542372881, color: '#d299c6', opacity: 0.6 },
+          { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
+        ]
+      ]
     }
   };
 
@@ -2092,7 +2628,7 @@ const CircularParticles = () => {
         blendMode: 'source-over'
       },
       selectedColorSet: 'Color Set A',
-      backgroundColor: '#f9f9f9'
+      backgroundColor: '#EEEEEE'
     },
     'B': {
       config: {
@@ -2810,7 +3346,7 @@ const CircularParticles = () => {
         connectorDotColor: '#000000'
       },
       selectedColorSet: 'Color Set K',
-      backgroundColor: '#f9f9f9'
+      backgroundColor: '#EEEEEE'
     },
     '10': {
       config: {
@@ -2937,7 +3473,7 @@ const CircularParticles = () => {
   const [selectedGradientIndex, setSelectedGradientIndex] = useState(null); // Track which gradient is being edited
   const [selectedPalette, setSelectedPalette] = useState(null); // Selected color palette name
   const gradientEditorRefs = useRef({}); // Refs for scrolling to specific gradients
-  const [backgroundColor, setBackgroundColor] = useState('#f9f9f9');
+  const [backgroundColor, setBackgroundColor] = useState('#EEEEEE');
   const [selectedPreset, setSelectedPreset] = useState('Default');
   // New color control states
   const [colorBrightness, setColorBrightness] = useState(1.0); // 0.5 to 2.0 multiplier
@@ -3072,6 +3608,11 @@ const CircularParticles = () => {
   
   // Update editable gradients when color set changes
   useEffect(() => {
+    // Skip Custom-10, Custom-11, and Custom-12 - they are handled by their respective functions
+    if (selectedColorSet === 'Custom-10' || selectedColorSet === 'Custom-11' || selectedColorSet === 'Custom-12') {
+      return;
+    }
+    
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:1360',message:'useEffect selectedColorSet entry',data:{selectedColorSet,colorSetExists:!!colorSets[selectedColorSet]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
@@ -6379,14 +6920,33 @@ const CircularParticles = () => {
               <label className="text-xs">Color Set:</label>
               <select
                 value={selectedColorSet}
-                onChange={(e) => setSelectedColorSet(e.target.value)}
+                onChange={(e) => {
+                  const newSet = e.target.value;
+                  setSelectedColorSet(newSet);
+                  // Call the appropriate function for custom sets
+                  if (newSet === 'Custom-10') {
+                    applyCustom10();
+                  } else if (newSet === 'Custom-11') {
+                    applyCustom11();
+                  } else if (newSet === 'Custom-12') {
+                    applyCustom12();
+                  }
+                }}
                 className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
               >
-                {Object.keys(colorSets).map((setName) => (
-                  <option key={setName} value={setName}>
-                    {setName}
-                  </option>
-                ))}
+                {Object.keys(colorSets)
+                  .sort((a, b) => {
+                    // Put "Default" first
+                    if (a === 'Default') return -1;
+                    if (b === 'Default') return 1;
+                    // Then sort alphabetically
+                    return a.localeCompare(b);
+                  })
+                  .map((setName) => (
+                    <option key={setName} value={setName}>
+                      {setName}
+                    </option>
+                  ))}
               </select>
             </div>
             <button
@@ -6745,6 +7305,27 @@ const CircularParticles = () => {
                     title="Apply Default: Same as Custom-9 but softer/more transparent"
                   >
                     Default
+                  </button>
+                  <button
+                    onClick={applyCustom10}
+                    className="px-2 py-2 bg-pink-600 hover:bg-pink-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-10: Same structure as Default with new color palette"
+                  >
+                    Custom-10
+                  </button>
+                  <button
+                    onClick={applyCustom11}
+                    className="px-2 py-2 bg-rose-600 hover:bg-rose-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-11: Same structure as Custom-10 with new color palette"
+                  >
+                    Custom-11
+                  </button>
+                  <button
+                    onClick={applyCustom12}
+                    className="px-2 py-2 bg-violet-600 hover:bg-violet-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-12: Same structure as Custom-11 with updated blue and purple"
+                  >
+                    Custom-12
                   </button>
                 </div>
                 <div className="mt-2 text-xs text-gray-400 text-center space-y-1">
