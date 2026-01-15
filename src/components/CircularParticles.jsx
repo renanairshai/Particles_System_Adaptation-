@@ -47,7 +47,7 @@ const CircularParticles = () => {
     glowRadius: 1,
     trailType: 'echo',
     streakColor: '#c8c8ff',
-    blendMode: 'multiply',
+    blendMode: 'source-over',
     connectorsEnabled: true,
     connectorMinDistance: 100,
     connectorMaxDistance: 112,
@@ -61,7 +61,7 @@ const CircularParticles = () => {
     connectorArcMode: false,
     connectorArcOutward: true,
     connectorArcHeight: 0.3,
-    connectorShowDots: true,
+    connectorShowDots: false,
     connectorDotSize: 9,
     connectorLineStyle: 'solid',
     connectorBlendMode: 'source-over',
@@ -506,6 +506,187 @@ const CircularParticles = () => {
     setSelectedColorSet('Custom-7');
     // Enable all 6 gradients for Custom-7
     setEnabledGradients(Array(6).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-8 color set - uses same structure as Color Set A but with specified colors
+  const applyCustom8 = () => {
+    // Get the current Color Set A structure to preserve gradient positions
+    const colorSetA = colorSets['Color Set A'];
+    if (!colorSetA) {
+      console.error('Color Set A not found');
+      return;
+    }
+    
+    // Convert Color Set A to new format to get the structure (positions and opacity)
+    const baseGradients = convertToNewFormat(colorSetA);
+    
+    // Define the 7 colors to use
+    const customColors = [
+      '#4891EA', // Medium blue
+      '#96b62d', // Yellow-green/chartreuse
+      '#9fc1d6', // Light blue/gray-blue
+      '#f2262A', // Red
+      '#f3f3f3', // Light gray/off-white
+      '#f4d529', // Bright yellow
+      '#ffb8f2'  // Light pink/magenta
+    ];
+    
+    // Map colors to gradients - distribute the 7 colors across 8 gradients
+    // Each gradient has 3 color stops, so we map [outer, middle, inner] colors
+    const colorMapping = [
+      [customColors[6], customColors[2], customColors[0]], // Pink → Light blue → Medium blue
+      [customColors[4], customColors[1], customColors[6]], // White → Yellow-green → Pink
+      [customColors[5], customColors[1], customColors[1]], // Yellow → Yellow-green → Yellow-green
+      [customColors[4], customColors[1], customColors[6]], // White → Yellow-green → Pink
+      [customColors[3], customColors[5], customColors[4]], // Red → Yellow → White
+      [customColors[2], customColors[0], customColors[2]], // Light blue → Medium blue → Light blue
+      [customColors[0], customColors[6], customColors[6]], // Medium blue → Pink → Pink
+      [customColors[3], customColors[5], customColors[5]]  // Red → Yellow → Yellow
+    ];
+    
+    // Create new gradients with same structure (positions, opacity) but new colors
+    const custom8Gradients = baseGradients.map((gradient, index) => {
+      const colors = colorMapping[index] || [customColors[0], customColors[1], customColors[2]];
+      // Sort stops by position to ensure correct order
+      const sortedStops = [...gradient].sort((a, b) => a.position - b.position);
+      return sortedStops.map((stop, stopIndex) => {
+        // Map colors: first stop gets first color, second gets second, etc.
+        // If there are more stops than colors, cycle through colors
+        const colorIndex = stopIndex % colors.length;
+        return {
+          ...stop,
+          color: colors[colorIndex]
+        };
+      });
+    });
+    
+    setEditableGradients(custom8Gradients);
+    setSelectedColorSet('Custom-8');
+    // Enable all gradients (same count as Color Set A - 8 gradients)
+    setEnabledGradients(Array(8).fill(true));
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Custom-9 - Uses the 7 specific colors from the palette
+  // Colors in order: #4891EA, #96B62D, #9FC1D6, #F2262A, #F3F3F3, #F4D529, #FFB8F2
+  const applyCustom9 = () => {
+    // Get Color Set K structure to preserve gradient positions
+    const colorSetK = colorSets['Color Set K'];
+    if (!colorSetK || !colorSetK.gradientStops) {
+      console.error('Color Set K not found');
+      return;
+    }
+    
+    // The 7 colors from the palette in the exact order shown
+    const paletteColors = [
+      '#4891EA',  // Medium Blue
+      '#96B62D',  // Olive Green
+      '#9FC1D6',  // Light Blue/Gray-Blue
+      '#F2262A',  // Red
+      '#F3F3F3',  // Very light gray/off-white
+      '#F4D529',  // Bright Yellow
+      '#FFB8F2'   // Light Pink/Lavender
+    ];
+    
+    // Distribute these 7 colors across the 9 gradients from Color Set K
+    // Keep the same gradient structure (positions, opacity) but use the new colors
+    const custom9Gradients = colorSetK.gradientStops.map((gradient, gradientIndex) => {
+      return gradient.map((stop, stopIndex) => {
+        // Map colors to stops - cycle through palette colors
+        const colorIndex = (gradientIndex * gradient.length + stopIndex) % paletteColors.length;
+        return {
+          ...stop,
+          color: paletteColors[colorIndex]
+        };
+      });
+    });
+    
+    setEditableGradients(custom9Gradients);
+    setSelectedColorSet('Custom-9');
+    // Enable all gradients (same count as Color Set K - 9 gradients)
+    setEnabledGradients(Array(9).fill(true));
+    // Set blend mode to normal (source-over)
+    updateConfig('blendMode', 'source-over');
+    // Set background color
+    setBackgroundColor('#f9f9f9');
+    setSelectedPalette(null); // Clear any palette selection
+  };
+
+  // Function to apply Default - Same as Custom-9 but softer/more transparent
+  const applyDefault = () => {
+    // Get Color Set K structure to preserve gradient positions
+    const colorSetK = colorSets['Color Set K'];
+    if (!colorSetK || !colorSetK.gradientStops) {
+      console.error('Color Set K not found');
+      return;
+    }
+    
+    // The same 7 colors from Custom-9, with green updated
+    const paletteColors = [
+      '#4891EA',  // Medium Blue
+      '#61b361',  // Green (updated)
+      '#9FC1D6',  // Light Blue/Gray-Blue
+      '#F2262A',  // Red
+      '#F3F3F3',  // Very light gray/off-white
+      '#F4D529',  // Bright Yellow
+      '#FFB8F2'   // Light Pink/Lavender
+    ];
+    
+    // Create softer version by reducing opacity
+    // Reduce opacity by about 40-50% to make it softer
+    const opacityMultiplier = 0.6; // 60% of original opacity = 40% reduction
+    
+    // Distribute these 7 colors across the 9 gradients from Color Set K
+    // Keep the same gradient structure but reduce opacity for softer appearance
+    const custom10Gradients = colorSetK.gradientStops.map((gradient, gradientIndex) => {
+      return gradient.map((stop, stopIndex) => {
+        // Map colors to stops - cycle through palette colors
+        const colorIndex = (gradientIndex * gradient.length + stopIndex) % paletteColors.length;
+        let finalColor = paletteColors[colorIndex];
+        
+        // Special handling for gradient 1 (index 0) - make it much softer, almost white
+        if (gradientIndex === 0) {
+          // All stops in gradient 1 should be white
+          finalColor = '#ffffff';
+          // Very low opacity for soft appearance
+          const newOpacity = Math.max(0, stop.opacity * 0.3);
+          return {
+            ...stop,
+            color: finalColor,
+            opacity: newOpacity
+          };
+        }
+        
+        // Keep white colors pure white (#ffffff) - don't use #F3F3F3 for white dots
+        // If the color is the light gray (#F3F3F3), convert it to pure white for better visibility
+        if (finalColor.toLowerCase() === '#f3f3f3') {
+          finalColor = '#ffffff';
+        }
+        
+        // Reduce opacity to make it softer, but keep white at full opacity for clean edges
+        let newOpacity = Math.max(0, stop.opacity * opacityMultiplier);
+        if (finalColor.toLowerCase() === '#ffffff' && stop.opacity > 0) {
+          // Keep white at higher opacity to avoid grey outlines
+          newOpacity = Math.max(0.8, stop.opacity * 0.9);
+        }
+        
+        return {
+          ...stop,
+          color: finalColor,
+          opacity: newOpacity
+        };
+      });
+    });
+    
+    setEditableGradients(custom10Gradients);
+    setSelectedColorSet('Default');
+    // Enable all gradients (same count as Color Set K - 9 gradients)
+    setEnabledGradients(Array(9).fill(true));
+    // Set blend mode to normal (source-over)
+    updateConfig('blendMode', 'source-over');
+    // Set background color
+    setBackgroundColor('#f9f9f9');
     setSelectedPalette(null); // Clear any palette selection
   };
 
@@ -1686,6 +1867,158 @@ const CircularParticles = () => {
           { position: 1, color: '#F54114', opacity: 0 }
         ]
       ]
+    },
+    'Custom-8': {
+      // New format: array of gradient stop arrays - exact arrangement from image
+      gradientStops: [
+        // Gradient 1: Light purple/lavender outer → Light blue/gray-blue inner (smallest shape)
+        [
+          { position: 0, color: '#ffb8f2', opacity: 1 },
+          { position: 0.3, color: '#ffb8f2', opacity: 1 },
+          { position: 0.7, color: '#9fc1d6', opacity: 1 },
+          { position: 1, color: '#9fc1d6', opacity: 0 }
+        ],
+        // Gradient 2: Light blue/gray-blue outer → Medium blue inner (large shape - blue gradient)
+        [
+          { position: 0, color: '#9fc1d6', opacity: 1 },
+          { position: 0.3, color: '#9fc1d6', opacity: 0.9 },
+          { position: 0.7, color: '#4891EA', opacity: 1 },
+          { position: 1, color: '#4891EA', opacity: 0 }
+        ],
+        // Gradient 3: Yellow-green/chartreuse throughout (medium-large shape)
+        [
+          { position: 0, color: '#96b62d', opacity: 1 },
+          { position: 0.3, color: '#96b62d', opacity: 1 },
+          { position: 0.7, color: '#96b62d', opacity: 0.8 },
+          { position: 1, color: '#96b62d', opacity: 0 }
+        ],
+        // Gradient 4: Light gray/off-white outer halo → Light pink/magenta inner (medium shape)
+        [
+          { position: 0, color: '#f3f3f3', opacity: 1 },
+          { position: 0.3, color: '#f3f3f3', opacity: 1 },
+          { position: 0.7, color: '#ffb8f2', opacity: 1 },
+          { position: 1, color: '#ffb8f2', opacity: 0 }
+        ],
+        // Gradient 5: Bright yellow outer halo → Vibrant red inner (largest shape)
+        [
+          { position: 0, color: '#f4d529', opacity: 1 },
+          { position: 0.3, color: '#f4d529', opacity: 1 },
+          { position: 0.7, color: '#f2262A', opacity: 1 },
+          { position: 1, color: '#f2262A', opacity: 0 }
+        ]
+      ]
+    },
+    'Custom-9': {
+      // Color Set K adjusted for normal blending mode (compensates for soft-light removal)
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 1 },
+          { position: 0.11016949152542373, color: '#bababa', opacity: 1 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 1 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#6a7d1a', opacity: 1 },
+          { position: 0.12076271186440678, color: '#6a8d6a', opacity: 1 },
+          { position: 0.508628519527702, color: '#ffb8f5', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#7aa4d4', opacity: 1 },
+          { position: 0.09322033898305085, color: '#325a7e', opacity: 1 },
+          { position: 0.1048728813559322, color: '#407d40', opacity: 1 },
+          { position: 0.4555084745762712, color: '#6f8a6f', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3d9a5f', opacity: 1 },
+          { position: 0.18528610354223432, color: '#6f7504', opacity: 1 },
+          { position: 0.5, color: '#f5b8f5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 1 },
+          { position: 0.1880108991825613, color: '#d4b3ff', opacity: 1 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0d5578', opacity: 1 },
+          { position: 0.3220338983050847, color: '#ffe0ff', opacity: 1 },
+          { position: 0.4608050847457627, color: '#ffe0ff', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff1a1a', opacity: 1 },
+          { position: 0.03072033898305085, color: '#750000', opacity: 1 },
+          { position: 0.17796610169491525, color: '#ff8a1a', opacity: 1 },
+          { position: 0.551906779661017, color: '#ffff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#6379ff', opacity: 1 },
+          { position: 0.06779661016949153, color: '#4a1a73', opacity: 1 },
+          { position: 0.19385593220338984, color: '#005277', opacity: 0.7 },
+          { position: 0.388771186440678, color: '#d4f5ff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 1 },
+          { position: 0.028601694915254237, color: '#e03f3f', opacity: 1 },
+          { position: 0.3199152542372881, color: '#d299c6', opacity: 1 },
+          { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
+        ]
+      ]
+    },
+    'Default': {
+      // Same as Custom-9 but with reduced opacity for softer appearance
+      // Colors: #4891EA, #61b361, #9FC1D6, #F2262A, #F3F3F3, #F4D529, #FFB8F2
+      // Opacity reduced to 60% of original for softer look
+      gradientStops: [
+        [
+          { position: 0.09745762711864407, color: '#ffffff', opacity: 0.3 },
+          { position: 0.11016949152542373, color: '#ffffff', opacity: 0.3 },
+          { position: 0.24258474576271186, color: '#ffffff', opacity: 0.3 },
+          { position: 0.4014830508474576, color: '#ffffff', opacity: 0 }
+        ],
+        [
+          { position: 0.09110169491525423, color: '#6a7d1a', opacity: 0.6 },
+          { position: 0.12076271186440678, color: '#6a8d6a', opacity: 0.6 },
+          { position: 0.508628519527702, color: '#ffb8f5', opacity: 0 }
+        ],
+        [
+          { position: 0.06779661016949153, color: '#7aa4d4', opacity: 0.6 },
+          { position: 0.09322033898305085, color: '#325a7e', opacity: 0.6 },
+          { position: 0.1048728813559322, color: '#407d40', opacity: 0.6 },
+          { position: 0.4555084745762712, color: '#6f8a6f', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#3d9a5f', opacity: 0.6 },
+          { position: 0.18528610354223432, color: '#6f7504', opacity: 0.6 },
+          { position: 0.5, color: '#f5b8f5', opacity: 0 }
+        ],
+        [
+          { position: 0, color: '#ffffff', opacity: 0.6 },
+          { position: 0.1880108991825613, color: '#d4b3ff', opacity: 0.6 },
+          { position: 0.5805084745762712, color: '#d9d9d9', opacity: 0 }
+        ],
+        [
+          { position: 0.1008174386920981, color: '#0d5578', opacity: 0.6 },
+          { position: 0.3220338983050847, color: '#ffe0ff', opacity: 0.6 },
+          { position: 0.4608050847457627, color: '#ffe0ff', opacity: 0 }
+        ],
+        [
+          { position: 0.024364406779661018, color: '#ff1a1a', opacity: 0.6 },
+          { position: 0.03072033898305085, color: '#750000', opacity: 0.6 },
+          { position: 0.17796610169491525, color: '#ff8a1a', opacity: 0.6 },
+          { position: 0.551906779661017, color: '#ffff1a', opacity: 0 }
+        ],
+        [
+          { position: 0.0423728813559322, color: '#6379ff', opacity: 0.6 },
+          { position: 0.06779661016949153, color: '#4a1a73', opacity: 0.6 },
+          { position: 0.19385593220338984, color: '#005277', opacity: 0.42 },
+          { position: 0.388771186440678, color: '#d4f5ff', opacity: 0 }
+        ],
+        [
+          { position: 0.026483050847457626, color: '#ffffff', opacity: 0.6 },
+          { position: 0.028601694915254237, color: '#e03f3f', opacity: 0.6 },
+          { position: 0.3199152542372881, color: '#d299c6', opacity: 0.6 },
+          { position: 0.670299727520436, color: '#d299c6', opacity: 0 }
+        ]
+      ]
     }
   };
 
@@ -1756,10 +2089,10 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#c8c8ff',
-        blendMode: 'multiply'
+        blendMode: 'source-over'
       },
       selectedColorSet: 'Color Set A',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#f9f9f9'
     },
     'B': {
       config: {
@@ -2451,7 +2784,7 @@ const CircularParticles = () => {
         glowRadius: 1,
         trailType: 'echo',
         streakColor: '#d1e9ff',
-        blendMode: 'soft-light',
+        blendMode: 'source-over',
         connectorsEnabled: true,
         connectorMinDistance: 195,
         connectorMaxDistance: 72,
@@ -2477,7 +2810,7 @@ const CircularParticles = () => {
         connectorDotColor: '#000000'
       },
       selectedColorSet: 'Color Set K',
-      backgroundColor: '#dbdbdb'
+      backgroundColor: '#f9f9f9'
     },
     '10': {
       config: {
@@ -2598,13 +2931,13 @@ const CircularParticles = () => {
     }
   };
 
-  const [selectedColorSet, setSelectedColorSet] = useState('Color Set A');
+  const [selectedColorSet, setSelectedColorSet] = useState('Default');
   const [showGradientEditor, setShowGradientEditor] = useState(false);
   const [showColorControls, setShowColorControls] = useState(true); // New state for color controls panel
   const [selectedGradientIndex, setSelectedGradientIndex] = useState(null); // Track which gradient is being edited
   const [selectedPalette, setSelectedPalette] = useState(null); // Selected color palette name
   const gradientEditorRefs = useRef({}); // Refs for scrolling to specific gradients
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [backgroundColor, setBackgroundColor] = useState('#f9f9f9');
   const [selectedPreset, setSelectedPreset] = useState('Default');
   // New color control states
   const [colorBrightness, setColorBrightness] = useState(1.0); // 0.5 to 2.0 multiplier
@@ -2703,11 +3036,38 @@ const CircularParticles = () => {
     // #endregion
   }, []);
 
-  // Initialize default period on mount
+  // Initialize Default color set and settings on mount - run FIRST
   useEffect(() => {
-    if (selectedPeriod === '9') {
-      handlePeriodChange('9');
-    }
+    // Apply Default color set (Custom-10 renamed) immediately
+    // This sets the correct colors dynamically
+    applyDefault();
+  }, []); // Only run on mount
+  
+  // Initialize default period on mount (but preserve Default color set)
+  // Run after Default is applied
+  useEffect(() => {
+    // Small delay to ensure Default is applied first
+    const timer = setTimeout(() => {
+      if (selectedPeriod === '9') {
+        const period = periodPresets['9'];
+        if (period) {
+          // Apply period config but preserve Default color set and settings
+          const periodConfig = { ...period.config };
+          // Override these to keep Default values
+          periodConfig.connectorShowDots = false;
+          periodConfig.blendMode = 'source-over';
+          setConfig(periodConfig);
+          if (configRef.current) {
+            configRef.current = { ...periodConfig };
+          }
+          // Don't change color set - keep it as Default
+          // Don't change background - keep it as #f9f9f9
+          setSelectedPeriod('9');
+        }
+      }
+    }, 50);
+    
+    return () => clearTimeout(timer);
   }, []); // Only run on mount
   
   // Update editable gradients when color set changes
@@ -5388,34 +5748,35 @@ const CircularParticles = () => {
           p.currentRadius > 0
         ).length;
         
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = 'black';
-        ctx.font = '12px monospace';
-        ctx.fillText(`Frame: ${timeRef.current} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
+        // Text display disabled
+        // ctx.globalCompositeOperation = 'source-over';
+        // ctx.fillStyle = 'black';
+        // ctx.font = '12px monospace';
+        // ctx.fillText(`Frame: ${timeRef.current} Visible: ${visibleCount}/${allParticles.length}`, 10, 20);
         
-        // Draw position text for hovered particle
-        if (hoveredParticleRef.current) {
-          const particle = hoveredParticleRef.current;
-          const x = Math.round(particle.x3d * 100) / 100;
-          const y = Math.round(particle.y3d * 100) / 100;
-          const z = Math.round(particle.z3d * 100) / 100;
-          const positionText = `[${x}, ${y}, ${z}]`;
-          
-          // Position text very close to the particle (above)
-          const textX = particle.x2d;
-          const textY = particle.y2d - particle.currentRadius - 2;
-          
-          // Draw text in black, smaller font
-          ctx.font = '10px monospace';
-          ctx.fillStyle = 'black';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'bottom';
-          ctx.fillText(positionText, textX, textY);
-          
-          // Reset text alignment
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'alphabetic';
-        }
+        // Draw position text for hovered particle - disabled
+        // if (hoveredParticleRef.current) {
+        //   const particle = hoveredParticleRef.current;
+        //   const x = Math.round(particle.x3d * 100) / 100;
+        //   const y = Math.round(particle.y3d * 100) / 100;
+        //   const z = Math.round(particle.z3d * 100) / 100;
+        //   const positionText = `[${x}, ${y}, ${z}]`;
+        //   
+        //   // Position text very close to the particle (above)
+        //   const textX = particle.x2d;
+        //   const textY = particle.y2d - particle.currentRadius - 2;
+        //   
+        //   // Draw text in black, smaller font
+        //   ctx.font = '10px monospace';
+        //   ctx.fillStyle = 'black';
+        //   ctx.textAlign = 'center';
+        //   ctx.textBaseline = 'bottom';
+        //   ctx.fillText(positionText, textX, textY);
+        //   
+        //   // Reset text alignment
+        //   ctx.textAlign = 'left';
+        //   ctx.textBaseline = 'alphabetic';
+        // }
       } catch (error) {
         console.error('Animation error:', error);
       }
@@ -5779,6 +6140,13 @@ const CircularParticles = () => {
       periodConfig.connectorWiggleSpeed = config.connectorWiggleSpeed;
     }
     
+    // Don't override show dots or blend mode if we're on Default color set
+    // Keep Default settings: show dots disabled, normal blending
+    if (selectedColorSet === 'Default') {
+      periodConfig.connectorShowDots = false;
+      periodConfig.blendMode = 'source-over';
+    }
+    
     // Update config state
     setConfig(periodConfig);
     
@@ -5788,15 +6156,18 @@ const CircularParticles = () => {
     }
     
     // Update color set from preset (which will update gradients via useEffect)
-    if (period.selectedColorSet) {
+    // But don't change if we're on Default
+    if (period.selectedColorSet && selectedColorSet !== 'Default') {
       // #region agent log
       fetch('http://127.0.0.1:7242/ingest/454bdaec-6972-42c5-890c-970c6aef7036',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CircularParticles.jsx:3775',message:'before setSelectedColorSet',data:{selectedColorSet:period.selectedColorSet,colorSetExists:!!colorSets[period.selectedColorSet],allColorSetKeys:Object.keys(colorSets),colorSet7DirectCheck:!!colorSets['Color Set 7'],colorSet7Value:colorSets['Color Set 7']?Object.keys(colorSets['Color Set 7']):'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
       // #endregion
       setSelectedColorSet(period.selectedColorSet);
     }
     
-    // Update background color
-    setBackgroundColor(period.backgroundColor);
+    // Update background color (but keep #f9f9f9 for Default)
+    if (selectedColorSet !== 'Default') {
+      setBackgroundColor(period.backgroundColor);
+    }
     
     // Update selected period
     setSelectedPeriod(periodName);
@@ -6354,6 +6725,27 @@ const CircularParticles = () => {
                   >
                     Custom-7
                   </button>
+                  <button
+                    onClick={applyCustom8}
+                    className="px-2 py-2 bg-indigo-600 hover:bg-indigo-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-8: Exact arrangement with 5 specific gradients"
+                  >
+                    Custom-8
+                  </button>
+                  <button
+                    onClick={applyCustom9}
+                    className="px-2 py-2 bg-teal-600 hover:bg-teal-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Custom-9: Color Set K adjusted for normal blending mode"
+                  >
+                    Custom-9
+                  </button>
+                  <button
+                    onClick={applyDefault}
+                    className="px-2 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-xs font-medium text-white transition-colors"
+                    title="Apply Default: Same as Custom-9 but softer/more transparent"
+                  >
+                    Default
+                  </button>
                 </div>
                 <div className="mt-2 text-xs text-gray-400 text-center space-y-1">
                   <div>Custom-1: #022FCD, #CA7D00, #FE5E40, #FFFF8D, #FCAFBA, #C3F0FF</div>
@@ -6363,6 +6755,9 @@ const CircularParticles = () => {
                   <div>Custom-5: #7098FA, #FF8C4A, #FFC6DD, #FAFE45, #D4EF3B, #80EB91</div>
                   <div>Custom-6: #FAE5EF, #F2262A, #2E32FF, #FBF99F, #284D41, #B7E5FF, #5E4E3A</div>
                   <div>Custom-7: #013605, #F54114, #FD98EA, #022FCD, #CA7D00, #0E0033, #48881E</div>
+                  <div>Custom-8: #4891EA, #96b62d, #9fc1d6, #f2262A, #f3f3f3, #f4d529, #ffb8f2</div>
+                  <div>Custom-9: #4891EA, #96B62D, #9FC1D6, #F2262A, #F3F3F3, #F4D529, #FFB8F2</div>
+                  <div>Default: Same as Custom-9 but softer/more transparent</div>
                 </div>
               </div>
               {/* Palette Preview */}
